@@ -9,9 +9,12 @@ function doPost(event){
     const body=JSON.parse(event.postData.contents||'{}');
     const expected=PropertiesService.getScriptProperties().getProperty('CORTEZ_API_TOKEN');
     if(!expected||body.token!==expected)return json_({ok:false,error:'Acesso não autorizado'});
-    if(body.action!=='sync')return json_({ok:false,error:'Ação inválida'});
     const lock=LockService.getScriptLock();lock.waitLock(30000);
-    try{const db=body.db||{};writeDatabase_(db);return json_({ok:true,db:readDatabase_()})}finally{lock.releaseLock()}
+    try{
+      if(body.action==='deleteOrder'){deleteOrder_(body.number,body.id);return json_({ok:true})}
+      if(body.action!=='sync')return json_({ok:false,error:'Ação inválida'});
+      const db=body.db||{};writeDatabase_(db);return json_({ok:true,db:readDatabase_()})
+    }finally{lock.releaseLock()}
   }catch(error){return json_({ok:false,error:String(error&&error.message||error)})}
 }
 
@@ -29,6 +32,13 @@ function metadata_(){const sheet=appData_(),last=sheet.getLastRow(),map=new Map(
 function folder_(){const folders=DriveApp.getFoldersByName(DRIVE_FOLDER);return folders.hasNext()?folders.next():DriveApp.createFolder(DRIVE_FOLDER)}
 function storeMedia_(value,name){if(!clean_(value).startsWith('data:'))return value;const match=String(value).match(/^data:([^;]+);base64,(.+)$/);if(!match)return value;const extension=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[match[1]]||'bin',file=folder_().createFile(Utilities.newBlob(Utilities.base64Decode(match[2]),match[1],`${name}.${extension}`));file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);return`https://drive.google.com/uc?export=view&id=${file.getId()}`}
 function saveMetadata_(order,store){const key=clean_(order.number).replace(/^0+/,'')||'0',found=store.map.get(key),previous=found?.data||{},incomingPhotos=order.photos||[],photos=[...(previous.photos||[]),...incomingPhotos].filter((value,index,list)=>value&&list.indexOf(value)===index).map((value,index)=>storeMedia_(value,`OS-${key}-foto-${index+1}`)),signature=order.signature||previous.signature||'',merged={...previous,...order,photos,signature,checklist:(order.checklist||[]).length?order.checklist:(previous.checklist||[]),notes:order.notes||previous.notes||'',damage:order.damage||previous.damage||''},json=JSON.stringify(merged);if(found)store.sheet.getRange(found.row,2).setValue(json);else{store.sheet.appendRow([key,json]);store.map.set(key,{row:store.sheet.getLastRow(),data:merged})}return merged}
+
+function deleteOrder_(number,id){
+  const key=clean_(number).replace(/^0+/,'')||'0',orders=rows_('Ordens de Serviço',13);
+  for(let index=orders.values.length-1;index>=0;index--){const rowKey=clean_(orders.values[index][0]).replace(/^0+/,'')||'0';if(rowKey===key)orders.sheet.deleteRow(index+HEADER_ROW+1)}
+  const store=metadata_(),found=store.map.get(key);
+  if(found&&(!id||!found.data.id||found.data.id===id||String(id)===`sheet-order-${key}`))store.sheet.deleteRow(found.row)
+}
 
 function writeDatabase_(db){
   const clients=rows_('Clientes',6),clientIndex=new Map(clients.values.map((row,i)=>[phone_(row[2])||clean_(row[1]).toLowerCase(),i+HEADER_ROW+1]));
