@@ -8,11 +8,11 @@ export function clearSyncConfig(){localStorage.removeItem(CONFIG_KEY)}
 const normalizePhone=value=>String(value||'').replace(/\D/g,'');
 const normalizePlate=value=>String(value||'').replace(/[^a-z0-9]/gi,'').toUpperCase();
 
-function mergeBy(items,remote,key){
+function mergeBy(items,remote,key,preserveLocalId=true){
   const result=[...items];
   for(const incoming of remote){
     const match=result.find(item=>key(item)===key(incoming));
-    if(match)Object.assign(match,incoming,{id:match.id||incoming.id});else result.push(incoming);
+    if(match)Object.assign(match,incoming,{id:preserveLocalId?(match.id||incoming.id):(incoming.id||match.id)});else result.push(incoming);
   }
   return result;
 }
@@ -27,7 +27,7 @@ export async function syncDatabase(db,config=getSyncConfig()){
   return {
     clients:mergeBy(db.clients||[],remote.clients||[],item=>normalizePhone(item.phone)||String(item.name||'').toLowerCase()),
     vehicles:mergeBy(db.vehicles||[],remote.vehicles||[],item=>normalizePlate(item.plate)),
-    orders:mergeBy(db.orders||[],remote.orders||[],item=>String(item.number||'')),
+    orders:mergeBy(db.orders||[],remote.orders||[],item=>String(item.number||''),false),
     counter:Math.max(Number(db.counter||1),Number(remote.counter||1))
   };
 }

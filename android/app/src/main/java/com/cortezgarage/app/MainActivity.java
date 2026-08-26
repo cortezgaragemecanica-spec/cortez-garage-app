@@ -13,6 +13,8 @@ import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
+    private static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
+    private static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
     private ValueCallback<Uri[]> fileCallback;
 
@@ -24,7 +26,14 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override public void onPageFinished(WebView view, String url) {
+                if (!url.startsWith("https://cortez-garage-app.pages.dev/")) return;
+                String config = "{\"url\":\"" + SYNC_URL + "\",\"token\":\"" + SYNC_TOKEN + "\"}";
+                String script = "(function(){var k='cortez-garage-sync-v1',v='" + config + "';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);location.reload();}})()";
+                view.evaluateJavascript(script, null);
+            }
+        });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
                 if (fileCallback != null) fileCallback.onReceiveValue(null);
