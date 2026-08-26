@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{readFile}from'node:fs/promises';
+test('recursos públicos usam caminhos portáveis',async()=>{const html=await readFile('index.html','utf8');assert.doesNotMatch(html,/(?:href|src)="\//);const manifest=JSON.parse(await readFile('public/manifest.webmanifest'));assert.equal(manifest.start_url,'./');assert.equal(manifest.scope,'./')});
+test('service worker e aplicação respeitam o próprio escopo',async()=>{const [sw,main]=await Promise.all(['public/sw.js','src/main.js'].map(x=>readFile(x,'utf8')));assert.match(sw,/new URL\('\.\/index\.html',self\.location\)/);assert.doesNotMatch(main,/register\('\/sw\.js'/);assert.match(main,/logo-cortez-garage\.svg/)});
