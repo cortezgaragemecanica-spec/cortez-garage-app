@@ -2,7 +2,7 @@
 
 ## Android
 
-O APK é gerado automaticamente pelo GitHub e publicado na seção **Releases** com o nome `Cortez-Garage-Android.apk`. Ele abre o mesmo aplicativo online, mantém os dados locais do aparelho e usa a integração segura com a planilha.
+O APK é gerado automaticamente pelo GitHub e publicado na seção **Releases** com o nome `Cortez-Garage-Android.apk`. Ele abre o mesmo aplicativo online e já configura a sincronização da oficina automaticamente. Clientes, veículos, ordens, checklists, assinaturas e fotos ficam compartilhados entre os aparelhos autorizados.
 
 Aplicativo instalável para gestão de oficina mecânica e auto elétrica. A interface responsiva usa a identidade oficial Cortez Garage, funciona offline e mantém clientes, veículos, checklists e ordens de serviço no próprio dispositivo.
 
@@ -70,5 +70,5 @@ O aplicativo mantém o funcionamento offline e pode sincronizar, sem duplicar re
 3. Implante como aplicativo da Web, executando como o proprietário e liberando o acesso para qualquer pessoa que possua o endereço. A chave continua obrigatória para ler ou gravar dados.
 4. No cartão **Planilha** do aplicativo, informe o endereço da implantação e a chave. Essas informações ficam somente no dispositivo e não são incluídas no repositório.
 
-A sincronização preserva os dados locais completos (fotos, assinatura e checklist) e envia à planilha os campos compatíveis das abas Clientes, Veículos e Ordens de Serviço.
+A sincronização envia à planilha os campos compatíveis das abas Clientes, Veículos e Ordens de Serviço. Fotos, assinaturas e os detalhes do checklist são gravados na pasta `Cortez Garage - Arquivos do App`, criada automaticamente no Google Drive da oficina.
 
