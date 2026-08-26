@@ -1,5 +1,9 @@
 # Cortez Garage
 
+## Android
+
+O APK é gerado automaticamente pelo GitHub e publicado na seção **Releases** com o nome `Cortez-Garage-Android.apk`. Ele abre o mesmo aplicativo online, mantém os dados locais do aparelho e usa a integração segura com a planilha.
+
 Aplicativo instalável para gestão de oficina mecânica e auto elétrica. A interface responsiva usa a identidade oficial Cortez Garage, funciona offline e mantém clientes, veículos, checklists e ordens de serviço no próprio dispositivo.
 
 ## Funcionalidades
