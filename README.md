@@ -46,8 +46,8 @@ Se o branch padrão tiver outro nome, ajuste a lista `branches` no workflow.
 
 ## Marca e PWA
 
-- Logo completa: `public/icons/logo-cortez-garage.svg`.
-- Ícone compacto instalável: `public/icons/icon.svg`.
+- Logo oficial completa: `public/official-logo.png`.
+- Ícones instaláveis derivados da logo oficial: `public/icons/icon-192.png` e `public/icons/icon-512.png`.
 - Configuração: `public/manifest.webmanifest`.
 - Cache offline: `public/sw.js`.
 
@@ -56,3 +56,4 @@ Ao atualizar arquivos essenciais, altere a constante `CACHE` do service worker p
 ## Dados locais
 
 Os dados são gravados na chave versionável `cortez-garage-v1`. Cada entidade recebe UUID local; clientes são conciliados pelo telefone e veículos pela placa. Para limpar os dados, remova essa chave no armazenamento local das ferramentas do navegador.
+
