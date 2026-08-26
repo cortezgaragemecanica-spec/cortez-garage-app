@@ -6,3 +6,8 @@
 @media(max-width:850px){header{background:#09090a}.header-logo{width:58px;height:58px}.hero{padding:220px 22px 25px;text-align:center}.hero>img{top:8px;left:50%;transform:translateX(-50%);height:205px;width:205px}.mobile-nav{border-top:1px solid #38383b;box-shadow:0 -8px 24px #0008}}
 @media(max-width:430px){header h1{font-size:18px}.header-logo{width:52px;height:52px}.hero{padding-top:205px}.hero>img{height:190px}}
 @media print{:root{color-scheme:light}body,main{background:#fff;color:#111}.detail,.billing{background:#fff;color:#111;border-color:#ccc}input,select,textarea{background:#fff;color:#111;border-color:#ccc}.header-logo{display:none}}
+
+.header-actions{display:flex;align-items:center;gap:10px}.mobile-sync{display:none;border:1px solid #4b4320;background:#211e0d;color:#fff;border-radius:8px;padding:9px 11px;align-items:center;gap:7px}.mobile-sync>span{color:#51c878}.mobile-sync small{font-size:10px;font-weight:700}
+@media(max-width:850px){.mobile-sync{display:flex}}
+@media print{.mobile-sync{display:none!important}}
+
