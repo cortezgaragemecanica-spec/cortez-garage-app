@@ -1,0 +1,1 @@
+import {rm,mkdir,cp,copyFile} from 'node:fs/promises'; await rm('dist',{recursive:true,force:true}); await mkdir('dist'); await Promise.all([copyFile('index.html','dist/index.html'),cp('src','dist/src',{recursive:true}),cp('public','dist',{recursive:true})]); console.log('✓ Build concluído em dist/');
