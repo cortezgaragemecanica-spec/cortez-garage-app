@@ -19,10 +19,20 @@ function mergeBy(items,remote,key,preserveLocalId=true){
 
 export async function syncDatabase(db,config=getSyncConfig()){
   if(!config?.url||!config?.token)throw new Error('Sincronização não configurada');
-  const response=await fetch(config.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'sync',token:config.token,db})});
-  if(!response.ok)throw new Error(`Falha na sincronização (${response.status})`);
-  const payload=await response.json();
-  if(!payload.ok)throw new Error(payload.error||'Falha na sincronização');
+  let payload,lastError;
+  for(let attempt=0;attempt<3;attempt++){
+    try{
+      const response=await fetch(config.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'sync',token:config.token,db})});
+      if(!response.ok)throw new Error(`Falha na sincronização (${response.status})`);
+      payload=await response.json();
+      if(!payload.ok)throw new Error(payload.error||'Falha na sincronização');
+      break;
+    }catch(error){
+      lastError=error;
+      if(attempt<2)await new Promise(resolve=>setTimeout(resolve,1500*(attempt+1)+Math.random()*1200));
+    }
+  }
+  if(!payload?.ok)throw lastError||new Error('Falha na sincronização');
   const remote=payload.db||{};
   return {
     clients:mergeBy(db.clients||[],remote.clients||[],item=>normalizePhone(item.phone)||String(item.name||'').toLowerCase()),
