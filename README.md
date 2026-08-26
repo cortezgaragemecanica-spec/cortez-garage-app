@@ -57,3 +57,14 @@ Ao atualizar arquivos essenciais, altere a constante `CACHE` do service worker p
 
 Os dados são gravados na chave versionável `cortez-garage-v1`. Cada entidade recebe UUID local; clientes são conciliados pelo telefone e veículos pela placa. Para limpar os dados, remova essa chave no armazenamento local das ferramentas do navegador.
 
+## Sincronização com Google Sheets
+
+O aplicativo mantém o funcionamento offline e pode sincronizar, sem duplicar registros, com a planilha **Cortez Garage - Gestão da Oficina**. Clientes são conciliados pelo telefone, veículos pela placa e ordens pelo número.
+
+1. Crie um projeto no Google Apps Script e cole `google-apps-script/Code.gs`.
+2. Nas propriedades do script, crie `CORTEZ_API_TOKEN` com uma chave longa e exclusiva.
+3. Implante como aplicativo da Web, executando como o proprietário e liberando o acesso para qualquer pessoa que possua o endereço. A chave continua obrigatória para ler ou gravar dados.
+4. No cartão **Planilha** do aplicativo, informe o endereço da implantação e a chave. Essas informações ficam somente no dispositivo e não são incluídas no repositório.
+
+A sincronização preserva os dados locais completos (fotos, assinatura e checklist) e envia à planilha os campos compatíveis das abas Clientes, Veículos e Ordens de Serviço.
+
