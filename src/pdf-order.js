@@ -14,7 +14,7 @@ function reportLines(order){
   if(!services.length)lines.push('Nenhum servico informado.');else services.forEach((item,index)=>lines.push(`${index+1}. ${plain(item.description)} | Mecanico: ${plain(item.mechanic)} | Valor: ${brl(item.value)}`));
   lines.push('',`Total de servicos: ${brl(budget.servicesTotal)}`,`TOTAL GERAL: ${brl(budget.total||order.total)}`,'',...field('Condicoes de pagamento',budget.paymentTerms||order.payment),...field('Termo de garantia',budget.warrantyTerms),'CHECKLIST DOS SERVICOS','----------------------------------------------');
   if(!checklist.length)lines.push('Nenhum item informado.');else checklist.forEach(item=>lines.push(`${item.ok?'[X]':'[ ]'} ${plain(item.label)}`));
-  lines.push('',`Fotos de entrada: ${(order.photos||[]).length}`,`Fotos dos servicos: ${(budget.photos||[]).length}`,`Assinatura do cliente: ${order.signature?'Registrada':'Nao registrada'}`,`Assinatura do mecanico: ${budget.mechanicSignature?'Registrada':'Nao registrada'}`,'',`Documento gerado em ${new Date().toLocaleString('pt-BR')}`);
+  lines.push('',`Fotos de entrada: ${(order.photos||[]).length}`,`Assinatura do cliente: ${order.signature?'Registrada':'Nao registrada'}`,'',`Documento gerado em ${new Date().toLocaleString('pt-BR')}`);
   return lines.flatMap(line=>wrap(line));
 }
 
