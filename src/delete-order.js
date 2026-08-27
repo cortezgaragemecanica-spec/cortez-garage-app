@@ -14,7 +14,7 @@ async function deleteCurrentOrder(button){
     await deleteOrder(order.id);
     database.orders=database.orders.filter(item=>item.id!==order.id);
     localStorage.setItem(DB_KEY,JSON.stringify(database));
-    location.reload();
+    document.dispatchEvent(new CustomEvent('cortez:order-deleted'));
   }catch(error){
     button.disabled=false;button.textContent='Excluir O.S.';
     alert(`Não foi possível excluir. Nenhum dado foi apagado.\n\n${error.message}`);
@@ -32,5 +32,4 @@ function addDeleteButton(){
 
 new MutationObserver(addDeleteButton).observe(document.querySelector('#app'),{childList:true,subtree:true});
 addDeleteButton();
-
 
