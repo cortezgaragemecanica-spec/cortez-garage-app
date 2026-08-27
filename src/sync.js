@@ -5,24 +5,12 @@ export function getSyncConfig(){try{return JSON.parse(localStorage.getItem(CONFI
 export function setSyncConfig(config){localStorage.setItem(CONFIG_KEY,JSON.stringify(config))}
 export function clearSyncConfig(){localStorage.removeItem(CONFIG_KEY)}
 
-const normalizePhone=value=>String(value||'').replace(/\D/g,'');
-const normalizePlate=value=>String(value||'').replace(/[^a-z0-9]/gi,'').toUpperCase();
-
-function mergeBy(items,remote,key,preserveLocalId=true){
-  const result=[...items];
-  for(const incoming of remote){
-    const match=result.find(item=>key(item)===key(incoming));
-    if(match){const localTime=Date.parse(match.updatedAt||match.updated_at||0)||0,remoteTime=Date.parse(incoming.updatedAt||incoming.updated_at||0)||0;if(!localTime||!remoteTime||remoteTime>=localTime)Object.assign(match,incoming,{id:preserveLocalId?(match.id||incoming.id):(incoming.id||match.id)})}else result.push(incoming);
-  }
-  return result;
-}
-
-export async function syncDatabase(db,config=getSyncConfig()){
+async function callMirror(action,data,config=getSyncConfig()){
   if(!config?.url||!config?.token)throw new Error('Sincronização não configurada');
   let payload,lastError;
   for(let attempt=0;attempt<3;attempt++){
     try{
-      const response=await fetch(config.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'sync',token:config.token,db})});
+      const response=await fetch(config.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,token:config.token,...data})});
       if(!response.ok)throw new Error(`Falha na sincronização (${response.status})`);
       payload=await response.json();
       if(!payload.ok)throw new Error(payload.error||'Falha na sincronização');
@@ -33,12 +21,10 @@ export async function syncDatabase(db,config=getSyncConfig()){
     }
   }
   if(!payload?.ok)throw lastError||new Error('Falha na sincronização');
-  const remote=payload.db||{};
-  return {
-    clients:mergeBy(db.clients||[],remote.clients||[],item=>normalizePhone(item.phone)||String(item.name||'').toLowerCase()),
-    vehicles:mergeBy(db.vehicles||[],remote.vehicles||[],item=>normalizePlate(item.plate)),
-    orders:mergeBy(db.orders||[],remote.orders||[],item=>String(item.number||''),false),
-    counter:Math.max(Number(db.counter||1),Number(remote.counter||1))
-  };
+  return payload;
 }
+
+export const mirrorOrders=(orders,config=getSyncConfig())=>callMirror('sync',{db:{orders}},config);
+export const syncStockMirror=(items,config=getSyncConfig())=>callMirror('stockSync',{items},config).then(result=>result.items||[]);
+
 
