@@ -12,7 +12,7 @@ function mergeBy(items,remote,key,preserveLocalId=true){
   const result=[...items];
   for(const incoming of remote){
     const match=result.find(item=>key(item)===key(incoming));
-    if(match)Object.assign(match,incoming,{id:preserveLocalId?(match.id||incoming.id):(incoming.id||match.id)});else result.push(incoming);
+    if(match){const localTime=Date.parse(match.updatedAt||match.updated_at||0)||0,remoteTime=Date.parse(incoming.updatedAt||incoming.updated_at||0)||0;if(!localTime||!remoteTime||remoteTime>=localTime)Object.assign(match,incoming,{id:preserveLocalId?(match.id||incoming.id):(incoming.id||match.id)})}else result.push(incoming);
   }
   return result;
 }
