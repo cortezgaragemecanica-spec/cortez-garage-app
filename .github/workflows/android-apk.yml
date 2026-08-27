@@ -34,8 +34,8 @@ jobs:
           path: Cortez-Garage-Android.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.3
-          name: Cortez Garage para Android v1.0.3
-          body: Aplicativo Android com escolha explícita entre câmera e galeria, além da sincronização automática compartilhada.
+          tag_name: android-v1.0.4
+          name: Cortez Garage para Android v1.0.4
+          body: Aplicativo Android com diagnóstico por áudio, notificações de novas O.S. e monitoramento em segundo plano.
           files: Cortez-Garage-Android.apk
 
