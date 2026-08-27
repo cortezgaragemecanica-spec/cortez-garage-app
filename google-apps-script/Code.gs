@@ -55,7 +55,7 @@ function deleteOrder_(number,id){
   if(found&&(!id||!found.data.id||found.data.id===id||String(id)===`sheet-order-${key}`))store.sheet.deleteRow(found.row)
 }
 
-function orderAlerts_(){const orders=rows_('Ordens de Serviço',13).values.filter(row=>clean_(row[0])).slice(-20);return orders.map(row=>({number:Number(row[0])||0,client:clean_(row[2]),plate:plate_(row[3]),created:dateText_(row[1])}))}
+function orderAlerts_(){const orders=rows_('Ordens de Serviço',13).values.filter(row=>clean_(row[0])).slice(-50);return orders.map(row=>({number:Number(row[0])||0,client:clean_(row[2]),plate:plate_(row[3]),created:dateText_(row[1]),status:statusToApp_(clean_(row[10]))}))}
 
 function stockSheet_(){const book=SpreadsheetApp.openById(SPREADSHEET_ID);let sheet=book.getSheetByName('Estoque');if(!sheet){sheet=book.insertSheet('Estoque');sheet.getRange(1,1,1,8).setValues([['Código','Descrição','Aplicação','Quantidade','Valor unitário','Foto da peça','Nota de entrada','Atualização']]);sheet.setFrozenRows(1)}return sheet}
 function stockList_(){const sheet=stockSheet_(),last=sheet.getLastRow();if(last<2)return[];return sheet.getRange(2,1,last-1,8).getValues().filter(row=>clean_(row[1])).map(row=>({id:clean_(row[0]),code:clean_(row[0]),description:clean_(row[1]),application:clean_(row[2]),quantity:Number(row[3])||0,value:Number(row[4])||0,photo:clean_(row[5]),invoicePhoto:clean_(row[6]),updatedAt:row[7]instanceof Date?Utilities.formatDate(row[7],Session.getScriptTimeZone(),'dd/MM/yyyy HH:mm'):clean_(row[7])}))}
