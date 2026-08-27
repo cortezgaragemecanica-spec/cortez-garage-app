@@ -56,6 +56,7 @@ export async function saveSupabase(localDb){const session=await refreshSession()
 
 export async function recordMirrorSync(data){const session=await refreshSession();if(!session?.access_token)return;await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'google_sheets',entidade:'database',registro_id:'mirror',dados:data}})}
 export async function deleteOrder(id){const session=await refreshSession();await request(`/rest/v1/ordens_servico?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
+export async function deleteVehicle(id){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?veiculo_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{veiculo_id:null}});await request(`/rest/v1/veiculos?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 
 const stockKey=item=>clean(item.codigo||item.code).toLowerCase()||`${clean(item.descricao||item.description).toLowerCase()}|${clean(item.aplicacao||item.application).toLowerCase()}`;
 const mapStock=row=>({id:row.id,code:row.codigo||'',description:row.descricao,application:row.aplicacao||'',quantity:Number(row.quantidade)||0,value:Number(row.valor_unitario)||0,photo:row.foto||'',updatedAt:row.atualizado_em});
