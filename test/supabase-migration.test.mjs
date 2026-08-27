@@ -51,4 +51,21 @@ test('migração não reutiliza o ID de uma O.S. existente em outro número',asy
   assert.notEqual(first.id,second.id);
 });
 
+test('migração descarta vínculo antigo quando o veículo não existe',async()=>{
+  const storage=new Map([['cortez-garage-supabase-session-v1',JSON.stringify({access_token:'test-token',refresh_token:'refresh',expires_at:Date.now()/1000+3600})]]);
+  globalThis.localStorage={getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)};
+  let writtenOrders=[];
+  globalThis.fetch=async(url,options={})=>{
+    const path=new URL(url).pathname;
+    if(options.method==='POST'&&path==='/rest/v1/ordens_servico'){writtenOrders=JSON.parse(options.body);return Response.json(writtenOrders)}
+    if(options.method==='POST'&&path.startsWith('/rest/v1/'))return Response.json(JSON.parse(options.body));
+    return Response.json([]);
+  };
+  const {syncSupabase}=await import(`../src/supabase.js?foreign-key=${Date.now()}`);
+  await syncSupabase({clients:[],vehicles:[],orders:[{id:'sheet-order-1',number:'0001',client:{id:'22222222-2222-4222-8222-222222222222'},vehicle:{id:'33333333-3333-4333-8333-333333333333'}}],counter:2});
+  assert.equal(writtenOrders[0].cliente_id,null);
+  assert.equal(writtenOrders[0].veiculo_id,null);
+});
+
+
 

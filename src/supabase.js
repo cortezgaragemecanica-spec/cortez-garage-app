@@ -31,12 +31,12 @@ async function writeDatabase(token,db){
   const clientIds=new Map(clients.map(row=>[clean(row.telefone)||clean(row.nome).toLowerCase(),row.id]));
   const migratedClientIds=new Map();
   for(const item of db.clients||[]){const oldId=item.id,key=clean(item.phone)||clean(item.name).toLowerCase(),newId=clientIds.get(key)||item.id;migratedClientIds.set(oldId,newId);item.id=newId}
-  const resolveClientId=client=>migratedClientIds.get(client?.id)||clientIds.get(clean(client?.phone)||clean(client?.name).toLowerCase())||(isUuid(client?.id)?client.id:null);
-  const vehicles=await upsert(token,'veiculos',(db.vehicles||[]).map(item=>({id:uuid(item.id),cliente_id:migratedClientIds.get(item.clientId)||(isUuid(item.clientId)?item.clientId:null),placa:clean(item.plate).toUpperCase(),modelo:item.model,marca:item.brand||null,ano:String(item.year||'')||null,cor:item.color||null,quilometragem:Number(item.km)||null,combustivel:item.fuel||null})),'placa');
+  const resolveClientId=client=>migratedClientIds.get(client?.id)||clientIds.get(clean(client?.phone)||clean(client?.name).toLowerCase())||null;
+  const vehicles=await upsert(token,'veiculos',(db.vehicles||[]).map(item=>({id:uuid(item.id),cliente_id:migratedClientIds.get(item.clientId)||null,placa:clean(item.plate).toUpperCase(),modelo:item.model,marca:item.brand||null,ano:String(item.year||'')||null,cor:item.color||null,quilometragem:Number(item.km)||null,combustivel:item.fuel||null})),'placa');
   const vehicleIds=new Map(vehicles.map(row=>[clean(row.placa).toUpperCase(),row.id]));
   const migratedVehicleIds=new Map();
   for(const item of db.vehicles||[]){const oldId=item.id,newId=vehicleIds.get(clean(item.plate).toUpperCase())||item.id;migratedVehicleIds.set(oldId,newId);item.clientId=migratedClientIds.get(item.clientId)||item.clientId;item.id=newId}
-  const resolveVehicleId=vehicle=>migratedVehicleIds.get(vehicle?.id)||vehicleIds.get(clean(vehicle?.plate).toUpperCase())||(isUuid(vehicle?.id)?vehicle.id:null);
+  const resolveVehicleId=vehicle=>migratedVehicleIds.get(vehicle?.id)||vehicleIds.get(clean(vehicle?.plate).toUpperCase())||null;
   const existingOrders=await request('/rest/v1/ordens_servico?select=id,numero',{token});
   const existingOrderIds=new Map(existingOrders.map(row=>[Number(row.numero),row.id]));
   const existingOrderNumbers=new Map(existingOrders.map(row=>[row.id,Number(row.numero)]));
@@ -48,5 +48,6 @@ async function writeDatabase(token,db){
 export async function syncSupabase(localDb){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');let remote=await readDatabase(session.access_token);const firstMigration=!localStorage.getItem(MIGRATION_KEY);let merged={clients:merge(localDb.clients||[],remote.clients||[],item=>clean(item.phone)||clean(item.name).toLowerCase()),vehicles:merge(localDb.vehicles||[],remote.vehicles||[],item=>clean(item.plate).toUpperCase()),orders:merge(localDb.orders||[],remote.orders||[],item=>String(item.number)),counter:Math.max(Number(localDb.counter||1),Number(remote.counter||1))};if(firstMigration||JSON.stringify(merged)!==JSON.stringify(remote)){await writeDatabase(session.access_token,merged);localStorage.setItem(MIGRATION_KEY,new Date().toISOString());remote=await readDatabase(session.access_token);merged=remote}return merged}
 
 export async function recordMirrorSync(data){const session=await refreshSession();if(!session?.access_token)return;await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'google_sheets',entidade:'database',registro_id:'mirror',dados:data}})}
+
 
 
