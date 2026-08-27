@@ -35,7 +35,7 @@ public class OrderNotificationService extends Service {
     @Override public void onCreate() {
         super.onCreate();
         createChannels();
-        startForeground(FOREGROUND_ID, notification(CHANNEL_MONITOR, "Cortez Garage", "Monitorando novas entradas", true));
+        startForeground(FOREGROUND_ID, notification(CHANNEL_MONITOR, "Cortez Garage", "Monitorando entradas e alterações de status", true));
         executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(this::checkOrders, 10, 120, TimeUnit.SECONDS);
     }
@@ -48,7 +48,7 @@ public class OrderNotificationService extends Service {
         if (Build.VERSION.SDK_INT < 26) return;
         NotificationManager manager = getSystemService(NotificationManager.class);
         NotificationChannel monitor = new NotificationChannel(CHANNEL_MONITOR, "Monitoramento do aplicativo", NotificationManager.IMPORTANCE_LOW);
-        NotificationChannel orders = new NotificationChannel(CHANNEL_ORDERS, "Novas ordens de serviço", NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel orders = new NotificationChannel(CHANNEL_ORDERS, "Atualizações das ordens de serviço", NotificationManager.IMPORTANCE_HIGH);
         manager.createNotificationChannel(monitor); manager.createNotificationChannel(orders);
     }
 
@@ -72,11 +72,13 @@ public class OrderNotificationService extends Service {
             JSONObject result = new JSONObject(json.toString()); if (!result.optBoolean("ok")) return;
             JSONArray items = result.optJSONArray("orders"); if (items == null || items.length() == 0) return;
             SharedPreferences prefs = getSharedPreferences("cortez-notifications", MODE_PRIVATE); int last = prefs.getInt("lastOrder", -1), newest = last;
+            JSONObject knownStatuses = new JSONObject(prefs.getString("orderStatuses", "{}"));
             List<JSONObject> newOrders = new ArrayList<>(); for (int i=0;i<items.length();i++) { JSONObject order=items.getJSONObject(i); int number=order.optInt("number"); newest=Math.max(newest,number); if(last>=0&&number>last)newOrders.add(order); }
-            if(last<0){prefs.edit().putInt("lastOrder",newest).apply();return;}
+            if(last<0){for(int i=0;i<items.length();i++){JSONObject order=items.getJSONObject(i);knownStatuses.put(String.valueOf(order.optInt("number")),order.optString("status"));}prefs.edit().putInt("lastOrder",newest).putString("orderStatuses",knownStatuses.toString()).apply();return;}
             newOrders.sort(Comparator.comparingInt(item->item.optInt("number"))); NotificationManager manager=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
             for(JSONObject order:newOrders){int number=order.optInt("number");String client=order.optString("client"),plate=order.optString("plate"),text=(client.isEmpty()?"Novo veículo":client)+(plate.isEmpty()?"":" · "+plate);manager.notify(5000+number,notification(CHANNEL_ORDERS,"Nova O.S. #"+String.format("%04d",number),text,false));}
-            if(newest>last)prefs.edit().putInt("lastOrder",newest).apply();
+            for(int i=0;i<items.length();i++){JSONObject order=items.getJSONObject(i);int number=order.optInt("number");String key=String.valueOf(number),status=order.optString("status"),previous=knownStatuses.optString(key,"");if(number<=last&&!previous.isEmpty()&&!status.isEmpty()&&!status.equals(previous)){String client=order.optString("client"),plate=order.optString("plate"),text=(client.isEmpty()?"O.S. atualizada":client)+(plate.isEmpty()?"":" · "+plate)+" · Status: "+status;manager.notify(9000+number,notification(CHANNEL_ORDERS,"O.S. #"+String.format("%04d",number)+" atualizada",text,false));}knownStatuses.put(key,status);}
+            prefs.edit().putInt("lastOrder",newest).putString("orderStatuses",knownStatuses.toString()).apply();
         } catch (Exception ignored) {} finally { if(connection!=null)connection.disconnect(); }
     }
 }

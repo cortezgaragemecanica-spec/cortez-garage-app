@@ -34,8 +34,8 @@ jobs:
           path: Cortez-Garage-Android.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.4
-          name: Cortez Garage para Android v1.0.4
-          body: Aplicativo Android com diagnóstico por áudio, notificações de novas O.S. e monitoramento em segundo plano.
+          tag_name: android-v1.0.5
+          name: Cortez Garage para Android v1.0.5
+          body: Aplicativo Android com notificações de novas O.S. e alterações de status, monitoramento em segundo plano e ordens organizadas pela chegada.
           files: Cortez-Garage-Android.apk
 
