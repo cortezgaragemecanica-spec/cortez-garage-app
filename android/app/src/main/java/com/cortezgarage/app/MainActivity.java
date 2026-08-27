@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
 import android.content.pm.PackageManager;
 import android.provider.MediaStore;
 import android.webkit.PermissionRequest;
@@ -16,6 +17,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.core.content.FileProvider;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +25,8 @@ import java.io.IOException;
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
     private static final int MICROPHONE_REQUEST = 1002;
-    private static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
-    private static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
+    static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
+    static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
     private ValueCallback<Uri[]> fileCallback;
     private Uri cameraUri;
@@ -32,6 +34,8 @@ public class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1003);
+        ContextCompat.startForegroundService(this, new Intent(this, OrderNotificationService.class));
         webView = new WebView(this);
         setContentView(webView);
         WebSettings settings = webView.getSettings();
