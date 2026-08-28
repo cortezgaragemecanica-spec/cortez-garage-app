@@ -1,4 +1,4 @@
-import{syncSupabase}from'./supabase.js';
+import{saveSupabase}from'./supabase.js';
 
 const DB_KEY='cortez-garage-v1';
 const mechanics=['Gustavo','Cortez','Fabio'];
@@ -34,15 +34,17 @@ function collectRows(selector,type){return[...document.querySelectorAll(`${selec
 function totals(){const parts=collectRows('#partsRows','part'),services=collectRows('#servicesRows','service'),partsTotal=parts.reduce((sum,item)=>sum+item.quantity*item.value,0),servicesTotal=services.reduce((sum,item)=>sum+item.value,0);document.querySelector('#partsTotal').textContent=money(partsTotal);document.querySelector('#servicesTotal').textContent=money(servicesTotal);document.querySelector('#budgetTotal').textContent=money(partsTotal+servicesTotal);[...document.querySelectorAll('#partsRows tr')].forEach(tr=>tr.querySelector('.line-total').textContent=money(Number(tr.querySelector('[data-field="quantity"]').value||0)*Number(tr.querySelector('[data-field="value"]').value||0)));[...document.querySelectorAll('#servicesRows tr')].forEach(tr=>tr.querySelector('.line-total').textContent=money(tr.querySelector('[data-field="value"]').value))}
 
 function wire(order,db){
-  document.querySelectorAll('[data-add]').forEach(button=>button.onclick=()=>{const body=document.querySelector(button.dataset.add==='part'?'#partsRows':'#servicesRows');body.insertAdjacentHTML('beforeend',row(button.dataset.add));totals()});
-  document.querySelector('#budgetSection').addEventListener('input',totals);document.querySelector('#budgetSection').addEventListener('click',event=>{const remove=event.target.closest('.remove-line');if(remove){remove.closest('tr').remove();totals()}});
-  document.querySelector('#saveBudget').onclick=async()=>{const button=document.querySelector('#saveBudget'),state=document.querySelector('#budgetState'),parts=collectRows('#partsRows','part'),services=collectRows('#servicesRows','service'),partsTotal=parts.reduce((sum,item)=>sum+item.quantity*item.value,0),servicesTotal=services.reduce((sum,item)=>sum+item.value,0);order.budget={parts,services,partsTotal,servicesTotal,total:partsTotal+servicesTotal,paymentTerms:document.querySelector('#budgetPayment').value.trim(),warrantyTerms:document.querySelector('#warrantyTerms').value.trim(),checklist:[...document.querySelectorAll('[data-check]')].map(input=>({label:serviceChecklist[Number(input.dataset.check)],ok:input.checked}))};button.disabled=true;state.textContent='Salvando no banco…';localStorage.setItem(DB_KEY,JSON.stringify(db));try{const synced=await syncSupabase(db);localStorage.setItem(DB_KEY,JSON.stringify(synced));state.textContent='Salvo no banco';setTimeout(()=>state.textContent='',2500)}catch(error){state.textContent='Salvo neste aparelho; banco pendente';alert(error.message)}finally{button.disabled=false}};
-  totals();
+  let autoTimer,saving=false,pending=false;
+  const collect=()=>{const parts=collectRows('#partsRows','part'),services=collectRows('#servicesRows','service'),partsTotal=parts.reduce((sum,item)=>sum+item.quantity*item.value,0),servicesTotal=services.reduce((sum,item)=>sum+item.value,0);order.budget={parts,services,partsTotal,servicesTotal,total:partsTotal+servicesTotal,paymentTerms:document.querySelector('#budgetPayment').value.trim(),warrantyTerms:document.querySelector('#warrantyTerms').value.trim(),checklist:[...document.querySelectorAll('[data-check]')].map(input=>({label:serviceChecklist[Number(input.dataset.check)],ok:input.checked}))};order.updatedAt=new Date().toISOString();localStorage.setItem(DB_KEY,JSON.stringify(db))};
+  const persist=async(manual=false)=>{collect();const state=document.querySelector('#budgetState'),button=document.querySelector('#saveBudget');if(saving){pending=true;return}saving=true;if(button&&manual)button.disabled=true;if(state)state.textContent='Salvando no banco…';try{const synced=await saveSupabase(db);localStorage.setItem(DB_KEY,JSON.stringify(synced));if(state)state.textContent='Salvo no banco'}catch(error){if(state)state.textContent='Banco pendente';if(manual)alert(error.message)}finally{saving=false;if(button)button.disabled=false;if(pending){pending=false;persist(false)}}};
+  const autoSave=()=>{totals();collect();const state=document.querySelector('#budgetState');if(state)state.textContent='Alteração pendente…';clearTimeout(autoTimer);autoTimer=setTimeout(()=>persist(false),500)};
+  document.querySelectorAll('[data-add]').forEach(button=>button.onclick=()=>{const body=document.querySelector(button.dataset.add==='part'?'#partsRows':'#servicesRows');body.insertAdjacentHTML('beforeend',row(button.dataset.add));autoSave()});
+  document.querySelector('#budgetSection').addEventListener('input',autoSave);document.querySelector('#budgetSection').addEventListener('change',autoSave);document.querySelector('#budgetSection').addEventListener('click',event=>{const remove=event.target.closest('.remove-line');if(remove){remove.closest('tr').remove();autoSave()}});
+  document.querySelector('#saveBudget').onclick=()=>persist(true);totals();
 }
 
 function mount(preserveScroll=false){const target=document.querySelector('.os-grid>div'),existing=document.querySelector('#budgetSection'),{db,order}=currentOrder();if(!target||!order)return;const previousScroll=window.scrollY;if(existing)existing.remove();target.insertAdjacentHTML('beforeend',budgetHtml(order));wire(order,db);if(preserveScroll)window.scrollTo(0,previousScroll)}
 
 new MutationObserver(()=>{if(document.querySelector('.os-grid')&&!document.querySelector('#budgetSection'))mount()}).observe(document.querySelector('#app'),{childList:true,subtree:true});
 mount();
-
 
