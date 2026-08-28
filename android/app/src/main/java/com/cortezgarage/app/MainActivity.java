@@ -10,6 +10,7 @@ import android.os.Build;
 import android.content.pm.PackageManager;
 import android.provider.MediaStore;
 import android.webkit.PermissionRequest;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -20,7 +21,10 @@ import androidx.core.content.FileProvider;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import android.util.Base64;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
@@ -37,6 +41,7 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1003);
         ContextCompat.startForegroundService(this, new Intent(this, OrderNotificationService.class));
         webView = new WebView(this);
+        webView.addJavascriptInterface(new PdfBridge(), "CortezAndroid");
         setContentView(webView);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -81,6 +86,23 @@ public class MainActivity extends Activity {
             }
         });
         webView.loadUrl("https://cortez-garage-app.pages.dev/");
+    }
+
+    private class PdfBridge {
+        @JavascriptInterface public void savePdf(String base64, String requestedName) {
+            new Thread(() -> {
+                try {
+                    String safeName = requestedName == null ? "Cortez-Garage-OS.pdf" : requestedName.replaceAll("[^a-zA-Z0-9._-]", "-");
+                    File file = new File(getCacheDir(), safeName);
+                    try (FileOutputStream output = new FileOutputStream(file)) { output.write(Base64.decode(base64, Base64.DEFAULT)); }
+                    Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", file);
+                    Intent share = new Intent(Intent.ACTION_SEND).setType("application/pdf").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    runOnUiThread(() -> startActivity(Intent.createChooser(share, "Salvar ou compartilhar PDF")));
+                } catch (Exception error) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Não foi possível gerar o PDF", Toast.LENGTH_LONG).show());
+                }
+            }).start();
+        }
     }
 
     @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
