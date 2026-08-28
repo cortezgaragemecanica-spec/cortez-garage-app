@@ -58,6 +58,7 @@ export async function saveOrderValues(order){const session=await refreshSession(
 export async function recordMirrorSync(data){const session=await refreshSession();if(!session?.access_token)return;await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'google_sheets',entidade:'database',registro_id:'mirror',dados:data}})}
 export async function deleteOrder(id){const session=await refreshSession();await request(`/rest/v1/ordens_servico?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 export async function deleteVehicle(id){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?veiculo_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{veiculo_id:null}});await request(`/rest/v1/veiculos?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
+export async function deleteClient(id){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?cliente_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{cliente_id:null}});await request(`/rest/v1/veiculos?cliente_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{cliente_id:null}});await request(`/rest/v1/clientes?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 
 const stockKey=item=>clean(item.codigo||item.code).toLowerCase()||`${clean(item.descricao||item.description).toLowerCase()}|${clean(item.aplicacao||item.application).toLowerCase()}`;
 const mapStock=row=>({id:row.id,code:row.codigo||'',description:row.descricao,application:row.aplicacao||'',quantity:Number(row.quantidade)||0,value:Number(row.valor_unitario)||0,photo:row.foto||'',updatedAt:row.atualizado_em});
@@ -69,6 +70,7 @@ const mapFinance=row=>({id:row.id,category:row.categoria,kind:row.movimento,desc
 export async function readFinance(){const session=await refreshSession(),rows=await request('/rest/v1/lancamentos_financeiros?select=*&order=vencimento.desc',{token:session.access_token});return rows.map(mapFinance)}
 export async function saveFinanceRecord(record){const session=await refreshSession(),rows=await request('/rest/v1/lancamentos_financeiros',{token:session.access_token,method:'POST',prefer:'return=representation',body:{categoria:record.category,movimento:record.kind,descricao:record.description,valor:Number(record.amount),vencimento:record.dueDate,status:record.status||'Pendente'}});return mapFinance(rows[0])}
 export async function markFinanceDone(id){const session=await refreshSession();await request(`/rest/v1/lancamentos_financeiros?id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{status:'Realizado'}})}
+
 
 
 
