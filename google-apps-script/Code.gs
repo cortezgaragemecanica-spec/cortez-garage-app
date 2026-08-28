@@ -3,6 +3,11 @@ const HEADER_ROW=3;
 const APP_DATA_SHEET='App Dados';
 const DRIVE_FOLDER='Cortez Garage - Arquivos do App';
 
+function autorizarLeituraDeNotas(){
+  UrlFetchApp.fetch('https://api.openai.com/v1/models',{muteHttpExceptions:true});
+  return 'Autorização externa concluída. Publique uma nova versão do app da web.';
+}
+
 function doGet(){return json_({ok:true,service:'Cortez Garage Sync',version:1})}
 function doPost(event){
   try{
