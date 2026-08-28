@@ -26,5 +26,6 @@ async function callMirror(action,data,config=getSyncConfig()){
 
 export const mirrorOrders=(orders,config=getSyncConfig())=>callMirror('sync',{db:{orders}},config);
 export const syncStockMirror=(items,config=getSyncConfig())=>callMirror('stockSync',{items},config).then(result=>result.items||[]);
+export const consumeOrderStock=(order,config=getSyncConfig())=>callMirror('stockConsumeOrder',{number:order.number,parts:order.budget?.parts||[]},config);
 
 
