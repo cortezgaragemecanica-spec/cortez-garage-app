@@ -1,4 +1,5 @@
 import{readStock,saveStockItems}from'./supabase.js';
+addEventListener('popstate',()=>{if(document.querySelector('.stock-form,.stock-detail'))openStock()});
 const LOCAL_KEY='cortez-garage-stock-v1';let stock=[],draftItems=[],stockSearch='';
 const $=s=>document.querySelector(s),money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const local=()=>{try{return JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]')}catch{return[]}};
