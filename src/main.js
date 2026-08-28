@@ -35,6 +35,7 @@ function render(){const c=$('#content');if(route==='dashboard')c.innerHTML=dashb
 function toast(msg){let t=document.createElement('div');t.className='toast';t.textContent='✓ '+msg;document.body.append(t);setTimeout(()=>t.remove(),3000)}
 document.addEventListener('cortez:order-deleted',()=>{db=JSON.parse(localStorage.getItem(DBKEY)||'null')||structuredClone(blank);route='orders';shell();toast('Ordem de serviço excluída')});
 document.addEventListener('cortez:database-updated',event=>{db=event.detail||JSON.parse(localStorage.getItem(DBKEY)||'null')||structuredClone(blank);lastDatabaseSync=Date.now();if(route==='dashboard')render()});
+document.addEventListener('cortez:section-opened',event=>{route=event.detail||route});
 document.addEventListener('click',event=>{if(event.target.closest?.('.view'))route='orders'},true);
 document.addEventListener('click',event=>{if(route!=='vehicles'||event.target.closest?.('.delete-vehicle'))return;const card=event.target.closest?.('.cards article'),id=card?.querySelector('.delete-vehicle')?.dataset.id;if(id)viewVehicleHistory(id)});
 document.addEventListener('click',event=>{if(event.target.closest?.('#saveOs'))setTimeout(()=>alert('O.S. salva com sucesso.'),0)},true);
