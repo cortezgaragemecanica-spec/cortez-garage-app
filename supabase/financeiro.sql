@@ -17,20 +17,17 @@ for each row execute function public.set_atualizado_em();
 
 alter table public.lancamentos_financeiros enable row level security;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname='public' and tablename='lancamentos_financeiros' and policyname='financeiro_authenticated'
-  ) then
-    create policy financeiro_authenticated on public.lancamentos_financeiros
-    for all to authenticated using (true) with check (true);
-  end if;
-end $$;
+drop policy if exists financeiro_authenticated on public.lancamentos_financeiros;
+drop policy if exists financeiro_owner on public.lancamentos_financeiros;
+create policy financeiro_owner on public.lancamentos_financeiros
+for all to authenticated
+using ((auth.jwt() ->> 'email') = 'cortezgaragemecanica@gmail.com')
+with check ((auth.jwt() ->> 'email') = 'cortezgaragemecanica@gmail.com');
 
 grant usage on schema public to authenticated;
 grant select, insert, update, delete on public.lancamentos_financeiros to authenticated;
 grant select, insert, update, delete on public.estoque to authenticated;
 grant usage, select on all sequences in schema public to authenticated;
+
 
 
