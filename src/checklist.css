@@ -1,0 +1,12 @@
+.check-item label{display:block}
+.check-description{display:block;margin:6px 3px 0;padding:9px 11px;border-left:3px solid var(--yellow);border-radius:4px;background:#242427;color:#ddd;line-height:1.45}
+.check-summary-item{margin:6px 0}
+.check-summary-item>small{display:block;margin:3px 4px 8px;padding:8px 10px;border-left:3px solid var(--yellow);background:#202023;color:#ddd;border-radius:4px}
+.check-popup{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:16px;background:#000c}
+.check-popup-card{width:min(100%,520px);background:var(--panel);border:1px solid #4a4a4f;border-radius:14px;padding:22px;box-shadow:0 25px 70px #000}
+.check-popup-card h3{margin:7px 0}
+.check-popup-card p{margin:0 0 15px;color:#aaa}
+.check-popup-card textarea{min-height:130px}
+.check-popup-card>div{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
+@media(max-width:600px){.check-popup{padding:0;align-items:end}.check-popup-card{border-radius:16px 16px 0 0;padding:18px}.check-popup-card>div{display:grid}.check-popup-card button{width:100%}}
+
