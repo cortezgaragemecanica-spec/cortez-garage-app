@@ -9,5 +9,6 @@
 .check-popup-card p{margin:0 0 15px;color:#aaa}
 .check-popup-card textarea{min-height:130px}
 .check-popup-card>div{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
+.warning-light-options{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}.warning-light-options label{display:flex;align-items:center;gap:8px;padding:11px;border:1px solid #45454a;border-radius:7px;background:#202023}.warning-light-options input{width:20px;height:20px}.warning-light-result span{display:block;margin:3px 0}.check-popup-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
 @media(max-width:600px){.check-popup{padding:0;align-items:end}.check-popup-card{border-radius:16px 16px 0 0;padding:18px}.check-popup-card>div{display:grid}.check-popup-card button{width:100%}}
 
