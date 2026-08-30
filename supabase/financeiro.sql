@@ -1,6 +1,6 @@
 create table if not exists public.lancamentos_financeiros (
   id uuid primary key default gen_random_uuid(),
-  categoria text not null check (categoria in ('Fluxo de caixa','Conta a receber','Conta a pagar')),
+  categoria text not null check (categoria in ('Fluxo de caixa','Conta a receber','Conta a pagar','Comissões')),
   movimento text not null check (movimento in ('Entrada','Saída')),
   descricao text not null,
   valor numeric(12,2) not null check (valor >= 0),
@@ -16,6 +16,10 @@ before update on public.lancamentos_financeiros
 for each row execute function public.set_atualizado_em();
 
 alter table public.lancamentos_financeiros enable row level security;
+
+alter table public.lancamentos_financeiros drop constraint if exists lancamentos_financeiros_categoria_check;
+alter table public.lancamentos_financeiros add constraint lancamentos_financeiros_categoria_check
+check (categoria in ('Fluxo de caixa','Conta a receber','Conta a pagar','Comissões'));
 
 drop policy if exists financeiro_authenticated on public.lancamentos_financeiros;
 drop policy if exists financeiro_owner on public.lancamentos_financeiros;
