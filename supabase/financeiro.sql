@@ -6,6 +6,11 @@ create table if not exists public.lancamentos_financeiros (
   valor numeric(12,2) not null check (valor >= 0),
   vencimento date not null,
   status text not null default 'Pendente' check (status in ('Pendente','Realizado')),
+  mecanico text,
+  forma_pagamento text,
+  os_id uuid,
+  referencia text,
+  semana_inicio date,
   atualizado_em timestamptz not null default now(),
   criado_em timestamptz not null default now()
 );
@@ -16,6 +21,14 @@ before update on public.lancamentos_financeiros
 for each row execute function public.set_atualizado_em();
 
 alter table public.lancamentos_financeiros enable row level security;
+
+alter table public.lancamentos_financeiros add column if not exists mecanico text;
+alter table public.lancamentos_financeiros add column if not exists forma_pagamento text;
+alter table public.lancamentos_financeiros add column if not exists os_id uuid;
+alter table public.lancamentos_financeiros add column if not exists referencia text;
+alter table public.lancamentos_financeiros add column if not exists semana_inicio date;
+create unique index if not exists lancamentos_financeiros_referencia_uidx
+on public.lancamentos_financeiros(referencia) where referencia is not null;
 
 alter table public.lancamentos_financeiros drop constraint if exists lancamentos_financeiros_categoria_check;
 alter table public.lancamentos_financeiros add constraint lancamentos_financeiros_categoria_check
