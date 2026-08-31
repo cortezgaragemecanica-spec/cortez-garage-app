@@ -20,7 +20,7 @@ function installWorkflow(){
     const open=document.createElement('button');open.id='openClosing';open.type='button';open.className='secondary';open.textContent='Fechamento';open.onclick=()=>{billing.classList.add('closing-open');billing.scrollIntoView({behavior:'smooth',block:'start'})};actions.append(open);
   }
   const payment=document.querySelector('#payment');
-  const paymentLabel=payment?.closest('label')?.querySelector('span');if(paymentLabel)paymentLabel.textContent='Condição / forma de pagamento';
+  const paymentLabel=payment?.closest('label')?.querySelector('span');if(paymentLabel&&paymentLabel.textContent!=='Condição / forma de pagamento')paymentLabel.textContent='Condição / forma de pagamento';
   for(const value of ['Pix ML','Pix BB'])if(payment&&![...payment.options].some(option=>option.value===value))payment.add(new Option(value,value));
   if(save.dataset.closingInstalled)return;
   save.dataset.closingInstalled='1';save.textContent='Fechar O.S.';
