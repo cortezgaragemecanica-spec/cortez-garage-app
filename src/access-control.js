@@ -1,4 +1,4 @@
-import{canManageServices}from'./supabase.js';
+import{canManageServices,getCurrentUser}from'./supabase.js';
 
 const blockedActions='.add-line,.remove-line,#includePart,#approveBudget,#previousStatus,#saveBudget';
 const protectedFields='#services,#parts,#labor,#partsValue,#discount,#payment,#budgetSection input:not([data-check]),#budgetSection textarea,#budgetSection select';
@@ -7,7 +7,8 @@ const message='Seu usuário possui acesso de consulta. O checklist pode ser atua
 function restricted(){return!canManageServices()}
 function lockServiceScreen(){
   const save=document.querySelector('#saveOs'),actions=document.querySelector('.os-head>div:last-child');
-  if(save&&actions&&save.parentElement!==actions){save.classList.remove('wide');actions.append(save)}
+  const owner=getCurrentUser().email.toLowerCase()==='cortezgaragemecanica@gmail.com';
+  if(save&&actions&&!owner&&save.parentElement!==actions){save.classList.remove('wide');actions.append(save)}
   if(!restricted())return;
   const order=document.querySelector('.os-grid');
   if(!order)return;
