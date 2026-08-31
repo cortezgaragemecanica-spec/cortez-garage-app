@@ -23,7 +23,9 @@ alter table public.agendamentos drop constraint if exists agenda_duracao_valida;
 alter table public.agendamentos add constraint agenda_horario check (inicio::time in ('08:30','09:30','10:30','11:30','14:00','15:00','16:00','17:00'));
 alter table public.agendamentos add constraint agenda_duracao_valida check (
   fim > inicio and inicio::date=fim::date and
-  ((inicio::time >= '08:30' and fim::time <= '12:00') or (inicio::time >= '14:00' and fim::time <= '18:00'))
+  ((inicio::time >= '08:30' and fim::time <= '12:00') or
+   (inicio::time >= '14:00' and fim::time <= '18:00') or
+   (inicio::time >= '08:30' and inicio::time < '12:00' and fim::time > '14:00' and fim::time <= '18:00'))
 );
 alter table public.agendamentos enable row level security;
 revoke insert,update,delete on public.agendamentos from authenticated;
