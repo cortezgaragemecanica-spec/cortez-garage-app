@@ -9,10 +9,9 @@ function lockServiceScreen(){
   if(!restricted())return;
   const order=document.querySelector('.os-grid');
   if(!order)return;
-  if(!order.querySelector('.access-restricted-note'))order.insertAdjacentHTML('beforebegin',`<div class="access-restricted-note" role="note">🔒 ${message}</div>`);
+  if(!document.querySelector('.access-restricted-note'))order.insertAdjacentHTML('beforebegin',`<div class="access-restricted-note" role="note">🔒 ${message}</div>`);
   document.querySelectorAll(blockedActions).forEach(element=>{element.hidden=true;element.disabled=true});
   document.querySelectorAll(protectedFields).forEach(element=>{element.disabled=true;element.readOnly=true;element.setAttribute('aria-disabled','true')});
-  document.querySelectorAll('#budgetSection [data-field="cost"],#budgetSection [data-field="margin"]').forEach(element=>element.remove());
   const status=document.querySelector('#status');
   if(status){
     const option=[...status.options].find(item=>item.textContent.trim()==='Entregue');
