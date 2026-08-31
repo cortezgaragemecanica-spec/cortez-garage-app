@@ -57,3 +57,5 @@
 
 .agenda-head-actions{display:flex;align-items:center;gap:8px}.agenda-event em{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:10px;background:#443b0c;color:var(--yellow);font-size:9px;font-style:normal}.agenda-event.completed{opacity:.72;border-color:#286b3b}.agenda-event.completed em{background:#183f24;color:#79db91}.agenda-shortcut i{color:var(--yellow)}.agenda-pdf-preview .report-pdf-sheet main{overflow-x:auto}.agenda-pdf-preview table{width:100%;border-collapse:collapse}.agenda-pdf-preview th,.agenda-pdf-preview td{font-size:10px}@media(max-width:700px){.agenda-head-actions{display:grid}.agenda-head-actions>#agendaPdf{width:100%}}
 
+
+.agenda-detail-actions{display:flex;flex-wrap:wrap}.agenda-detail-actions button{flex:1;min-width:110px}.agenda-form-row{grid-template-columns:repeat(3,minmax(0,1fr))}#agendaNotifications{white-space:nowrap}@media(max-width:700px){.agenda-form-row{grid-template-columns:1fr}.agenda-detail-actions{display:grid}.agenda-detail-actions button{width:100%}}
