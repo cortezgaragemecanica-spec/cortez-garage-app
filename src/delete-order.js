@@ -1,5 +1,6 @@
 const DB_KEY='cortez-garage-v1';
-import{deleteOrder}from'./supabase.js';
+import{deleteOrder,getCurrentUser}from'./supabase.js';
+const OWNER_EMAIL='cortezgaragemecanica@gmail.com';
 
 const readJson=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')||fallback}catch{return fallback}};
 
@@ -23,6 +24,7 @@ async function deleteCurrentOrder(button){
 
 function addDeleteButton(){
   const actions=document.querySelector('.os-head>div:last-child');
+  if(getCurrentUser().email.toLowerCase()!==OWNER_EMAIL){document.querySelector('#deleteOs')?.remove();return}
   if(!actions||document.querySelector('#deleteOs'))return;
   const button=document.createElement('button');
   button.id='deleteOs';button.className='danger';button.type='button';button.textContent='Excluir O.S.';
