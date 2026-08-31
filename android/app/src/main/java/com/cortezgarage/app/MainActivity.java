@@ -107,6 +107,18 @@ public class MainActivity extends Activity {
                 }
             }).start();
         }
+        @JavascriptInterface public void showNotification(String title, String text, int notificationId) {
+            runOnUiThread(() -> {
+                NotificationManager manager = getSystemService(NotificationManager.class);
+                String channelId = "cortez_agenda";
+                if (Build.VERSION.SDK_INT >= 26) manager.createNotificationChannel(new NotificationChannel(channelId, "Lembretes da agenda", NotificationManager.IMPORTANCE_HIGH));
+                Intent open = new Intent(MainActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                PendingIntent pending = PendingIntent.getActivity(MainActivity.this, notificationId, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                Notification.Builder builder = Build.VERSION.SDK_INT >= 26 ? new Notification.Builder(MainActivity.this, channelId) : new Notification.Builder(MainActivity.this);
+                builder.setSmallIcon(android.R.drawable.ic_dialog_info).setContentTitle(title).setContentText(text).setAutoCancel(true).setContentIntent(pending);
+                manager.notify(20000 + Math.abs(notificationId % 10000), builder.build());
+            });
+        }
     }
 
     @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
