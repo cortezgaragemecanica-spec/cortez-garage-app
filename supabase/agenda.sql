@@ -16,9 +16,19 @@ create table if not exists public.agendamentos (
   constraint agenda_horario check (inicio::time in ('08:30','09:30','10:30','14:00','15:00','16:00','17:00')),
   constraint agenda_sem_sobreposicao exclude using gist (mecanico with =, tsrange(inicio,fim,'[)') with &&)
 );
+alter table public.agendamentos add column if not exists status text not null default 'Agendado' check (status in ('Agendado','Concluído'));
+alter table public.agendamentos add column if not exists concluido_por uuid references auth.users(id);
+alter table public.agendamentos add column if not exists concluido_em timestamptz;
 alter table public.agendamentos enable row level security;
-grant select,insert,update,delete on public.agendamentos to authenticated;
+revoke insert,update,delete on public.agendamentos from authenticated;
+grant select,insert on public.agendamentos to authenticated;
+grant update(status,concluido_por,concluido_em) on public.agendamentos to authenticated;
 drop policy if exists "agenda autenticada" on public.agendamentos;
-create policy "agenda autenticada" on public.agendamentos for all to authenticated using (true) with check (true);
+drop policy if exists "agenda leitura" on public.agendamentos;
+drop policy if exists "agenda proprietario insere" on public.agendamentos;
+drop policy if exists "agenda equipe conclui" on public.agendamentos;
+create policy "agenda leitura" on public.agendamentos for select to authenticated using (true);
+create policy "agenda proprietario insere" on public.agendamentos for insert to authenticated with check (lower(auth.jwt()->>'email')='cortezgaragemecanica@gmail.com');
+create policy "agenda equipe conclui" on public.agendamentos for update to authenticated using (true) with check (true);
 create index if not exists agendamentos_inicio_idx on public.agendamentos(inicio);
 
