@@ -41,6 +41,20 @@ for all to authenticated
 using ((auth.jwt() ->> 'email') = 'cortezgaragemecanica@gmail.com')
 with check ((auth.jwt() ->> 'email') = 'cortezgaragemecanica@gmail.com');
 
+drop policy if exists financeiro_os_select on public.lancamentos_financeiros;
+drop policy if exists financeiro_os_insert on public.lancamentos_financeiros;
+drop policy if exists financeiro_os_update on public.lancamentos_financeiros;
+create policy financeiro_os_select on public.lancamentos_financeiros
+for select to authenticated
+using (categoria = 'Conta a receber' and referencia like 'receber-os-%');
+create policy financeiro_os_insert on public.lancamentos_financeiros
+for insert to authenticated
+with check (categoria = 'Conta a receber' and movimento = 'Entrada' and referencia like 'receber-os-%' and os_id is not null);
+create policy financeiro_os_update on public.lancamentos_financeiros
+for update to authenticated
+using (categoria = 'Conta a receber' and referencia like 'receber-os-%')
+with check (categoria = 'Conta a receber' and movimento = 'Entrada' and referencia like 'receber-os-%' and os_id is not null);
+
 grant usage on schema public to authenticated;
 grant select, insert, update, delete on public.lancamentos_financeiros to authenticated;
 grant select, insert, update, delete on public.estoque to authenticated;
