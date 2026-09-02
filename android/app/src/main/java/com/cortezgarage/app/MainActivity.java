@@ -33,6 +33,8 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
     private static final int MICROPHONE_REQUEST = 1002;
+    private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
+    private static final String APK_CACHE_VERSION = "106";
     static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
     static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
@@ -51,11 +53,18 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webView.clearCache(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override public void onPageFinished(WebView view, String url) {
-                if (!url.startsWith("https://cortez-garage-app.pages.dev/")) return;
+                if (!url.startsWith(APP_URL)) return;
                 String config = "{\"url\":\"" + SYNC_URL + "\",\"token\":\"" + SYNC_TOKEN + "\"}";
-                String script = "(function(){var k='cortez-garage-sync-v1',v='" + config + "';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);location.reload();}})()";
+                String script = "(function(){var syncKey='cortez-garage-sync-v1',syncValue='" + config + "',cacheKey='cortez-apk-cache-version',cacheValue='" + APK_CACHE_VERSION + "';"
+                    + "if(localStorage.getItem(syncKey)!==syncValue){localStorage.setItem(syncKey,syncValue);location.reload();return;}"
+                    + "if(localStorage.getItem(cacheKey)===cacheValue)return;localStorage.setItem(cacheKey,cacheValue);"
+                    + "var tasks=[];if(window.caches&&caches.keys)tasks.push(caches.keys().then(function(keys){return Promise.all(keys.map(function(key){return caches.delete(key);}));}));"
+                    + "if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)tasks.push(navigator.serviceWorker.getRegistrations().then(function(items){return Promise.all(items.map(function(item){return item.unregister();}));}));"
+                    + "Promise.all(tasks).then(function(){location.replace('" + APP_URL + "?apk=" + APK_CACHE_VERSION + "');},function(){location.replace('" + APP_URL + "?apk=" + APK_CACHE_VERSION + "');});})()";
                 view.evaluateJavascript(script, null);
             }
         });
@@ -89,7 +98,7 @@ public class MainActivity extends Activity {
                 }
             }
         });
-        webView.loadUrl("https://cortez-garage-app.pages.dev/");
+        webView.loadUrl(APP_URL + "?apk=" + APK_CACHE_VERSION);
     }
 
     private class PdfBridge {
