@@ -1,6 +1,6 @@
 import{canManageServices,getCurrentUser}from'./supabase.js';
 
-const blockedActions='.add-line,.remove-line,#includePart,#approveBudget,#previousStatus,#saveBudget';
+const blockedActions='.add-line,.remove-line,.refuse-line,#includePart,#approveBudget,#previousStatus,#saveBudget';
 const protectedFields='#services,#parts,#labor,#partsValue,#discount,#payment,#budgetSection input:not([data-check]),#budgetSection textarea,#budgetSection select';
 const message='Seu usuário possui acesso de consulta. O checklist pode ser atualizado; serviços, peças, valores, baixa de estoque e entrega não podem ser alterados.';
 
