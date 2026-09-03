@@ -19,6 +19,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebViewClient;
 
 import androidx.core.content.FileProvider;
@@ -34,7 +35,7 @@ public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
     private static final int MICROPHONE_REQUEST = 1002;
     private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
-    private static final String APK_CACHE_VERSION = "106";
+    private static final String APK_CACHE_VERSION = "107";
     static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
     static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
@@ -56,6 +57,34 @@ public class MainActivity extends Activity {
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webView.clearCache(true);
         webView.setWebViewClient(new WebViewClient() {
+            private boolean openExternalUrl(String url) {
+                if (url == null) return false;
+                Uri uri = Uri.parse(url);
+                String scheme = uri.getScheme() == null ? "" : uri.getScheme();
+                String host = uri.getHost() == null ? "" : uri.getHost();
+                boolean isWhatsApp = scheme.equalsIgnoreCase("whatsapp") || host.equalsIgnoreCase("wa.me") || host.toLowerCase().endsWith(".whatsapp.com");
+                if (!isWhatsApp) return false;
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                } catch (ActivityNotFoundException error) {
+                    String phone = uri.getQueryParameter("phone");
+                    if (phone == null || phone.isEmpty()) phone = uri.getPath();
+                    String digits = phone == null ? "" : phone.replaceAll("\\D", "");
+                    try {
+                        if (digits.isEmpty()) throw new ActivityNotFoundException();
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + digits)));
+                    } catch (ActivityNotFoundException fallbackError) {
+                        Toast.makeText(MainActivity.this, "Instale o WhatsApp ou um navegador para chamar o cliente.", Toast.LENGTH_LONG).show();
+                    }
+                }
+                return true;
+            }
+            @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return openExternalUrl(request.getUrl().toString());
+            }
+            @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return openExternalUrl(url);
+            }
             @Override public void onPageFinished(WebView view, String url) {
                 if (!url.startsWith(APP_URL)) return;
                 String config = "{\"url\":\"" + SYNC_URL + "\",\"token\":\"" + SYNC_TOKEN + "\"}";
