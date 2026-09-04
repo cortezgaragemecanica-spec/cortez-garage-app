@@ -1,4 +1,4 @@
-import{getCurrentUser,readFinance,saveFinanceRecord,updateFinanceRecord,markFinanceDone,deleteFinanceRecord}from'./supabase.js?v=20260904-3';
+import{getCurrentUser,readFinance,saveFinanceRecord,updateFinanceRecord,markFinanceDone,deleteFinanceRecord}from'./supabase.js?v=20260904-4';
 import{getSyncConfig}from'./sync.js';
 import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
 const DEVICE_KEY='cortez-garage-admin-device-v1',DB_KEY='cortez-garage-v1',FINANCE_EMAIL='cortezgaragemecanica@gmail.com',MECHANICS=['Gustavo','Cortez','Fabio'],CASH_ACCOUNTS=['Banco do Brasil','Mercado Livre','Dinheiro'];let adminToken=sessionStorage.getItem('cortez-admin-token')||'',records=[],activeArea='Fluxo de caixa',activeMechanic='Gustavo',activeCashAccount='Banco do Brasil',showReceivedArchive=false;
