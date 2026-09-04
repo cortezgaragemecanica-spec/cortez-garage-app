@@ -1,4 +1,4 @@
-import{getCurrentUser,readFinance,readStock}from'./supabase.js?v=20260904-3';
+import{getCurrentUser,readFinance,readStock}from'./supabase.js?v=20260904-4';
 import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
 
 const DB_KEY='cortez-garage-v1';
