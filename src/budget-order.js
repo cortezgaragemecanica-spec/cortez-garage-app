@@ -1,7 +1,7 @@
-import{saveOrderValues}from'./supabase.js';
+import{saveOrderValues,getCachedMechanics}from'./supabase.js?v=20260905-1';
 
 const DB_KEY='cortez-garage-v1';
-const mechanics=['Gustavo','Cortez','Fabio'];
+let mechanics=getCachedMechanics();addEventListener('cortez:mechanics-updated',event=>{if(event.detail?.length)mechanics=event.detail});
 const readDb=()=>{try{return JSON.parse(localStorage.getItem(DB_KEY)||'null')}catch{return null}};
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const parseMoney=value=>{const text=String(value??'').trim().replace(/[^\d,.-]/g,'');return Number(text.includes(',')?text.replace(/\./g,'').replace(',','.'):text)||0};
