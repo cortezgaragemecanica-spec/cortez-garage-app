@@ -4,6 +4,8 @@ const SESSION_KEY='cortez-garage-supabase-session-v1';
 const MIGRATION_KEY='cortez-garage-supabase-migrated-v1';
 const DEVICE_KEY='cortez-garage-device-id-v1';
 const OWNER_EMAIL='cortezgaragemecanica@gmail.com';
+const MECHANICS_KEY='cortez-garage-mechanics-v1';
+const DEFAULT_MECHANICS=['Gustavo','Cortez','Fabio'];
 const GUSTAVO_EMAILS=new Set(['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com']);
 const FABIO_EMAILS=new Set(['fabiomaier19850901@gmail.com']);
 const RESTRICTED_SERVICE_EMAILS=new Set([...GUSTAVO_EMAILS,...FABIO_EMAILS,'kaugg490@gmail.com','kauavinicius.cortez@gmail.com','kauavinicius.cortezz@gmail.com']);
@@ -136,3 +138,22 @@ export async function recordOrderDelivery(order,paymentType,credit=null){const s
 
 
 
+
+const normalizedMechanicItems=value=>{
+  const source=Array.isArray(value)?value:[];
+  const result=[];
+  for(const entry of source){
+    const name=clean(typeof entry==='string'?entry:entry?.name);
+    if(!name||result.some(item=>item.name.toLowerCase()===name.toLowerCase()))continue;
+    result.push({name,active:typeof entry==='string'?true:entry.active!==false});
+  }
+  for(const name of DEFAULT_MECHANICS)if(!result.some(item=>item.name.toLowerCase()===name.toLowerCase()))result.push({name,active:true});
+  return result
+};
+const cacheMechanics=items=>{const normalized=normalizedMechanicItems(items);localStorage.setItem(MECHANICS_KEY,JSON.stringify(normalized));dispatchEvent(new CustomEvent('cortez:mechanics-updated',{detail:normalized.filter(item=>item.active).map(item=>item.name)}));return normalized};
+export function getCachedMechanics(){try{return normalizedMechanicItems(JSON.parse(localStorage.getItem(MECHANICS_KEY)||'[]')).filter(item=>item.active).map(item=>item.name)}catch{return[...DEFAULT_MECHANICS]}}
+async function mechanicConfig(session){const rows=await request('/rest/v1/sincronizacao?entidade=eq.configuracao&registro_id=eq.mecanicos&select=id,dados&order=criado_em.desc&limit=1',{token:session.access_token});return rows[0]||null}
+export async function readMechanics(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const row=await mechanicConfig(session);return cacheMechanics(row?.dados?.items||DEFAULT_MECHANICS)}
+async function writeMechanics(items){if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode cadastrar mecânicos.');const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const current=await mechanicConfig(session),normalized=normalizedMechanicItems(items),body={origem:'app',entidade:'configuracao',registro_id:'mecanicos',dados:{items:normalized,updatedAt:new Date().toISOString()}};if(current)await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(current.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});else await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body});return cacheMechanics(normalized)}
+export async function saveMechanic(name){name=clean(name).replace(/\s+/g,' ');if(name.length<2)throw new Error('Digite o nome do mecânico.');const items=await readMechanics(),found=items.find(item=>item.name.toLowerCase()===name.toLowerCase());if(found){found.name=name;found.active=true}else items.push({name,active:true});return writeMechanics(items)}
+export async function setMechanicActive(name,active){const items=await readMechanics(),found=items.find(item=>item.name.toLowerCase()===clean(name).toLowerCase());if(!found)throw new Error('Mecânico não encontrado.');found.active=Boolean(active);return writeMechanics(items)}
