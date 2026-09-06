@@ -80,3 +80,15 @@
 @media(max-width:700px){.os-head>div:last-child{display:flex;flex-wrap:wrap;gap:8px}.os-head>div:last-child>*{flex:1 1 145px}.os-workflow-modal .grid.two{grid-template-columns:1fr}.stock-match-card{padding:12px}.check-popup-actions{flex-direction:column}.check-popup-actions button{width:100%}}
 
 .weekly-report-pdf .report-pdf-sheet>footer{flex-wrap:wrap}
+
+.company-health{margin:18px 0;padding:20px;border:1px solid var(--line,#333);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.015))}
+.company-health-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.company-health-head h3{margin:.25rem 0;font-size:1.55rem}
+.company-health-head p{margin:0;color:var(--muted,#999)}
+.company-health-head>strong{font-size:2.4rem;line-height:1;color:#fff}
+.company-health-head>strong small{font-size:.9rem;color:var(--muted,#999)}
+.company-health progress{width:100%;height:12px;margin:18px 0;accent-color:#f4c400}
+.company-health-healthy progress{accent-color:#25c46a}.company-health-stable progress{accent-color:#e8c547}.company-health-attention progress{accent-color:#ed8b2f}.company-health-critical progress{accent-color:#df4b4b}
+.company-health-healthy .company-health-head h3{color:#4ddd8b}.company-health-stable .company-health-head h3{color:#e8c547}.company-health-attention .company-health-head h3{color:#ed8b2f}.company-health-critical .company-health-head h3{color:#ff6262}
+.company-health-method{display:block;margin-top:12px;color:var(--muted,#999);line-height:1.45}
+@media(max-width:640px){.company-health{padding:16px}.company-health-head>strong{font-size:2rem}.company-health .finance-summary{grid-template-columns:1fr 1fr}.company-health .finance-summary article{min-width:0}}
