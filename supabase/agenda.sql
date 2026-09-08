@@ -1,7 +1,7 @@
 create extension if not exists btree_gist;
 create table if not exists public.agendamentos (
   id uuid primary key default gen_random_uuid(),
-  mecanico text not null check (mecanico in ('Fabio','Gustavo','Cortez')),
+  mecanico text not null,
   inicio timestamp without time zone not null,
   fim timestamp without time zone not null,
   cliente text not null,
@@ -14,6 +14,9 @@ create table if not exists public.agendamentos (
   constraint agenda_dia_util check (extract(isodow from inicio) between 1 and 5),
   constraint agenda_sem_sobreposicao exclude using gist (mecanico with =, tsrange(inicio,fim,'[)') with &&)
 );
+alter table public.agendamentos drop constraint if exists agendamentos_mecanico_check;
+alter table public.agendamentos drop constraint if exists agenda_mecanico_preenchido;
+alter table public.agendamentos add constraint agenda_mecanico_preenchido check (length(trim(mecanico)) > 0);
 alter table public.agendamentos add column if not exists status text not null default 'Agendado' check (status in ('Agendado','Concluído'));
 alter table public.agendamentos add column if not exists concluido_por uuid references auth.users(id);
 alter table public.agendamentos add column if not exists concluido_em timestamptz;
