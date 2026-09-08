@@ -1,4 +1,4 @@
-import{refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20260906-1';
+import{refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20260908-1';
 const API='https://pqldixrfvmkwkwbbysyl.supabase.co',KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe',OWNER='cortezgaragemecanica@gmail.com';
 const starts=['08:30','09:30','10:30','11:30','14:00','15:00','16:00','17:00'],ends=['09:30','10:30','11:30','12:00','15:00','16:00','17:00','18:00'];
 const owner=()=>getCurrentUser().email.toLowerCase()===OWNER,esc=v=>String(v||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
