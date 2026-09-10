@@ -31,6 +31,8 @@ export function getCurrentUser(){const user=getSession()?.user,metadata=user?.us
 const currentEmail=()=>getCurrentUser().email.trim().toLowerCase();
 export function canManageServices(){return hasPermission('manageValues')}
 export function agendaMechanicForCurrentUser(){const user=getManagedUser(currentEmail());return user?.agendaMechanic||''}
+export async function readCurrentMechanicCommissions(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');return request('/rest/v1/rpc/comissoes_semana_mecanico',{token:session.access_token,method:'POST',body:{}})}
+export async function confirmCurrentMechanicCommissions(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');return request('/rest/v1/rpc/conferir_comissoes_semana_mecanico',{token:session.access_token,method:'POST',body:{}})}
 const requireServiceManagement=action=>{if(!canManageServices())throw new Error(`Seu usuário não tem permissão para ${action}.`)};
 const getDeviceId=()=>{let id=localStorage.getItem(DEVICE_KEY);if(!id){id=crypto.randomUUID();localStorage.setItem(DEVICE_KEY,id)}return id};
 export function signOut(){localStorage.removeItem(SESSION_KEY);location.reload()}
