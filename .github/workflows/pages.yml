@@ -25,8 +25,8 @@ jobs:
       # O deploy valida a sintaxe de todo o app e o teste do recurso atual sem mascarar erro de execução.
       - name: Validar JavaScript
         run: for file in src/*.js; do node --check "$file"; done
-      - name: Validar acertos de fornecedores
-        run: node --test --test-name-pattern="financeiro controla acertos" test/paths.test.mjs
+      - name: Validar recursos financeiros atuais
+        run: node --test --test-name-pattern="financeiro controla acertos|baixa de conta a pagar" test/paths.test.mjs
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
