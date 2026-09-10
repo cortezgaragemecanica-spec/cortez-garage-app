@@ -26,7 +26,7 @@ jobs:
       - name: Validar JavaScript
         run: for file in src/*.js; do node --check "$file"; done
       - name: Validar recursos financeiros atuais
-        run: node --test --test-name-pattern="financeiro controla acertos|baixa de conta a pagar|caixa bloqueia duplicidade|peças da ordem|nota do Luizinho" test/paths.test.mjs
+        run: node --test --test-name-pattern="financeiro controla acertos|baixa de conta a pagar|caixa bloqueia duplicidade|peças da ordem|nota do Luizinho|pagamento Luizinho" test/paths.test.mjs
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
