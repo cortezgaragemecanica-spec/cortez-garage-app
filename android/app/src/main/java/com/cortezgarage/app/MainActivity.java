@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
     private static final int MICROPHONE_REQUEST = 1002;
     private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
-    private static final String APK_CACHE_VERSION = "107";
+    private static final String APK_CACHE_VERSION = "108";
     static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
     static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
@@ -142,6 +142,21 @@ public class MainActivity extends Activity {
                     runOnUiThread(() -> startActivity(Intent.createChooser(share, "Salvar ou compartilhar PDF")));
                 } catch (Exception error) {
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Não foi possível gerar o PDF", Toast.LENGTH_LONG).show());
+                }
+            }).start();
+        }
+        @JavascriptInterface public void saveFile(String base64, String requestedName, String requestedMimeType) {
+            new Thread(() -> {
+                try {
+                    String safeName = requestedName == null ? "cortez-garage-backup.json" : requestedName.replaceAll("[^a-zA-Z0-9._-]", "-");
+                    String mimeType = requestedMimeType == null || requestedMimeType.isEmpty() ? "application/octet-stream" : requestedMimeType;
+                    File file = new File(getCacheDir(), safeName);
+                    try (FileOutputStream output = new FileOutputStream(file)) { output.write(Base64.decode(base64, Base64.DEFAULT)); }
+                    Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", file);
+                    Intent share = new Intent(Intent.ACTION_SEND).setType(mimeType).putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    runOnUiThread(() -> startActivity(Intent.createChooser(share, "Salvar ou compartilhar backup")));
+                } catch (Exception error) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Não foi possível gerar o backup", Toast.LENGTH_LONG).show());
                 }
             }).start();
         }

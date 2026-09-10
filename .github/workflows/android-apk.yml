@@ -34,8 +34,8 @@ jobs:
           path: Cortez-Garage-Android.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.7
-          name: Cortez Garage para Android v1.0.7
-          body: Correção da abertura do WhatsApp pelo telefone do cliente na O.S., com renovação segura do cache.
+          tag_name: android-v1.0.8
+          name: Cortez Garage para Android v1.0.8
+          body: Adiciona criação e restauração do backup operacional, com opção de salvar ou compartilhar o arquivo no Android.
           files: Cortez-Garage-Android.apk
 
