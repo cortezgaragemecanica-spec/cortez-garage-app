@@ -99,3 +99,5 @@
   .mobile-nav i,.mobile-nav span{display:block;width:100%;margin-left:auto;margin-right:auto;text-align:center}
   .mobile-nav i{margin-bottom:4px}
 }
+.stock-supplier-note{margin:0 0 18px;padding:16px;border:1px solid #3d3923;border-radius:14px;background:#17160f}.stock-supplier-note>.check-item{margin-bottom:14px}.stock-supplier-note .grid{transition:opacity .2s}.stock-supplier-note .grid.is-disabled{opacity:.45}.supplier-tabs{margin-bottom:18px}.supplier-table table{min-width:760px}.supplier-table td:last-child{width:180px}
+@media(max-width:640px){.supplier-table{overflow-x:auto}.supplier-table .finance-row-actions{flex-wrap:nowrap}.stock-supplier-note{padding:12px}}
