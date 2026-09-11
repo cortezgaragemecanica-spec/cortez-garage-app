@@ -240,7 +240,7 @@ with datas_entrega as (
           and f.movimento = 'Entrada'
           and (f.referencia like 'caixa-os-%' or f.descricao ilike '%saldo final%')
       ),
-      o.atualizado_em::date
+      o.data_entrada::date
     ) as entregue_em
   from public.ordens_servico o
   left join public.lancamentos_financeiros f on f.os_id = o.id
@@ -251,6 +251,13 @@ update public.ordens_servico o
 set entregue_em = d.entregue_em
 from datas_entrega d
 where o.id = d.id and o.entregue_em is null;
+
+-- Estas O.S. foram importadas sem movimento financeiro que comprovasse a entrega.
+-- A última alteração ocorreu em 10/09, mas elas são entradas antigas de agosto.
+update public.ordens_servico
+set entregue_em = data_entrada::date
+where numero in (3, 5, 7, 8, 13, 20, 24, 26, 27)
+  and status = 'Entregue';
 
 create or replace function public.registrar_data_entrega_os()
 returns trigger

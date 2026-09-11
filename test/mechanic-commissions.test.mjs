@@ -61,6 +61,8 @@ test('ordens entregues são separadas por semana',async()=>{
   assert.match(sql,/add column if not exists entregue_em date/);
   assert.match(sql,/create trigger ordens_servico_registrar_data_entrega/);
   assert.match(sql,/min\(f\.vencimento\) filter \(where f\.categoria = 'Comissões'\)/);
+  assert.match(sql,/numero in \(3, 5, 7, 8, 13, 20, 24, 26, 27\)/);
+  assert.match(sql,/set entregue_em = data_entrada::date/);
   assert.match(style,/\.delivered-week-head/);
   assert.match(index,/main\.js\?v=20260910-6/);
 });
