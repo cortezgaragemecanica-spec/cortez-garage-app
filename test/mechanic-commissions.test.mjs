@@ -34,3 +34,17 @@ test('confirmação aparece no histórico administrativo do fechamento',async()=
   assert.match(admin,/confirmationConfirmations|commissionConfirmations/);
   assert.match(admin,/Conferido em/);
 });
+
+test('proprietário transfere comissão de serviço entregue somente na semana vigente',async()=>{
+  const [sql,supabase,budget]=await Promise.all([read('supabase/comissoes-mecanicos.sql'),read('src/supabase.js'),read('src/budget-order.js')]);
+  assert.match(sql,/alterar_mecanico_servico_entregue/);
+  assert.match(sql,/ordem\.status <> 'Entregue'/);
+  assert.match(sql,/A O\.S\. não foi entregue na semana vigente/);
+  assert.match(sql,/delete from public\.lancamentos_financeiros/);
+  assert.match(sql,/round\(sum\([\s\S]*\* 0\.5, 2\)/);
+  assert.match(sql,/já foi paga e não pode ser transferida/);
+  assert.match(sql,/já foram conferidas e não podem ser transferidas/);
+  assert.match(supabase,/reassignDeliveredServiceMechanic/);
+  assert.match(budget,/Transferir a comissão deste serviço/);
+  assert.match(budget,/order\.status==='Entregue'/);
+});
