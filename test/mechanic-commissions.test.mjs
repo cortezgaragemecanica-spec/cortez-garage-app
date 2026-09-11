@@ -64,5 +64,16 @@ test('ordens entregues são separadas por semana',async()=>{
   assert.match(sql,/numero in \(3, 5, 7, 8, 13, 20, 24, 26, 27\)/);
   assert.match(sql,/set entregue_em = data_entrada::date/);
   assert.match(style,/\.delivered-week-head/);
-  assert.match(index,/main\.js\?v=20260910-6/);
+  assert.match(index,/main\.js\?v=20260910-7/);
+});
+
+test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',async()=>{
+  const [main,index]=await Promise.all([read('src/main.js'),read('index.html')]);
+  assert.match(main,/formData=\{mechanic:agendaMechanicForCurrentUser\(\)\}/);
+  assert.match(main,/Definido automaticamente pelo usuário conectado/);
+  assert.match(main,/photos:\[\]/);
+  assert.doesNotMatch(main,/id="photos"/);
+  assert.doesNotMatch(main,/Checklist e fotos/);
+  assert.doesNotMatch(main,/compressImage/);
+  assert.match(index,/main\.js\?v=20260910-7/);
 });
