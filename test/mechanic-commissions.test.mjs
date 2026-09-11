@@ -127,6 +127,7 @@ test('nova entrada gera comprovante em PDF e encaminha para o WhatsApp do client
   assert.match(activity,/sharePdfToWhatsApp/);
   assert.match(activity,/application\/pdf/);
   assert.match(activity,/com\.whatsapp/);
+  assert.ok(activity.indexOf('setPackage("com.whatsapp.w4b")')<activity.indexOf('setPackage("com.whatsapp")'));
   assert.match(manifest,/com\.whatsapp/);
   assert.match(style,/\.entry-finish-actions/);
   assert.match(index,/entry-receipt\.js\?v=20260911-1/);
