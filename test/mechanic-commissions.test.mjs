@@ -50,12 +50,17 @@ test('proprietário transfere comissão de serviço entregue somente na semana v
 });
 
 test('ordens entregues são separadas por semana',async()=>{
-  const [main,style,index]=await Promise.all([read('src/main.js'),read('src/style.css'),read('index.html')]);
+  const [main,supabase,sql,style,index]=await Promise.all([read('src/main.js'),read('src/supabase.js'),read('supabase/comissoes-mecanicos.sql'),read('src/style.css'),read('index.html')]);
   assert.match(main,/function deliveredWeek/);
   assert.match(main,/function deliveredOrdersByWeek/);
   assert.match(main,/orderGroup==='delivered'\?deliveredOrdersByWeek/);
+  assert.match(main,/orderRowsTable\(group\.orders,true\)/);
   assert.match(main,/SEMANA MAIS RECENTE/);
   assert.match(main,/SEMANA ARQUIVADA/);
+  assert.match(supabase,/deliveredAt:row\.entregue_em/);
+  assert.match(sql,/add column if not exists entregue_em date/);
+  assert.match(sql,/create trigger ordens_servico_registrar_data_entrega/);
+  assert.match(sql,/min\(f\.vencimento\) filter \(where f\.categoria = 'Comissões'\)/);
   assert.match(style,/\.delivered-week-head/);
-  assert.match(index,/main\.js\?v=20260910-5/);
+  assert.match(index,/main\.js\?v=20260910-6/);
 });

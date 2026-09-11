@@ -224,3 +224,54 @@ $$;
 
 revoke all on function public.alterar_mecanico_servico_entregue(uuid, integer, text) from public, anon;
 grant execute on function public.alterar_mecanico_servico_entregue(uuid, integer, text) to authenticated;
+
+-- A semana de uma O.S. entregue não pode depender de atualizado_em: qualquer
+-- correção posterior alteraria sua semana. Este campo registra a entrega uma vez.
+alter table public.ordens_servico
+  add column if not exists entregue_em date;
+
+with datas_entrega as (
+  select
+    o.id,
+    coalesce(
+      min(f.vencimento) filter (where f.categoria = 'Comissões'),
+      min(f.vencimento) filter (
+        where f.categoria = 'Fluxo de caixa'
+          and f.movimento = 'Entrada'
+          and (f.referencia like 'caixa-os-%' or f.descricao ilike '%saldo final%')
+      ),
+      o.atualizado_em::date
+    ) as entregue_em
+  from public.ordens_servico o
+  left join public.lancamentos_financeiros f on f.os_id = o.id
+  where o.status = 'Entregue' and o.entregue_em is null
+  group by o.id, o.atualizado_em
+)
+update public.ordens_servico o
+set entregue_em = d.entregue_em
+from datas_entrega d
+where o.id = d.id and o.entregue_em is null;
+
+create or replace function public.registrar_data_entrega_os()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if new.status = 'Entregue' then
+    if tg_op = 'INSERT' then
+      new.entregue_em := coalesce(new.entregue_em, new.data_entrada::date, timezone('America/Sao_Paulo', now())::date);
+    elsif old.status is distinct from 'Entregue' then
+      new.entregue_em := timezone('America/Sao_Paulo', now())::date;
+    else
+      new.entregue_em := coalesce(new.entregue_em, old.entregue_em, timezone('America/Sao_Paulo', now())::date);
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists ordens_servico_registrar_data_entrega on public.ordens_servico;
+create trigger ordens_servico_registrar_data_entrega
+before insert or update on public.ordens_servico
+for each row execute function public.registrar_data_entrega_os();
