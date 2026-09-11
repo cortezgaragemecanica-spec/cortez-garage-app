@@ -34,8 +34,8 @@ jobs:
           path: Cortez-Garage-Android.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.8
-          name: Cortez Garage para Android v1.0.8
-          body: Adiciona criação e restauração do backup operacional, com opção de salvar ou compartilhar o arquivo no Android.
+          tag_name: android-v1.0.9
+          name: Cortez Garage para Android v1.0.9
+          body: Adiciona o comprovante de entrada em PDF e o compartilhamento direto do arquivo pelo WhatsApp.
           files: Cortez-Garage-Android.apk
 
