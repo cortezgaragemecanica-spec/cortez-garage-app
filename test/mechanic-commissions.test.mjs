@@ -48,3 +48,14 @@ test('proprietário transfere comissão de serviço entregue somente na semana v
   assert.match(budget,/Transferir a comissão deste serviço/);
   assert.match(budget,/order\.status==='Entregue'/);
 });
+
+test('ordens entregues são separadas por semana',async()=>{
+  const [main,style,index]=await Promise.all([read('src/main.js'),read('src/style.css'),read('index.html')]);
+  assert.match(main,/function deliveredWeek/);
+  assert.match(main,/function deliveredOrdersByWeek/);
+  assert.match(main,/orderGroup==='delivered'\?deliveredOrdersByWeek/);
+  assert.match(main,/SEMANA MAIS RECENTE/);
+  assert.match(main,/SEMANA ARQUIVADA/);
+  assert.match(style,/\.delivered-week-head/);
+  assert.match(index,/main\.js\?v=20260910-5/);
+});
