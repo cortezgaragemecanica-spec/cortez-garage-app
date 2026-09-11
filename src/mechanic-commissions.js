@@ -8,9 +8,10 @@ const eligible=()=>getCurrentUser().email.trim().toLowerCase()!==OWNER&&Boolean(
 
 function installButtons(){
   if(!eligible())return document.querySelectorAll('.mechanic-commission-route').forEach(button=>button.remove());
-  const aside=document.querySelector('aside nav'),mobile=document.querySelector('.mobile-nav');
+  const aside=document.querySelector('aside nav'),mobile=document.querySelector('.mobile-nav'),finance=document.querySelector('.home-menu .admin-shortcut');
   if(aside&&!aside.querySelector('.mechanic-commission-route'))aside.insertAdjacentHTML('beforeend','<button type="button" class="mechanic-commission-route"><i>%</i>Minhas comissões</button>');
   if(mobile&&!mobile.querySelector('.mechanic-commission-route'))mobile.insertAdjacentHTML('beforeend','<button type="button" class="mechanic-commission-route"><i>%</i><span>Comissões</span></button>');
+  if(finance&&!document.querySelector('.home-menu .mechanic-commission-route'))finance.insertAdjacentHTML('afterend','<button type="button" class="mechanic-commission-route mechanic-commission-shortcut"><i>%</i><span>Comissões</span></button>');
   document.querySelectorAll('.mechanic-commission-route').forEach(button=>button.onclick=open);
 }
 
