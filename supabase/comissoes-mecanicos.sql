@@ -77,7 +77,8 @@ begin
         where translate(lower(trim(coalesce(nullif(servico ->> 'mechanic', ''), o.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
           and coalesce(servico ->> 'refused', 'false') <> 'true'
       ), ''), 'Serviço da O.S.'),
-      'amount', f.valor
+      'amount', f.valor,
+      'status', f.status
     ) order by f.vencimento desc, o.numero desc), '[]'::jsonb),
     coalesce(sum(f.valor), 0)
   into itens, total
@@ -85,7 +86,6 @@ begin
   left join public.ordens_servico o on o.id = f.os_id
   left join public.veiculos v on v.id = o.veiculo_id
   where f.categoria = 'Comissões'
-    and f.status <> 'Realizado'
     and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
     and coalesce(f.semana_inicio, f.vencimento - (extract(isodow from f.vencimento)::integer - 1)) = inicio_semana;
 
@@ -119,7 +119,7 @@ begin
   end if;
   if not exists (
     select 1 from public.lancamentos_financeiros f
-    where f.categoria = 'Comissões' and f.status <> 'Realizado'
+    where f.categoria = 'Comissões'
       and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
       and coalesce(f.semana_inicio, f.vencimento - (extract(isodow from f.vencimento)::integer - 1)) = inicio_semana
   ) then raise exception 'Não há comissões pendentes nesta semana para conferir.'; end if;
