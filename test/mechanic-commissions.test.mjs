@@ -77,3 +77,20 @@ test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',
   assert.doesNotMatch(main,/compressImage/);
   assert.match(index,/main\.js\?v=20260910-7/);
 });
+
+test('ações do orçamento ficam juntas e o salvamento manual é removido',async()=>{
+  const [budget,workflow,access,index,worker]=await Promise.all([read('src/budget-order.js'),read('src/order-workflow.js'),read('src/access-control.js'),read('index.html'),read('public/sw.js')]);
+  assert.match(budget,/id="sendBudget"/);
+  assert.match(budget,/order\.status='Aguardando aprovação'/);
+  assert.match(budget,/await persist\(true\)/);
+  assert.match(budget,/if\(!canManageServices\(\)\)await updateOrderStatus/);
+  assert.match(budget,/id="approveBudget"/);
+  assert.doesNotMatch(budget,/id="saveBudget"/);
+  assert.doesNotMatch(budget,/Salvar orçamento e execução/);
+  assert.match(workflow,/approval\.insertBefore\(ready,approval\.querySelector\('#previousStatus'\)\)/);
+  assert.match(workflow,/Veículo pronto para entrega/);
+  assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
+  assert.match(index,/budget-order\.js\?v=20260911-1/);
+  assert.match(index,/order-workflow\.js\?v=20260911-1/);
+  assert.match(worker,/cortez-garage-v164/);
+});
