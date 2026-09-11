@@ -30,7 +30,8 @@ export function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_
 export function getCurrentUser(){const user=getSession()?.user,metadata=user?.user_metadata||{};return{id:user?.id||'',name:metadata.name||metadata.nome||user?.email?.split('@')[0]||'Usuário',email:user?.email||'',deviceId:localStorage.getItem(DEVICE_KEY)||metadata.device_id||''}}
 const currentEmail=()=>getCurrentUser().email.trim().toLowerCase();
 export function canManageServices(){return hasPermission('manageValues')}
-export function agendaMechanicForCurrentUser(){const user=getManagedUser(currentEmail());return user?.agendaMechanic||''}
+const defaultMechanicForEmail=email=>GUSTAVO_EMAILS.has(email)?'Gustavo':FABIO_EMAILS.has(email)?'Fabio':'';
+export function agendaMechanicForCurrentUser(){const email=currentEmail(),user=getManagedUser(email);if(user?.active===false)return'';return clean(user?.agendaMechanic)||defaultMechanicForEmail(email)}
 export async function readCurrentMechanicCommissions(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');return request('/rest/v1/rpc/comissoes_semana_mecanico',{token:session.access_token,method:'POST',body:{}})}
 export async function confirmCurrentMechanicCommissions(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');return request('/rest/v1/rpc/conferir_comissoes_semana_mecanico',{token:session.access_token,method:'POST',body:{}})}
 export async function readMechanicCommissionConfirmations(){if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode consultar este histórico.');const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const rows=await request('/rest/v1/rpc/historico_conferencia_comissoes_mecanicos',{token:session.access_token,method:'POST',body:{}});return(rows||[]).map(row=>({id:row.confirmation_id,email:row.user_email,mechanic:row.mechanic,weekStart:row.week_start,confirmedAt:row.confirmed_at}))}
@@ -197,7 +198,7 @@ const MANAGED_USER_DEFAULTS=[
 const normalizeEmail=value=>clean(value).toLowerCase();
 const normalizeManagedUsers=value=>{
   const saved=Array.isArray(value)?value:[],byEmail=new Map(MANAGED_USER_DEFAULTS.map(item=>[item.email,{...item,permissions:{...ALL_USER_PERMISSIONS,...item.permissions}}]));
-  for(const item of saved){const email=normalizeEmail(item?.email);if(!email)continue;const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}};byEmail.set(email,{...previous,...item,email,name:clean(item.name)||previous.name,active:item.active!==false,agendaMechanic:clean(item.agendaMechanic),permissions:{...previous.permissions,...item.permissions}})}
+  for(const item of saved){const email=normalizeEmail(item?.email);if(!email)continue;const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}},agendaMechanic=clean(item.agendaMechanic)||previous.agendaMechanic||defaultMechanicForEmail(email);byEmail.set(email,{...previous,...item,email,name:clean(item.name)||previous.name,active:item.active!==false,agendaMechanic,permissions:{...previous.permissions,...item.permissions}})}
   return[...byEmail.values()]
 };
 const cacheManagedUsers=users=>{const normalized=normalizeManagedUsers(users);localStorage.setItem(USER_ACCESS_KEY,JSON.stringify(normalized));dispatchEvent(new CustomEvent('cortez:user-access-updated',{detail:normalized}));return normalized};

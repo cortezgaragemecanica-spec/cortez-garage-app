@@ -15,16 +15,31 @@ alter table public.conferencia_comissoes_mecanicos enable row level security;
 revoke all on public.conferencia_comissoes_mecanicos from anon, authenticated;
 
 create or replace function public.mecanico_atual_do_usuario()
-returns text language sql stable security definer set search_path = public
+returns text language plpgsql stable security definer set search_path = public
 as $$
-  select nullif(trim(usuario ->> 'agendaMechanic'), '')
+declare
+  email_atual text := lower(trim(coalesce(auth.jwt() ->> 'email', '')));
+  usuario jsonb;
+  mecanico text;
+begin
+  select usuarios.item into usuario
   from public.sincronizacao configuracao
-  cross join lateral jsonb_array_elements(coalesce(configuracao.dados -> 'users', '[]'::jsonb)) usuario
+  cross join lateral jsonb_array_elements(coalesce(configuracao.dados -> 'users', '[]'::jsonb)) as usuarios(item)
   where configuracao.entidade = 'configuracao'
     and configuracao.registro_id = 'usuarios-permissoes'
-    and lower(usuario ->> 'email') = lower(coalesce(auth.jwt() ->> 'email', ''))
-    and coalesce((usuario ->> 'active')::boolean, true)
+    and lower(trim(usuarios.item ->> 'email')) = email_atual
   limit 1;
+
+  if usuario is not null and not coalesce((usuario ->> 'active')::boolean, true) then return null; end if;
+  mecanico := nullif(trim(usuario ->> 'agendaMechanic'), '');
+  if mecanico is not null then return mecanico; end if;
+
+  return case
+    when email_atual in ('gust.cribas@gmail.com', 'gust.ribas@gmail.com', 'gust.ribas@hotmail.com') then 'Gustavo'
+    when email_atual = 'fabiomaier19850901@gmail.com' then 'Fabio'
+    else null
+  end;
+end;
 $$;
 
 revoke all on function public.mecanico_atual_do_usuario() from public, anon;
@@ -59,7 +74,7 @@ begin
       'service', coalesce(nullif((
         select string_agg(nullif(trim(servico ->> 'description'), ''), ', ')
         from jsonb_array_elements(coalesce(o.dados_extras -> 'budget' -> 'services', '[]'::jsonb)) servico
-        where lower(coalesce(nullif(servico ->> 'mechanic', ''), o.mecanico, '')) = lower(mecanico_atual)
+        where translate(lower(trim(coalesce(nullif(servico ->> 'mechanic', ''), o.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
           and coalesce(servico ->> 'refused', 'false') <> 'true'
       ), ''), 'Serviço da O.S.'),
       'amount', f.valor
@@ -71,7 +86,7 @@ begin
   left join public.veiculos v on v.id = o.veiculo_id
   where f.categoria = 'Comissões'
     and f.status <> 'Realizado'
-    and lower(trim(coalesce(f.mecanico, ''))) = lower(trim(mecanico_atual))
+    and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
     and coalesce(f.semana_inicio, f.vencimento - (extract(isodow from f.vencimento)::integer - 1)) = inicio_semana;
 
   return jsonb_build_object(
@@ -105,7 +120,7 @@ begin
   if not exists (
     select 1 from public.lancamentos_financeiros f
     where f.categoria = 'Comissões' and f.status <> 'Realizado'
-      and lower(trim(coalesce(f.mecanico, ''))) = lower(trim(mecanico_atual))
+      and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
       and coalesce(f.semana_inicio, f.vencimento - (extract(isodow from f.vencimento)::integer - 1)) = inicio_semana
   ) then raise exception 'Não há comissões pendentes nesta semana para conferir.'; end if;
 
