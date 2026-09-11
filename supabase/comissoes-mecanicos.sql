@@ -120,3 +120,31 @@ $$;
 
 revoke all on function public.conferir_comissoes_semana_mecanico() from public, anon;
 grant execute on function public.conferir_comissoes_semana_mecanico() to authenticated;
+
+create or replace function public.historico_conferencia_comissoes_mecanicos()
+returns table (
+  confirmation_id uuid,
+  user_email text,
+  mechanic text,
+  week_start date,
+  confirmed_at timestamptz
+)
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+begin
+  if lower(coalesce(auth.jwt() ->> 'email', '')) <> 'cortezgaragemecanica@gmail.com' then
+    raise exception 'Somente o proprietário pode consultar este histórico.';
+  end if;
+
+  return query
+  select c.id, c.email, c.mecanico, c.semana_inicio, c.conferido_em
+  from public.conferencia_comissoes_mecanicos c
+  order by c.semana_inicio desc, c.conferido_em desc;
+end;
+$$;
+
+revoke all on function public.historico_conferencia_comissoes_mecanicos() from public, anon;
+grant execute on function public.historico_conferencia_comissoes_mecanicos() to authenticated;

@@ -24,3 +24,13 @@ test('conferência é aceita apenas sexta-feira das 17h às 21h e some após con
   assert.match(view,/data\.confirmedAt/);
   assert.match(view,/data\.canConfirm/);
 });
+
+test('confirmação aparece no histórico administrativo do fechamento',async()=>{
+  const [sql,supabase,admin]=await Promise.all([read('supabase/comissoes-mecanicos.sql'),read('src/supabase.js'),read('src/admin.js')]);
+  assert.match(sql,/historico_conferencia_comissoes_mecanicos\(\)/);
+  assert.match(sql,/Somente o proprietário pode consultar este histórico/);
+  assert.match(supabase,/readMechanicCommissionConfirmations/);
+  assert.match(admin,/Histórico do fechamento de comissões/);
+  assert.match(admin,/confirmationConfirmations|commissionConfirmations/);
+  assert.match(admin,/Conferido em/);
+});
