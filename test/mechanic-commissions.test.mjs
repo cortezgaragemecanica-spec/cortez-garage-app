@@ -92,5 +92,17 @@ test('ações do orçamento ficam juntas e o salvamento manual é removido',asyn
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(index,/budget-order\.js\?v=20260911-1/);
   assert.match(index,/order-workflow\.js\?v=20260911-1/);
-  assert.match(worker,/cortez-garage-v164/);
+  assert.match(worker,/cortez-garage-v165/);
+});
+
+test('plano de custos abre os lançamentos registrados por categoria',async()=>{
+  const [admin,style,index,worker]=await Promise.all([read('src/admin.js'),read('src/style.css'),read('index.html'),read('public/sw.js')]);
+  assert.match(admin,/const costPlanEntries=/);
+  assert.match(admin,/function openCostPlanDetails/);
+  for(const label of ['Registros encontrados','Total realizado','Data','Caixa','Descrição','Valor','Nenhum lançamento registrado nesta categoria e neste mês.'])assert.ok(admin.includes(label));
+  assert.match(admin,/expenseKind\(record\.description\)===category/);
+  assert.match(admin,/openCostPlanDetails\(row\.dataset\.costCategory\)/);
+  assert.match(style,/\.cost-plan-detail-popup/);
+  assert.match(index,/admin\.js\?v=20260911-1/);
+  assert.match(worker,/cortez-garage-v165/);
 });

@@ -85,6 +85,8 @@
 
 .weekly-report-pdf .report-pdf-sheet>footer{flex-wrap:wrap}
 
+.cost-plan-row{cursor:pointer}.cost-plan-row:hover,.cost-plan-row:focus{background:#202023;outline:1px solid var(--yellow)}.cost-plan-row td:first-child small{display:block;margin-top:4px;color:#aaa}.cost-plan-detail-popup{padding:12px;align-items:center}.cost-plan-detail-popup .check-popup-card{width:min(900px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}.cost-plan-detail-table{max-height:55dvh;overflow:auto}@media(max-width:700px){.cost-plan-detail-popup{padding:8px}.cost-plan-detail-popup .check-popup-card{width:100%;max-height:calc(100dvh - 16px);padding:14px}.cost-plan-detail-popup .finance-area-head{display:grid}.cost-plan-detail-popup .close-cost-details{width:100%}}
+
 .company-health{margin:18px 0;padding:20px;border:1px solid var(--line,#333);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.015))}
 .company-health-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
 .company-health-head h3{margin:.25rem 0;font-size:1.55rem}
