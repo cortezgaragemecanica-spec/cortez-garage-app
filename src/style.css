@@ -100,6 +100,7 @@
 .company-health-healthy progress{accent-color:#25c46a}.company-health-stable progress{accent-color:#e8c547}.company-health-attention progress{accent-color:#ed8b2f}.company-health-critical progress{accent-color:#df4b4b}
 .company-health-healthy .company-health-head h3{color:#4ddd8b}.company-health-stable .company-health-head h3{color:#e8c547}.company-health-attention .company-health-head h3{color:#ed8b2f}.company-health-critical .company-health-head h3{color:#ff6262}
 .company-health-method{display:block;margin-top:12px;color:var(--muted,#999);line-height:1.45}
+.company-health-commitments{cursor:pointer;outline:none;transition:border-color .15s,transform .15s}.company-health-commitments:hover,.company-health-commitments:focus{border-color:var(--yellow);transform:translateY(-1px)}.company-commitments-table{margin:16px 0}.company-commitments-table table{min-width:0}.company-commitments-total td{background:#242007!important;color:var(--yellow);border-top:2px solid #6e5b08!important}
 @media(max-width:640px){.company-health{padding:16px}.company-health-head>strong{font-size:2rem}.company-health .finance-summary{grid-template-columns:1fr 1fr}.company-health .finance-summary article{min-width:0}}
 
 @media(max-width:600px){
