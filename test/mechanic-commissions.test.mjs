@@ -23,7 +23,7 @@ test('atalho de comissões dos mecânicos fica ao lado do Financeiro',async()=>{
   assert.match(view,/finance\.insertAdjacentHTML\('afterend'/);
   assert.match(view,/mechanic-commission-shortcut/);
   assert.match(index,/mechanic-commissions\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('conferência é aceita apenas sexta-feira das 17h às 21h e some após confirmar',async()=>{
@@ -116,7 +116,7 @@ test('ações do orçamento ficam juntas e o salvamento manual é removido',asyn
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(index,/budget-order\.js\?v=20260914-2/);
   assert.match(index,/order-workflow\.js\?v=20260911-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('peça de orçamento ignora o estoque e mantém todos os campos comerciais',async()=>{
@@ -132,6 +132,15 @@ test('peça de orçamento ignora o estoque e mantém todos os campos comerciais'
   assert.match(worker,/budget-order\.js\?v=20260914-2/);
 });
 
+test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
+  const [pdf,index,worker]=await Promise.all([read('src/pdf-order.js'),read('index.html'),read('public/sw.js')]);
+  assert.match(pdf,/description:item\.description,brand:item\.brand,quantity:item\.quantity,value:item\.value,refused:item\.refused/);
+  assert.doesNotMatch(pdf,/item\.supplier/);
+  assert.match(pdf,/\[item\.description,item\.brand\]\.filter\(Boolean\)/);
+  assert.match(index,/pdf-order\.js\?v=20260914-1/);
+  assert.match(worker,/pdf-order\.js\?v=20260914-1/);
+});
+
 test('plano de custos abre os lançamentos registrados por categoria',async()=>{
   const [admin,style,index,worker]=await Promise.all([read('src/admin.js'),read('src/style.css'),read('index.html'),read('public/sw.js')]);
   assert.match(admin,/const costPlanEntries=/);
@@ -141,7 +150,7 @@ test('plano de custos abre os lançamentos registrados por categoria',async()=>{
   assert.match(admin,/openCostPlanDetails\(row\.dataset\.costCategory\)/);
   assert.match(style,/\.cost-plan-detail-popup/);
   assert.match(index,/admin\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('plano de custos permite informar e salvar valores já pagos',async()=>{
@@ -152,7 +161,7 @@ test('plano de custos permite informar e salvar valores já pagos',async()=>{
   assert.match(admin,/não cria uma nova saída no caixa/);
   assert.match(supabase,/paid:item\?\.paid===null\|\|item\?\.paid===undefined\?null/);
   assert.match(index,/admin\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('ano e cor são obrigatórios na nova entrada',async()=>{
@@ -161,7 +170,7 @@ test('ano e cor são obrigatórios na nova entrada',async()=>{
   assert.match(main,/\['year','Ano \*'\],\['color','Cor \*'\]/);
   assert.match(main,/input\.required=true/);
   assert.match(index,/main\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('telefone cadastrado abre seleção entre veículo existente e novo veículo',async()=>{
@@ -172,7 +181,7 @@ test('telefone cadastrado abre seleção entre veículo existente e novo veícul
   assert.match(main,/clientVehiclePopup\(client,input\)/);
   assert.match(style,/\.entry-client-vehicles/);
   assert.match(index,/main\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',async()=>{
@@ -184,7 +193,7 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   assert.match(main,/card\.hidden=!match/);
   assert.match(style,/\.people-toolbar/);
   assert.match(index,/main\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('Fábio mantém o vínculo e enxerga comissões mesmo com agenda antiga vazia ou acentuada',async()=>{
@@ -196,7 +205,7 @@ test('Fábio mantém o vínculo e enxerga comissões mesmo com agenda antiga vaz
   assert.match(sql,/translate\(lower\(trim\(coalesce\(f\.mecanico/);
   assert.match(view,/mechanic-commission-route/);
   assert.match(index,/mechanic-commissions\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v177/);
+  assert.match(worker,/cortez-garage-v178/);
 });
 
 test('nova entrada gera comprovante em PDF e encaminha para o WhatsApp do cliente',async()=>{
