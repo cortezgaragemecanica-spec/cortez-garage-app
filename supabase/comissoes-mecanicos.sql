@@ -57,8 +57,8 @@ declare
   itens jsonb;
   total numeric(12,2);
 begin
-  inicio_semana := agora_local::date - (extract(isodow from agora_local)::integer - 1);
-  fim_semana := inicio_semana + 4;
+  inicio_semana := agora_local::date - ((extract(dow from agora_local)::integer + 1) % 7);
+  fim_semana := inicio_semana + 6;
   mecanico_atual := public.mecanico_atual_do_usuario();
   if mecanico_atual is null then raise exception 'Este usuário não possui um mecânico vinculado.'; end if;
 
@@ -87,7 +87,7 @@ begin
   left join public.veiculos v on v.id = o.veiculo_id
   where f.categoria = 'Comissões'
     and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
-    and coalesce(f.semana_inicio, f.vencimento - (extract(isodow from f.vencimento)::integer - 1)) = inicio_semana;
+    and coalesce(f.semana_inicio, f.vencimento - ((extract(dow from f.vencimento)::integer + 1) % 7)) = inicio_semana;
 
   return jsonb_build_object(
     'mechanic', mecanico_atual, 'weekStart', inicio_semana, 'weekEnd', fim_semana,
@@ -111,7 +111,7 @@ declare
   mecanico_atual text;
   confirmado timestamptz;
 begin
-  inicio_semana := agora_local::date - (extract(isodow from agora_local)::integer - 1);
+  inicio_semana := agora_local::date - ((extract(dow from agora_local)::integer + 1) % 7);
   mecanico_atual := public.mecanico_atual_do_usuario();
   if mecanico_atual is null then raise exception 'Este usuário não possui um mecânico vinculado.'; end if;
   if extract(isodow from agora_local) <> 5 or agora_local::time < time '17:00' or agora_local::time > time '21:00' then
@@ -121,7 +121,7 @@ begin
     select 1 from public.lancamentos_financeiros f
     where f.categoria = 'Comissões'
       and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
-      and coalesce(f.semana_inicio, f.vencimento - (extract(isodow from f.vencimento)::integer - 1)) = inicio_semana
+      and coalesce(f.semana_inicio, f.vencimento - ((extract(dow from f.vencimento)::integer + 1) % 7)) = inicio_semana
   ) then raise exception 'Não há comissões pendentes nesta semana para conferir.'; end if;
 
   insert into public.conferencia_comissoes_mecanicos (usuario_id, email, mecanico, semana_inicio)
@@ -188,7 +188,7 @@ begin
   end if;
   if nullif(trim(p_new_mechanic), '') is null then raise exception 'Selecione o novo mecânico.'; end if;
 
-  inicio_semana := agora_local::date - (extract(isodow from agora_local)::integer - 1);
+  inicio_semana := agora_local::date - ((extract(dow from agora_local)::integer + 1) % 7);
   select * into ordem from public.ordens_servico where id = p_os_id for update;
   if not found then raise exception 'Ordem de serviço não encontrada.'; end if;
   if ordem.status <> 'Entregue' then raise exception 'Esta função é exclusiva para O.S. entregues.'; end if;
@@ -196,7 +196,7 @@ begin
   select min(f.vencimento) into data_comissao
   from public.lancamentos_financeiros f
   where f.os_id = p_os_id and f.categoria = 'Comissões'
-    and coalesce(f.semana_inicio, f.vencimento - (extract(isodow from f.vencimento)::integer - 1)) = inicio_semana;
+    and coalesce(f.semana_inicio, f.vencimento - ((extract(dow from f.vencimento)::integer + 1) % 7)) = inicio_semana;
   if data_comissao is null then raise exception 'A O.S. não foi entregue na semana vigente.'; end if;
   if exists (select 1 from public.lancamentos_financeiros f where f.os_id = p_os_id and f.categoria = 'Comissões' and f.status = 'Realizado') then
     raise exception 'A comissão desta O.S. já foi paga e não pode ser transferida.';
@@ -297,3 +297,13 @@ drop trigger if exists ordens_servico_registrar_data_entrega on public.ordens_se
 create trigger ordens_servico_registrar_data_entrega
 before insert or update on public.ordens_servico
 for each row execute function public.registrar_data_entrega_os();
+
+-- Normaliza registros anteriores para a semana comercial de sábado a sexta.
+update public.lancamentos_financeiros
+set semana_inicio = vencimento - ((extract(dow from vencimento)::integer + 1) % 7)
+where categoria = 'Comissões'
+  and semana_inicio is distinct from vencimento - ((extract(dow from vencimento)::integer + 1) % 7);
+
+update public.conferencia_comissoes_mecanicos
+set semana_inicio = semana_inicio - ((extract(dow from semana_inicio)::integer + 1) % 7)
+where semana_inicio is distinct from semana_inicio - ((extract(dow from semana_inicio)::integer + 1) % 7);

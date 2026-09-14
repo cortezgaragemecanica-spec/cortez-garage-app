@@ -22,8 +22,8 @@ test('atalho de comissões dos mecânicos fica ao lado do Financeiro',async()=>{
   assert.match(view,/\.home-menu \.admin-shortcut/);
   assert.match(view,/finance\.insertAdjacentHTML\('afterend'/);
   assert.match(view,/mechanic-commission-shortcut/);
-  assert.match(index,/mechanic-commissions\.js\?v=20260911-5/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(index,/mechanic-commissions\.js\?v=20260914-1/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('conferência é aceita apenas sexta-feira das 17h às 21h e some após confirmar',async()=>{
@@ -34,6 +34,19 @@ test('conferência é aceita apenas sexta-feira das 17h às 21h e some após con
   assert.match(sql,/unique \(usuario_id, semana_inicio\)/);
   assert.match(view,/data\.confirmedAt/);
   assert.match(view,/data\.canConfirm/);
+});
+
+test('comissões dos mecânicos e dos sócios usam semana de sábado a sexta',async()=>{
+  const [sql,supabase,admin,reports]=await Promise.all([read('supabase/comissoes-mecanicos.sql'),read('src/supabase.js'),read('src/admin.js'),read('src/reports.js')]);
+  assert.match(sql,/extract\(dow from agora_local\)::integer \+ 1\) % 7/);
+  assert.match(sql,/fim_semana := inicio_semana \+ 6/);
+  assert.match(sql,/set semana_inicio = vencimento - \(\(extract\(dow from vencimento\)::integer \+ 1\) % 7\)/);
+  assert.match(supabase,/date\.getDate\(\)-\(\(day\+1\)%7\)/);
+  assert.match(admin,/function commissionWeek/);
+  assert.match(admin,/recebidos de sábado a sexta/);
+  assert.doesNotMatch(admin,/isWorkday\(item\.date\)/);
+  assert.match(reports,/function weekRange[\s\S]*reference\.getDay\(\)\+1\)%7/);
+  assert.match(reports,/Relatórios de sábado a sexta/);
 });
 
 test('confirmação aparece no histórico administrativo do fechamento',async()=>{
@@ -75,7 +88,7 @@ test('ordens entregues são separadas por semana',async()=>{
   assert.match(sql,/numero in \(3, 5, 7, 8, 13, 20, 24, 26, 27\)/);
   assert.match(sql,/set entregue_em = data_entrada::date/);
   assert.match(style,/\.delivered-week-head/);
-  assert.match(index,/main\.js\?v=20260911-7/);
+  assert.match(index,/main\.js\?v=20260914-1/);
 });
 
 test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',async()=>{
@@ -86,7 +99,7 @@ test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',
   assert.doesNotMatch(main,/id="photos"/);
   assert.doesNotMatch(main,/Checklist e fotos/);
   assert.doesNotMatch(main,/compressImage/);
-  assert.match(index,/main\.js\?v=20260911-7/);
+  assert.match(index,/main\.js\?v=20260914-1/);
 });
 
 test('ações do orçamento ficam juntas e o salvamento manual é removido',async()=>{
@@ -103,7 +116,7 @@ test('ações do orçamento ficam juntas e o salvamento manual é removido',asyn
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(index,/budget-order\.js\?v=20260911-1/);
   assert.match(index,/order-workflow\.js\?v=20260911-1/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('plano de custos abre os lançamentos registrados por categoria',async()=>{
@@ -114,8 +127,8 @@ test('plano de custos abre os lançamentos registrados por categoria',async()=>{
   assert.match(admin,/expenseKind\(record\.description\)===category/);
   assert.match(admin,/openCostPlanDetails\(row\.dataset\.costCategory\)/);
   assert.match(style,/\.cost-plan-detail-popup/);
-  assert.match(index,/admin\.js\?v=20260911-3/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(index,/admin\.js\?v=20260914-1/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('plano de custos permite informar e salvar valores já pagos',async()=>{
@@ -125,8 +138,8 @@ test('plano de custos permite informar e salvar valores já pagos',async()=>{
   assert.match(admin,/paid:Number\(row\.querySelector\('\.cost-plan-paid'\)\.value\)\|\|0/);
   assert.match(admin,/não cria uma nova saída no caixa/);
   assert.match(supabase,/paid:item\?\.paid===null\|\|item\?\.paid===undefined\?null/);
-  assert.match(index,/admin\.js\?v=20260911-3/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(index,/admin\.js\?v=20260914-1/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('ano e cor são obrigatórios na nova entrada',async()=>{
@@ -134,8 +147,8 @@ test('ano e cor são obrigatórios na nova entrada',async()=>{
   assert.match(main,/function requireVehicleYearAndColor/);
   assert.match(main,/\['year','Ano \*'\],\['color','Cor \*'\]/);
   assert.match(main,/input\.required=true/);
-  assert.match(index,/main\.js\?v=20260911-7/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('telefone cadastrado abre seleção entre veículo existente e novo veículo',async()=>{
@@ -145,8 +158,8 @@ test('telefone cadastrado abre seleção entre veículo existente e novo veícul
   for(const label of ['CLIENTE LOCALIZADO','Incluir este veículo','Incluir novo veículo','Nenhum veículo cadastrado para este cliente.'])assert.ok(main.includes(label));
   assert.match(main,/clientVehiclePopup\(client,input\)/);
   assert.match(style,/\.entry-client-vehicles/);
-  assert.match(index,/main\.js\?v=20260911-7/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',async()=>{
@@ -157,8 +170,8 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   assert.match(main,/event\.target\?\.id!==['"]peopleSearch['"]/);
   assert.match(main,/card\.hidden=!match/);
   assert.match(style,/\.people-toolbar/);
-  assert.match(index,/main\.js\?v=20260911-7/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('Fábio mantém o vínculo e enxerga comissões mesmo com agenda antiga vazia ou acentuada',async()=>{
@@ -169,8 +182,8 @@ test('Fábio mantém o vínculo e enxerga comissões mesmo com agenda antiga vaz
   assert.match(sql,/fabiomaier19850901@gmail\.com'[\s\S]*then 'Fabio'/);
   assert.match(sql,/translate\(lower\(trim\(coalesce\(f\.mecanico/);
   assert.match(view,/mechanic-commission-route/);
-  assert.match(index,/mechanic-commissions\.js\?v=20260911-5/);
-  assert.match(worker,/cortez-garage-v175/);
+  assert.match(index,/mechanic-commissions\.js\?v=20260914-1/);
+  assert.match(worker,/cortez-garage-v176/);
 });
 
 test('nova entrada gera comprovante em PDF e encaminha para o WhatsApp do cliente',async()=>{
