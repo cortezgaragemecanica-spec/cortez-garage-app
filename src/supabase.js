@@ -126,6 +126,34 @@ export async function readPartRequests(){
   return(rows||[]).map(row=>({...row.dados,id:row.registro_id||row.dados?.id||row.id,rowId:row.id,createdAt:row.dados?.createdAt||''})).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
 }
 
+export async function saveServiceQuoteRequest(order,items){
+  if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem solicitar orçamento de serviços.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const user=getCurrentUser(),id=crypto.randomUUID(),cleanItems=(items||[]).map(item=>({quantity:Number(item.quantity),description:clean(item.description),reason:clean(item.reason)}));
+  if(!order?.id||!cleanItems.length||cleanItems.some(item=>!Number.isInteger(item.quantity)||item.quantity<1||!item.description))throw new Error('Preencha quantidade e descrição de todos os serviços.');
+  const data={id,orderId:order.id,orderNumber:String(order.number||''),vehicle:{plate:clean(order.vehicle?.plate),model:clean(order.vehicle?.model),year:clean(order.vehicle?.year),color:clean(order.vehicle?.color)},items:cleanItems,requestedBy:{id:user.id,email:user.email,name:user.name},status:'Pendente',createdAt:new Date().toISOString()};
+  await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'app',entidade:'solicitacao_orcamento_servicos',registro_id:id,dados:data}});
+  return data;
+}
+
+export async function readServiceQuoteRequests(){
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const rows=await request('/rest/v1/sincronizacao?entidade=eq.solicitacao_orcamento_servicos&select=id,registro_id,dados',{token:session.access_token});
+  return(rows||[]).map(row=>({...row.dados,id:row.registro_id||row.dados?.id||row.id,rowId:row.id,createdAt:row.dados?.createdAt||''})).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+}
+
+export async function acknowledgeServiceQuoteRequests(ids){
+  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode conferir estas solicitações.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  for(const id of ids){
+    const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_orcamento_servicos&registro_id=eq.${encodeURIComponent(id)}&select=id,dados&limit=1`,{token:session.access_token}),row=rows[0];
+    if(row&&row.dados?.status==='Pendente')await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:{...row.dados,status:'Visualizada',viewedAt:new Date().toISOString()}}});
+  }
+}
+
 export async function markPartRequestSent(requestId){
   if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode enviar pedidos ao fornecedor.');
   const session=await refreshSession();
