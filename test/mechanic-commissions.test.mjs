@@ -115,7 +115,7 @@ test('ações do orçamento ficam juntas e o salvamento manual é removido',asyn
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(index,/budget-order\.js\?v=20260914-2/);
-  assert.match(index,/order-workflow\.js\?v=20260914-5/);
+  assert.match(index,/order-workflow\.js\?v=20260914-6/);
   assert.match(worker,/cortez-garage-v189/);
 });
 
@@ -137,8 +137,8 @@ test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
   assert.match(pdf,/description:item\.description,brand:item\.brand,quantity:item\.quantity,value:item\.value,refused:item\.refused/);
   assert.doesNotMatch(pdf,/item\.supplier/);
   assert.match(pdf,/\[item\.description,item\.brand\]\.filter\(Boolean\)/);
-  assert.match(index,/pdf-order\.js\?v=20260914-1/);
-  assert.match(worker,/pdf-order\.js\?v=20260914-1/);
+  assert.match(index,/pdf-order\.js\?v=20260914-2/);
+  assert.match(worker,/pdf-order\.js\?v=20260914-2/);
 });
 
 test('contas a pagar possuem pesquisa, agrupamento, edição e pagamento parcial',async()=>{
@@ -321,7 +321,7 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(style,/#requestParts\{background:#f2c500/);
   assert.match(activity,/shareTextToWhatsApp/);
   assert.match(activity,/shareTextToWhatsApp[\s\S]*?setPackage\("com\.whatsapp"\)[\s\S]*?setPackage\("com\.whatsapp\.w4b"\)/);
-  assert.match(index,/order-workflow\.js\?v=20260914-5/);
+  assert.match(index,/order-workflow\.js\?v=20260914-6/);
   assert.match(index,/access-control\.js\?v=20260914-2/);
   assert.match(worker,/cortez-garage-v189/);
 });
@@ -355,4 +355,14 @@ test('ações restritas da O.S. ficam somente com o proprietário e Voltar fecha
   assert.match(activity,/modal\.querySelector\('\.part-request-editor,\.part-request-list'\)/);
   assert.match(activity,/webView\.evaluateJavascript\(closePartRequest/);
   assert.match(index,/technical-report\.js\?v=20260914-1/);
+});
+
+test('campo Serviços a executar passa a se chamar Observação',async()=>{
+  const [workflow,pdf,index]=await Promise.all([read('src/order-workflow.js'),read('src/pdf-order.js'),read('index.html')]);
+  assert.match(workflow,/label\.textContent='Observação'/);
+  assert.match(workflow,/field\.placeholder='Digite uma observação sobre o serviço'/);
+  assert.match(pdf,/paragraph\('Observação',order\.services\)/);
+  assert.doesNotMatch(pdf,/Serviços a executar/);
+  assert.match(index,/order-workflow\.js\?v=20260914-6/);
+  assert.match(index,/pdf-order\.js\?v=20260914-2/);
 });
