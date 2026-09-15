@@ -1,4 +1,4 @@
-import{consumeStockForOrder,getCurrentUser,hasPermission,markPartRequestSent,readPartRequests,readStock,recordOrderAdvance,recordOrderDelivery,recordOrderReadyReceivable,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus}from'./supabase.js?v=20260914-3';
+import{consumeStockForOrder,getCurrentUser,hasPermission,markPartRequestSent,readPartRequests,readStock,recordOrderAdvance,recordOrderDelivery,recordOrderReadyReceivable,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus}from'./supabase.js?v=20260914-4';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1';
 const owner=()=>getCurrentUser().email.toLowerCase()===OWNER;

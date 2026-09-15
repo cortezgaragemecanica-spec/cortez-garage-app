@@ -122,8 +122,8 @@ export async function savePartRequest(order,items){
 export async function readPartRequests(){
   const session=await refreshSession();
   if(!session?.access_token)throw new Error('Sessão expirada');
-  const rows=await request('/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&select=id,registro_id,dados,criado_em&order=criado_em.desc',{token:session.access_token});
-  return(rows||[]).map(row=>({...row.dados,id:row.registro_id||row.dados?.id||row.id,rowId:row.id,createdAt:row.dados?.createdAt||row.criado_em}));
+  const rows=await request('/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&select=id,registro_id,dados',{token:session.access_token});
+  return(rows||[]).map(row=>({...row.dados,id:row.registro_id||row.dados?.id||row.id,rowId:row.id,createdAt:row.dados?.createdAt||''})).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
 }
 
 export async function markPartRequestSent(requestId){
