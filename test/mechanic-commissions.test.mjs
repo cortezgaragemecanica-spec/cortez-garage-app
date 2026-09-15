@@ -88,7 +88,7 @@ test('ordens entregues são separadas por semana',async()=>{
   assert.match(sql,/numero in \(3, 5, 7, 8, 13, 20, 24, 26, 27\)/);
   assert.match(sql,/set entregue_em = data_entrada::date/);
   assert.match(style,/\.delivered-week-head/);
-  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(index,/main\.js\?v=20260915-1/);
 });
 
 test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',async()=>{
@@ -99,7 +99,7 @@ test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',
   assert.doesNotMatch(main,/id="photos"/);
   assert.doesNotMatch(main,/Checklist e fotos/);
   assert.doesNotMatch(main,/compressImage/);
-  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(index,/main\.js\?v=20260915-1/);
 });
 
 test('ações do orçamento ficam juntas e o salvamento manual é removido',async()=>{
@@ -235,7 +235,7 @@ test('ano e cor são obrigatórios na nova entrada',async()=>{
   assert.match(main,/function requireVehicleYearAndColor/);
   assert.match(main,/\['year','Ano \*'\],\['color','Cor \*'\]/);
   assert.match(main,/input\.required=true/);
-  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(index,/main\.js\?v=20260915-1/);
   assert.match(worker,/cortez-garage-v191/);
 });
 
@@ -246,7 +246,7 @@ test('telefone cadastrado abre seleção entre veículo existente e novo veícul
   for(const label of ['CLIENTE LOCALIZADO','Incluir este veículo','Incluir novo veículo','Nenhum veículo cadastrado para este cliente.'])assert.ok(main.includes(label));
   assert.match(main,/clientVehiclePopup\(client,input\)/);
   assert.match(style,/\.entry-client-vehicles/);
-  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(index,/main\.js\?v=20260915-1/);
   assert.match(worker,/cortez-garage-v191/);
 });
 
@@ -258,7 +258,7 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   assert.match(main,/event\.target\?\.id!==['"]peopleSearch['"]/);
   assert.match(main,/card\.hidden=!match/);
   assert.match(style,/\.people-toolbar/);
-  assert.match(index,/main\.js\?v=20260914-1/);
+  assert.match(index,/main\.js\?v=20260915-1/);
   assert.match(worker,/cortez-garage-v191/);
 });
 
@@ -380,4 +380,15 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
   assert.match(style,/\.budget-part-actions/);
   assert.match(index,/budget-order\.js\?v=20260915-1/);
   assert.match(worker,/budget-order\.js\?v=20260915-1/);
+});
+
+test('painel inicial ordena as O.S. pela última atualização',async()=>{
+  const [main,index,worker]=await Promise.all([read('src/main.js'),read('index.html'),read('public/sw.js')]);
+  assert.match(main,/const recent=visibleOrders\(\)\.slice\(\)\.sort\(\(a,b\)=>new Date\(b\.updatedAt\|\|b\.created\)-new Date\(a\.updatedAt\|\|a\.created\)\)/);
+  assert.doesNotMatch(main,/open=allOrders\.filter\(order=>status\(order\)!=='entregue'\)/);
+  assert.match(main,/Ordens atualizadas recentemente/);
+  assert.match(main,/<th>Atualização<\/th>/);
+  assert.match(main,/new Date\(o\.updatedAt\|\|o\.created\)\.toLocaleString\('pt-BR'\)/);
+  assert.match(index,/main\.js\?v=20260915-1/);
+  assert.match(worker,/main\.js\?v=20260915-1/);
 });
