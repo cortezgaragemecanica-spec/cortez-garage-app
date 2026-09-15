@@ -144,6 +144,17 @@ export async function readServiceQuoteRequests(){
   return(rows||[]).map(row=>({...row.dados,id:row.registro_id||row.dados?.id||row.id,rowId:row.id,createdAt:row.dados?.createdAt||''})).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
 }
 
+export async function deleteServiceQuoteRequest(requestId){
+  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode excluir solicitações de orçamento de serviços.');
+  if(!isUuid(requestId))throw new Error('Identificador da solicitação inválido.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_orcamento_servicos&registro_id=eq.${encodeURIComponent(requestId)}&select=id`,{token:session.access_token});
+  if(rows.length!==1)throw new Error('Solicitação não encontrada ou duplicada. Nenhum registro foi excluído.');
+  const deleted=await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(rows[0].id)}&entidade=eq.solicitacao_orcamento_servicos&registro_id=eq.${encodeURIComponent(requestId)}&select=id`,{token:session.access_token,method:'DELETE',prefer:'return=representation'});
+  if(!Array.isArray(deleted)||deleted.length!==1)throw new Error('O banco não confirmou a exclusão da solicitação.');
+}
+
 export async function acknowledgeServiceQuoteRequests(ids){
   if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode conferir estas solicitações.');
   const session=await refreshSession();
