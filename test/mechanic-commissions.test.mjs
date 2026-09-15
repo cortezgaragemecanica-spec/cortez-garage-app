@@ -114,7 +114,7 @@ test('ações do orçamento ficam juntas e o salvamento manual é removido',asyn
   assert.match(workflow,/approval\.insertBefore\(ready,approval\.querySelector\('#previousStatus'\)\)/);
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
-  assert.match(index,/budget-order\.js\?v=20260914-2/);
+  assert.match(index,/budget-order\.js\?v=20260915-1/);
   assert.match(index,/order-workflow\.js\?v=20260914-7/);
   assert.match(worker,/cortez-garage-v191/);
 });
@@ -128,8 +128,8 @@ test('peça de orçamento ignora o estoque e mantém todos os campos comerciais'
   assert.match(budget,/brand:tr\.querySelector/);
   assert.match(budget,/supplier:tr\.querySelector/);
   assert.match(style,/\.part-code-field\[hidden\],#partStockArea\[hidden\]/);
-  assert.match(index,/budget-order\.js\?v=20260914-2/);
-  assert.match(worker,/budget-order\.js\?v=20260914-2/);
+  assert.match(index,/budget-order\.js\?v=20260915-1/);
+  assert.match(worker,/budget-order\.js\?v=20260915-1/);
 });
 
 test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
@@ -366,4 +366,18 @@ test('campo Serviços a executar passa a se chamar Observação',async()=>{
   assert.doesNotMatch(pdf,/Serviços a executar/);
   assert.match(index,/order-workflow\.js\?v=20260914-7/);
   assert.match(index,/pdf-order\.js\?v=20260914-2/);
+});
+
+test('proprietário altera o markup de todas as peças da O.S.',async()=>{
+  const [budget,style,index,worker]=await Promise.all([read('src/budget-order.js'),read('src/style.css'),read('index.html'),read('public/sw.js')]);
+  assert.match(budget,/owner\(\)\?'<button type="button" class="secondary" id="changeAllMarkup"/);
+  assert.match(budget,/function bulkMarkupPopup/);
+  assert.match(budget,/Alterar markup de todas as peças/);
+  assert.match(budget,/const rows=\[\.\.\.document\.querySelectorAll\('#partsRows tr'\)\]/);
+  assert.match(budget,/value=cost\*\(1\+markup\/100\)/);
+  assert.match(budget,/querySelector\('\[data-field="margin"\]'\)\.value=markup/);
+  assert.match(budget,/autoSave\(\)/);
+  assert.match(style,/\.budget-part-actions/);
+  assert.match(index,/budget-order\.js\?v=20260915-1/);
+  assert.match(worker,/budget-order\.js\?v=20260915-1/);
 });
