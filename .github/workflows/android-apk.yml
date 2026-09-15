@@ -34,8 +34,8 @@ jobs:
           path: Cortez-Garage-Android.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.10
-          name: Cortez Garage para Android v1.0.10
-          body: Prioriza o WhatsApp Business nos links de clientes e no envio do comprovante de entrada em PDF.
+          tag_name: android-v1.0.11
+          name: Cortez Garage para Android v1.0.11
+          body: Adiciona solicitação de peças na O.S., notificações persistentes e envio ao fornecedor pelo WhatsApp Business.
           files: Cortez-Garage-Android.apk
 

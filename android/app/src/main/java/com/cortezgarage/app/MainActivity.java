@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
     private static final int MICROPHONE_REQUEST = 1002;
     private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
-    private static final String APK_CACHE_VERSION = "110";
+    private static final String APK_CACHE_VERSION = "111";
     static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
     static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
@@ -171,6 +171,19 @@ public class MainActivity extends Activity {
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Não foi possível compartilhar o comprovante", Toast.LENGTH_LONG).show());
                 }
             }).start();
+        }
+        @JavascriptInterface public void shareTextToWhatsApp(String message) {
+            runOnUiThread(() -> {
+                try {
+                    Intent share = new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, message == null ? "" : message);
+                    share.setPackage("com.whatsapp.w4b");
+                    if (share.resolveActivity(getPackageManager()) == null) share.setPackage("com.whatsapp");
+                    if (share.resolveActivity(getPackageManager()) != null) startActivity(share);
+                    else { share.setPackage(null); startActivity(Intent.createChooser(share, "Enviar solicitação ao fornecedor")); }
+                } catch (Exception error) {
+                    Toast.makeText(MainActivity.this, "Não foi possível abrir o WhatsApp", Toast.LENGTH_LONG).show();
+                }
+            });
         }
         @JavascriptInterface public void saveFile(String base64, String requestedName, String requestedMimeType) {
             new Thread(() -> {

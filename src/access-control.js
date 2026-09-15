@@ -1,9 +1,9 @@
-import{canManageServices,getCurrentUser,hasPermission}from'./supabase.js?v=20260914-1';
+import{canManageServices,getCurrentUser,hasPermission}from'./supabase.js?v=20260914-3';
 
 const blockedActions='.add-line,.edit-part,.remove-line,.refuse-line,#includePart,#approveBudget,#previousStatus';
 const protectedFields='#services,#parts,#labor,#partsValue,#discount,#payment,#budgetSection input:not([data-check]),#budgetSection textarea,#budgetSection select';
 const message='Seu usuário possui acesso de consulta. O checklist pode ser atualizado; serviços, peças, valores, baixa de estoque e entrega não podem ser alterados.';
-const orderReadOnlyActions='.os-grid button:not(#print),.os-head button:not(#print),#saveOs,#editOrder,#technicalReport,#sendBudget,#readyOrder,#approveBudget,#previousStatus';
+const orderReadOnlyActions='.os-grid button:not(#print):not(#toggleOrderChecklist),.os-head button:not(#print):not(#toggleOrderChecklist),#saveOs,#editOrder,#technicalReport,#sendBudget,#readyOrder,#approveBudget,#previousStatus';
 const orderReadOnlyFields='.os-grid input,.os-grid textarea,.os-grid select,.os-grid canvas,.os-head select';
 const orderReadOnlyMessage='Modo espectador: esta ordem de serviço está disponível apenas para consulta.';
 

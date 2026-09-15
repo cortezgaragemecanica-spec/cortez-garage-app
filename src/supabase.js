@@ -107,6 +107,35 @@ export async function saveOrderProgress(order){const session=await refreshSessio
 export async function updateOrderStatus(id,status){if(status==='Pronto para entrega'&&!hasPermission('readyOrders'))throw new Error('Seu usuário não tem permissão para colocar a O.S. como pronta para entrega.');const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?id=eq.${encodeURIComponent(id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{status}});return status}
 
 export async function recordMirrorSync(data){const session=await refreshSession();if(!session?.access_token)return;await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'google_sheets',entidade:'database',registro_id:'mirror',dados:data}})}
+
+export async function savePartRequest(order,items){
+  if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem solicitar peças.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const user=getCurrentUser(),id=crypto.randomUUID(),cleanItems=(items||[]).map(item=>({quantity:Math.max(1,Number(item.quantity||1)),description:clean(item.description),reason:clean(item.reason)})).filter(item=>item.description);
+  if(!order?.id||!cleanItems.length)throw new Error('Informe ao menos uma peça.');
+  const data={id,orderId:order.id,orderNumber:String(order.number||''),vehicle:{plate:clean(order.vehicle?.plate),model:clean(order.vehicle?.model),year:clean(order.vehicle?.year),color:clean(order.vehicle?.color)},items:cleanItems,requestedBy:{id:user.id,email:user.email,name:user.name},status:'Pendente',createdAt:new Date().toISOString()};
+  await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'app',entidade:'solicitacao_pecas',registro_id:id,dados:data}});
+  return data;
+}
+
+export async function readPartRequests(){
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const rows=await request('/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&select=id,registro_id,dados,criado_em&order=criado_em.desc',{token:session.access_token});
+  return(rows||[]).map(row=>({...row.dados,id:row.registro_id||row.dados?.id||row.id,rowId:row.id,createdAt:row.dados?.createdAt||row.criado_em}));
+}
+
+export async function markPartRequestSent(requestId){
+  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode enviar pedidos ao fornecedor.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&registro_id=eq.${encodeURIComponent(requestId)}&select=id,dados&limit=1`,{token:session.access_token}),row=rows[0];
+  if(!row)throw new Error('Solicitação de peças não encontrada.');
+  const data={...(row.dados||{}),status:'Enviada',sentAt:new Date().toISOString(),sentBy:getCurrentUser().email};
+  await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:data}});
+  return data;
+}
 export async function deleteOrder(id){if(!hasPermission('deleteOrders'))throw new Error('Seu usuário não tem permissão para excluir ordens de serviço.');const session=await refreshSession();await request(`/rest/v1/ordens_servico?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 export async function deleteVehicle(id){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?veiculo_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{veiculo_id:null}});await request(`/rest/v1/veiculos?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 export async function deleteClient(id){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?cliente_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{cliente_id:null}});await request(`/rest/v1/veiculos?cliente_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{cliente_id:null}});await request(`/rest/v1/clientes?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
