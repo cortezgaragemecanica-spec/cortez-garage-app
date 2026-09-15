@@ -334,13 +334,25 @@ test('APK recupera falha de carregamento e não bloqueia a abertura com permiss�
   assert.match(activity,/recoverAppLoad/);
   assert.match(activity,/Tentar novamente/);
   assert.match(activity,/view\.postDelayed/);
-  assert.match(activity,/APK_CACHE_VERSION = "114"/);
+  assert.match(activity,/APK_CACHE_VERSION = "115"/);
   assert.doesNotMatch(activity,/super\.onCreate\(state\);\s*if \(Build\.VERSION\.SDK_INT >= 33[\s\S]*?requestPermissions/);
   assert.match(activity,/@JavascriptInterface public void requestNotificationPermission/);
   assert.match(activity,/requestCode == NOTIFICATION_REQUEST/);
   assert.match(agenda,/CortezAndroid\?\.requestNotificationPermission/);
   assert.match(index,/agenda-enhancements\.js\?v=20260914-1/);
-  assert.match(gradle,/versionCode 14/);
-  assert.match(gradle,/versionName '1\.0\.14'/);
-  assert.match(workflow,/android-v1\.0\.14/);
+  assert.match(gradle,/versionCode 15/);
+  assert.match(gradle,/versionName '1\.0\.15'/);
+  assert.match(workflow,/android-v1\.0\.15/);
+});
+
+test('ações restritas da O.S. ficam somente com o proprietário e Voltar fecha solicitação de peças',async()=>{
+  const [orderWorkflow,technical,activity,index]=await Promise.all([read('src/order-workflow.js'),read('src/technical-report.js'),read('android/app/src/main/java/com/cortezgarage/app/MainActivity.java'),read('index.html')]);
+  assert.match(orderWorkflow,/if\(owner\(\)&&!document\.querySelector\('#advanceOs'\)\)/);
+  assert.match(orderWorkflow,/if\(!owner\(\)\)\{document\.querySelector\('#openClosing'\)\?\.remove\(\);return\}/);
+  assert.match(technical,/const OWNER='cortezgaragemecanica@gmail\.com'/);
+  assert.match(technical,/function openTab\(order\)\{if\(owner\(\)&&order\)/);
+  assert.match(technical,/if\(!owner\(\)\)\{document\.querySelector\('#openTechnicalReport'\)\?\.remove\(\)/);
+  assert.match(activity,/modal\.querySelector\('\.part-request-editor,\.part-request-list'\)/);
+  assert.match(activity,/webView\.evaluateJavascript\(closePartRequest/);
+  assert.match(index,/technical-report\.js\?v=20260914-1/);
 });

@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
     private static final int NOTIFICATION_REQUEST = 1003;
     private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
     private static final String FALLBACK_URL = "https://cortezgaragemecanica-spec.github.io/cortez-garage-app/";
-    private static final String APK_CACHE_VERSION = "114";
+    private static final String APK_CACHE_VERSION = "115";
     static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
     static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
@@ -283,8 +283,16 @@ public class MainActivity extends Activity {
         cameraUri = null;
     }
 
+    private void navigateBackNormally() {
+        if (webView != null && webView.canGoBack()) webView.goBack(); else super.onBackPressed();
+    }
+
     @Override public void onBackPressed() {
-        if (webView.canGoBack()) webView.goBack(); else super.onBackPressed();
+        if (webView == null) { super.onBackPressed(); return; }
+        String closePartRequest = "(function(){var modal=document.querySelector('.os-workflow-modal');if(!modal||!modal.querySelector('.part-request-editor,.part-request-list'))return false;modal.remove();document.body.classList.remove('modal-open');return true;})()";
+        webView.evaluateJavascript(closePartRequest, handled -> {
+            if (!"true".equals(handled)) navigateBackNormally();
+        });
     }
 }
 
