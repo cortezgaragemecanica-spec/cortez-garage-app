@@ -34,8 +34,8 @@ jobs:
           path: Cortez-Garage-Android.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.11
-          name: Cortez Garage para Android v1.0.11
-          body: Adiciona solicitação de peças na O.S., notificações persistentes e envio ao fornecedor pelo WhatsApp Business.
+          tag_name: android-v1.0.12
+          name: Cortez Garage para Android v1.0.12
+          body: Destaca a solicitação de peças e prioriza o WhatsApp comum no envio ao fornecedor, com fallback para o Business.
           files: Cortez-Garage-Android.apk
 
