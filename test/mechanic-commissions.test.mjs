@@ -318,3 +318,17 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(index,/access-control\.js\?v=20260914-2/);
   assert.match(worker,/cortez-garage-v188/);
 });
+
+test('APK recupera falha de carregamento sem deixar tela branca',async()=>{
+  const [activity,gradle,workflow]=await Promise.all([read('android/app/src/main/java/com/cortezgarage/app/MainActivity.java'),read('android/app/build.gradle'),read('.github/workflows/android-apk.yml')]);
+  assert.match(activity,/FALLBACK_URL = "https:\/\/cortezgaragemecanica-spec\.github\.io\/cortez-garage-app\/"/);
+  assert.match(activity,/onReceivedError/);
+  assert.match(activity,/onReceivedHttpError/);
+  assert.match(activity,/recoverAppLoad/);
+  assert.match(activity,/Tentar novamente/);
+  assert.match(activity,/view\.postDelayed/);
+  assert.match(activity,/APK_CACHE_VERSION = "113"/);
+  assert.match(gradle,/versionCode 13/);
+  assert.match(gradle,/versionName '1\.0\.13'/);
+  assert.match(workflow,/android-v1\.0\.13/);
+});

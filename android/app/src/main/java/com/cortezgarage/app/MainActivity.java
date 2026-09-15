@@ -20,6 +20,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebViewClient;
 
 import androidx.core.content.FileProvider;
@@ -35,19 +37,36 @@ public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
     private static final int MICROPHONE_REQUEST = 1002;
     private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
-    private static final String APK_CACHE_VERSION = "112";
+    private static final String FALLBACK_URL = "https://cortezgaragemecanica-spec.github.io/cortez-garage-app/";
+    private static final String APK_CACHE_VERSION = "113";
     static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
     static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
     private ValueCallback<Uri[]> fileCallback;
     private Uri cameraUri;
     private PermissionRequest microphonePermissionRequest;
+    private boolean fallbackTried = false;
+
+    private void loadApp(String baseUrl) {
+        webView.loadUrl(baseUrl + "?apk=" + APK_CACHE_VERSION);
+    }
+
+    private void recoverAppLoad(WebView view) {
+        if (!fallbackTried) {
+            fallbackTried = true;
+            loadApp(FALLBACK_URL);
+            return;
+        }
+        String html = "<html><head><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='margin:0;background:#050505;color:#fff;font-family:sans-serif;display:grid;place-items:center;min-height:100vh;text-align:center'><main><h2>Não foi possível abrir o aplicativo</h2><p style='color:#aaa'>Confira a internet e tente novamente.</p><button style='padding:14px 24px;border:0;border-radius:8px;background:#f2c500;color:#111;font-weight:bold' onclick=\"location.href='" + APP_URL + "?apk=" + APK_CACHE_VERSION + "'\">Tentar novamente</button></main></body></html>";
+        view.loadData(html, "text/html", "UTF-8");
+    }
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1003);
         ContextCompat.startForegroundService(this, new Intent(this, OrderNotificationService.class));
         webView = new WebView(this);
+        webView.setBackgroundColor(android.graphics.Color.BLACK);
         webView.addJavascriptInterface(new PdfBridge(), "CortezAndroid");
         setContentView(webView);
         WebSettings settings = webView.getSettings();
@@ -91,16 +110,30 @@ public class MainActivity extends Activity {
             @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return openExternalUrl(url);
             }
+            @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                if (request.isForMainFrame()) recoverAppLoad(view);
+            }
+            @Override public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse response) {
+                if (request.isForMainFrame() && response.getStatusCode() >= 400) recoverAppLoad(view);
+            }
             @Override public void onPageFinished(WebView view, String url) {
-                if (!url.startsWith(APP_URL)) return;
+                if (!url.startsWith(APP_URL) && !url.startsWith(FALLBACK_URL)) return;
+                String activeBase = url.startsWith(FALLBACK_URL) ? FALLBACK_URL : APP_URL;
                 String config = "{\"url\":\"" + SYNC_URL + "\",\"token\":\"" + SYNC_TOKEN + "\"}";
                 String script = "(function(){var syncKey='cortez-garage-sync-v1',syncValue='" + config + "',cacheKey='cortez-apk-cache-version',cacheValue='" + APK_CACHE_VERSION + "';"
                     + "if(localStorage.getItem(syncKey)!==syncValue){localStorage.setItem(syncKey,syncValue);location.reload();return;}"
                     + "if(localStorage.getItem(cacheKey)===cacheValue)return;localStorage.setItem(cacheKey,cacheValue);"
                     + "var tasks=[];if(window.caches&&caches.keys)tasks.push(caches.keys().then(function(keys){return Promise.all(keys.map(function(key){return caches.delete(key);}));}));"
                     + "if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)tasks.push(navigator.serviceWorker.getRegistrations().then(function(items){return Promise.all(items.map(function(item){return item.unregister();}));}));"
-                    + "Promise.all(tasks).then(function(){location.replace('" + APP_URL + "?apk=" + APK_CACHE_VERSION + "');},function(){location.replace('" + APP_URL + "?apk=" + APK_CACHE_VERSION + "');});})()";
+                    + "Promise.all(tasks).then(function(){location.replace('" + activeBase + "?apk=" + APK_CACHE_VERSION + "');},function(){location.replace('" + activeBase + "?apk=" + APK_CACHE_VERSION + "');});})()";
                 view.evaluateJavascript(script, null);
+                String finishedUrl = url;
+                view.postDelayed(() -> {
+                    if (!finishedUrl.equals(view.getUrl())) return;
+                    view.evaluateJavascript("(function(){var app=document.getElementById('app');return !app||!String(app.innerText||'').trim();})()", empty -> {
+                        if ("true".equals(empty)) recoverAppLoad(view);
+                    });
+                }, 8000);
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {
@@ -133,7 +166,7 @@ public class MainActivity extends Activity {
                 }
             }
         });
-        webView.loadUrl(APP_URL + "?apk=" + APK_CACHE_VERSION);
+        loadApp(APP_URL);
     }
 
     private class PdfBridge {
