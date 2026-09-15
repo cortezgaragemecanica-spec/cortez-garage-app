@@ -136,6 +136,33 @@ export async function markPartRequestSent(requestId){
   await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:data}});
   return data;
 }
+
+async function partRequestRow(session,requestId){
+  const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&registro_id=eq.${encodeURIComponent(requestId)}&select=id,dados&limit=1`,{token:session.access_token});
+  if(!rows[0])throw new Error('Solicitação de peças não encontrada.');
+  const actor=currentEmail(),requester=clean(rows[0].dados?.requestedBy?.email).toLowerCase();
+  if(actor!==OWNER_EMAIL&&actor!==requester)throw new Error('Você só pode alterar suas próprias solicitações.');
+  return rows[0];
+}
+
+export async function updatePartRequest(requestId,items){
+  if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem alterar solicitações.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const row=await partRequestRow(session,requestId),cleanItems=(items||[]).map(item=>({quantity:Math.max(1,Number(item.quantity||1)),description:clean(item.description),reason:clean(item.reason)})).filter(item=>item.description);
+  if(!cleanItems.length)throw new Error('Informe ao menos uma peça.');
+  const data={...(row.dados||{}),items:cleanItems,updatedAt:new Date().toISOString()};
+  await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:data}});
+  return data;
+}
+
+export async function deletePartRequest(requestId){
+  if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem excluir solicitações.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const row=await partRequestRow(session,requestId);
+  await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'});
+}
 export async function deleteOrder(id){if(!hasPermission('deleteOrders'))throw new Error('Seu usuário não tem permissão para excluir ordens de serviço.');const session=await refreshSession();await request(`/rest/v1/ordens_servico?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 export async function deleteVehicle(id){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?veiculo_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{veiculo_id:null}});await request(`/rest/v1/veiculos?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 export async function deleteClient(id){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await request(`/rest/v1/ordens_servico?cliente_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{cliente_id:null}});await request(`/rest/v1/veiculos?cliente_id=eq.${id}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{cliente_id:null}});await request(`/rest/v1/clientes?id=eq.${id}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
