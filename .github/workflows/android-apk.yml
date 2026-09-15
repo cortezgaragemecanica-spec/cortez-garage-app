@@ -34,8 +34,8 @@ jobs:
           path: Cortez-Garage-Android.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.13
-          name: Cortez Garage para Android v1.0.13
-          body: Corrige a tela branca com recuperação automática por endereço alternativo e opção para tentar novamente.
+          tag_name: android-v1.0.14
+          name: Cortez Garage para Android v1.0.14
+          body: Corrige o bloqueio do pedido de permissão de notificações na abertura do aplicativo.
           files: Cortez-Garage-Android.apk
 

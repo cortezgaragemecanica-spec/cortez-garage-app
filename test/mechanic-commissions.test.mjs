@@ -326,16 +326,21 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(worker,/cortez-garage-v189/);
 });
 
-test('APK recupera falha de carregamento sem deixar tela branca',async()=>{
-  const [activity,gradle,workflow]=await Promise.all([read('android/app/src/main/java/com/cortezgarage/app/MainActivity.java'),read('android/app/build.gradle'),read('.github/workflows/android-apk.yml')]);
+test('APK recupera falha de carregamento e não bloqueia a abertura com permissões',async()=>{
+  const [activity,gradle,workflow,agenda,index]=await Promise.all([read('android/app/src/main/java/com/cortezgarage/app/MainActivity.java'),read('android/app/build.gradle'),read('.github/workflows/android-apk.yml'),read('src/agenda-enhancements.js'),read('index.html')]);
   assert.match(activity,/FALLBACK_URL = "https:\/\/cortezgaragemecanica-spec\.github\.io\/cortez-garage-app\/"/);
   assert.match(activity,/onReceivedError/);
   assert.match(activity,/onReceivedHttpError/);
   assert.match(activity,/recoverAppLoad/);
   assert.match(activity,/Tentar novamente/);
   assert.match(activity,/view\.postDelayed/);
-  assert.match(activity,/APK_CACHE_VERSION = "113"/);
-  assert.match(gradle,/versionCode 13/);
-  assert.match(gradle,/versionName '1\.0\.13'/);
-  assert.match(workflow,/android-v1\.0\.13/);
+  assert.match(activity,/APK_CACHE_VERSION = "114"/);
+  assert.doesNotMatch(activity,/super\.onCreate\(state\);\s*if \(Build\.VERSION\.SDK_INT >= 33[\s\S]*?requestPermissions/);
+  assert.match(activity,/@JavascriptInterface public void requestNotificationPermission/);
+  assert.match(activity,/requestCode == NOTIFICATION_REQUEST/);
+  assert.match(agenda,/CortezAndroid\?\.requestNotificationPermission/);
+  assert.match(index,/agenda-enhancements\.js\?v=20260914-1/);
+  assert.match(gradle,/versionCode 14/);
+  assert.match(gradle,/versionName '1\.0\.14'/);
+  assert.match(workflow,/android-v1\.0\.14/);
 });

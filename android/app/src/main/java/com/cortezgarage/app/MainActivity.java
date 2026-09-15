@@ -36,9 +36,10 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 1001;
     private static final int MICROPHONE_REQUEST = 1002;
+    private static final int NOTIFICATION_REQUEST = 1003;
     private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
     private static final String FALLBACK_URL = "https://cortezgaragemecanica-spec.github.io/cortez-garage-app/";
-    private static final String APK_CACHE_VERSION = "113";
+    private static final String APK_CACHE_VERSION = "114";
     static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
     static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
     private WebView webView;
@@ -46,6 +47,11 @@ public class MainActivity extends Activity {
     private Uri cameraUri;
     private PermissionRequest microphonePermissionRequest;
     private boolean fallbackTried = false;
+
+    private void startNotificationServiceIfAllowed() {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return;
+        ContextCompat.startForegroundService(this, new Intent(this, OrderNotificationService.class));
+    }
 
     private void loadApp(String baseUrl) {
         webView.loadUrl(baseUrl + "?apk=" + APK_CACHE_VERSION);
@@ -63,8 +69,7 @@ public class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
-        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1003);
-        ContextCompat.startForegroundService(this, new Intent(this, OrderNotificationService.class));
+        startNotificationServiceIfAllowed();
         webView = new WebView(this);
         webView.setBackgroundColor(android.graphics.Color.BLACK);
         webView.addJavascriptInterface(new PdfBridge(), "CortezAndroid");
@@ -235,6 +240,7 @@ public class MainActivity extends Activity {
         }
         @JavascriptInterface public void showNotification(String title, String text, int notificationId) {
             runOnUiThread(() -> {
+                if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return;
                 NotificationManager manager = getSystemService(NotificationManager.class);
                 String channelId = "cortez_agenda";
                 if (Build.VERSION.SDK_INT >= 26) manager.createNotificationChannel(new NotificationChannel(channelId, "Lembretes da agenda", NotificationManager.IMPORTANCE_HIGH));
@@ -245,10 +251,21 @@ public class MainActivity extends Activity {
                 manager.notify(20000 + Math.abs(notificationId % 10000), builder.build());
             });
         }
+        @JavascriptInterface public void requestNotificationPermission() {
+            runOnUiThread(() -> {
+                if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_REQUEST);
+                } else startNotificationServiceIfAllowed();
+            });
+        }
     }
 
     @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == NOTIFICATION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) startNotificationServiceIfAllowed();
+            return;
+        }
         if (requestCode != MICROPHONE_REQUEST || microphonePermissionRequest == null) return;
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) microphonePermissionRequest.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
         else microphonePermissionRequest.deny();
