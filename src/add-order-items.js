@@ -1,6 +1,6 @@
 const number=value=>Number(value)||0;
 const text=value=>String(value||'').trim();
-const partFields=['description','brand','supplier','stockMode'];
+const partFields=['description','brand','supplier','stockMode','stockId'];
 const serviceFields=['description','mechanic'];
 const partCost=item=>number(item?.cost??item?.value);
 const partMargin=item=>number(item?.margin);
