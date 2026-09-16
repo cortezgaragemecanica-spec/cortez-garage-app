@@ -1,10 +1,11 @@
+import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js';
+
 const DB_KEY='cortez-garage-v1';
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
 const COMPANY={name:'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Brasil, 5452 — Bamerindus — Itapoá/SC',phone:'(47) 99124-7442',cnpj:'57.757.919/0001-41'};
 const readDb=()=>{try{return JSON.parse(localStorage.getItem(DB_KEY)||'null')}catch{return null}};
 const plain=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,' ');
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const isExecutionPdf=order=>['Em andamento','Aguardando peça','Pronto para entrega','Entregue'].includes(order.status);
 const currentOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();return readDb()?.orders?.find(order=>String(order.number)===number)};
 const loadImage=src=>new Promise((resolve,reject)=>{const image=new Image;image.onload=()=>resolve(image);image.onerror=reject;image.src=src});
 const wrap=(ctx,text,maxWidth)=>{const words=String(text||'—').split(/\s+/),lines=[];let line='';for(const word of words){const next=(line+' '+word).trim();if(line&&ctx.measureText(next).width>maxWidth){lines.push(line);line=word}else line=next}if(line)lines.push(line);return lines.length?lines:['—']};
@@ -22,10 +23,10 @@ function drawReport(order,logo){
   newPage();title('Identificação do cliente e veículo');
   infoGrid([['Cliente',order.client?.name],['Telefone',order.client?.phone],['CPF',order.client?.cpf||'—'],['Endereço',order.client?.address||'—'],['Veículo',order.vehicle?.model],['Placa',order.vehicle?.plate],['Ano / cor',`${order.vehicle?.year||'—'} / ${order.vehicle?.color||'—'}`],['KM / combustível',`${order.vehicle?.km||'—'} / ${order.vehicle?.fuel||'—'}`],['Data de entrada',new Date(order.created).toLocaleString('pt-BR')],['Status',order.status]]);
   title('Checklist de entrada');const entryChecks=order.checklist||[];compactChecklist(entryChecks);if(String(order.checklistNotes||'').trim())paragraph('Observação do checklist',order.checklistNotes);
-  if(budgetOnly){title('Descrição do orçamento');paragraph('Solicitação do cliente',order.complaint);paragraph('Observação',order.services)}else{title('Relato, diagnóstico e observações');paragraph('Reclamação do cliente',order.complaint);paragraph('Diagnóstico técnico',order.diagnosis);paragraph('Observação',order.services);paragraph('Observações adicionais',order.notes)}
-  const parts=(budget.parts||[]).map(item=>({description:item.description,brand:item.brand,quantity:item.quantity,value:item.value,refused:item.refused})),services=budget.services||[];
+  if(budgetOnly){title('Descrição do orçamento');paragraph('Solicitação do cliente',order.complaint);const observation=budgetObservation(order);if(observation)paragraph('Observação',observation)}else{title('Relato, diagnóstico e observações');paragraph('Reclamação do cliente',order.complaint);paragraph('Diagnóstico técnico',order.diagnosis);paragraph('Observação',order.services);paragraph('Observações adicionais',order.notes)}
+  const parts=(budget.parts||[]).map(item=>({description:item.description,brand:item.brand,quantity:item.quantity,value:item.value,refused:item.refused}));
   title(budgetOnly?'Peças do orçamento':'Peças utilizadas');table(['Descrição','Qtd.','Valor unit.','Subtotal'],parts.map(item=>[`${item.refused?'RECUSADA — ':''}${[item.description,item.brand].filter(Boolean).join(' · ')}`,String(Number(item.quantity||0)),money(item.value),item.refused?'R$ 0,00':money(Number(item.quantity||0)*Number(item.value||0))]),[560,100,210,230]);
-  title(budgetOnly?'Serviços do orçamento':'Serviços executados');table(['Serviço','Mecânico','Valor'],services.map(item=>[`${item.refused?'RECUSADO — ':''}${item.description}`,item.mechanic||order.mechanic||'—',item.refused?'R$ 0,00':money(item.value)]),[650,250,200]);
+  const serviceSection=servicePdfSection(order,money);title(serviceSection.title);table(serviceSection.headers,serviceSection.rows,serviceSection.widths);
   ensure(160);ctx.font='bold 22px Arial';ctx.fillText(`Total de peças: ${money(order.partsValue??budget.partsTotal)}`,MARGIN,y);y+=34;ctx.fillText(`Total de serviços: ${money(order.labor??budget.servicesTotal)}`,MARGIN,y);y+=42;ctx.fillStyle='#d6b718';ctx.fillRect(MARGIN,y,contentWidth,54);ctx.fillStyle='#111';ctx.font='bold 27px Arial';ctx.fillText(`VALOR TOTAL: ${money(order.total??budget.total)}`,MARGIN+18,y+36);y+=75;
   if(budgetOnly){title('Condições de pagamento');paragraph('Forma/condições de pagamento',budget.paymentTerms||order.payment);return pages}
   title('Condições de pagamento');paragraph('Forma/condições de pagamento',budget.paymentTerms||order.payment);title('Garantia');paragraph('Termo de garantia',budget.warrantyTerms);
