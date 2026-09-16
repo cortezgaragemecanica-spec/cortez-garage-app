@@ -1,7 +1,10 @@
-import{canManageServices,getCurrentUser,hasPermission}from'./supabase.js?v=20260914-3';
+import{canManageServices,canAddOrderItems,getCurrentUser,hasPermission}from'./supabase.js?v=20260915-6';
 
 const blockedActions='.add-line,.edit-part,.remove-line,.refuse-line,#includePart,#approveBudget,#previousStatus';
 const protectedFields='#services,#parts,#labor,#partsValue,#discount,#payment,#budgetSection input:not([data-check]),#budgetSection textarea,#budgetSection select';
+const addOnlyBlockedActions='.edit-part,.remove-line,.refuse-line,#approveBudget,#previousStatus';
+const addOnlyProtectedFields='#services,#parts,#labor,#partsValue,#discount,#payment,#budgetPayment,#warrantyTerms';
+const addOnlyMessage='Você pode incluir peças e serviços com valores. Não pode alterar ou excluir itens já cadastrados, mudar descontos nem incluir peças no estoque.';
 const message='Seu usuário possui acesso de consulta. O checklist pode ser atualizado; serviços, peças, valores, baixa de estoque e entrega não podem ser alterados.';
 const orderReadOnlyActions='.os-grid button:not(#print):not(#toggleOrderChecklist),.os-head button:not(#print):not(#toggleOrderChecklist),#saveOs,#editOrder,#technicalReport,#sendBudget,#readyOrder,#approveBudget,#previousStatus';
 const orderReadOnlyFields='.os-grid input,.os-grid textarea,.os-grid select,.os-grid canvas,.os-head select';
@@ -23,6 +26,13 @@ function lockServiceScreen(){
   if(!restricted())return;
   const order=document.querySelector('.os-grid');
   if(!order)return;
+  if(canAddOrderItems()){
+    if(!document.querySelector('.access-restricted-note'))order.insertAdjacentHTML('beforebegin',`<div class="access-restricted-note" role="note">🔒 ${addOnlyMessage}</div>`);
+    document.querySelectorAll(addOnlyBlockedActions).forEach(element=>{element.hidden=true;element.disabled=true});
+    if(document.querySelector('#status')?.value==='Entregue')document.querySelectorAll('.add-line').forEach(element=>{element.hidden=true;element.disabled=true});
+    document.querySelectorAll(`${addOnlyProtectedFields},#budgetSection tr:not([data-new]) input,#budgetSection tr:not([data-new]) textarea,#budgetSection tr:not([data-new]) select`).forEach(element=>{element.disabled=true;element.readOnly=true;element.setAttribute('aria-disabled','true')});
+    return;
+  }
   if(!document.querySelector('.access-restricted-note'))order.insertAdjacentHTML('beforebegin',`<div class="access-restricted-note" role="note">🔒 ${message}</div>`);
   document.querySelectorAll(blockedActions).forEach(element=>{element.hidden=true;element.disabled=true});
   document.querySelectorAll(protectedFields).forEach(element=>{element.disabled=true;element.readOnly=true;element.setAttribute('aria-disabled','true')});
@@ -30,8 +40,8 @@ function lockServiceScreen(){
 
 document.addEventListener('click',event=>{
   if(!hasPermission('editOrders')&&event.target.closest(orderReadOnlyActions)){event.preventDefault();event.stopImmediatePropagation();alert(orderReadOnlyMessage);return}
-  if(!restricted()||!event.target.closest(blockedActions))return;
-  event.preventDefault();event.stopImmediatePropagation();alert(message);
+  if(!restricted()||!event.target.closest(canAddOrderItems()?addOnlyBlockedActions:blockedActions))return;
+  event.preventDefault();event.stopImmediatePropagation();alert(canAddOrderItems()?addOnlyMessage:message);
 },true);
 new MutationObserver(lockServiceScreen).observe(document.querySelector('#app'),{childList:true,subtree:true});
 lockServiceScreen();
