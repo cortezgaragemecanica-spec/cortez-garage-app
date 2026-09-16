@@ -13,7 +13,8 @@ const DEFAULT_MECHANICS=['Gustavo','Cortez','Fabio'];
 const USER_ACCESS_KEY='cortez-garage-user-access-v1';
 const GUSTAVO_EMAILS=new Set(['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com']);
 const FABIO_EMAILS=new Set(['fabiomaier19850901@gmail.com']);
-const RESTRICTED_SERVICE_EMAILS=new Set([...GUSTAVO_EMAILS,...FABIO_EMAILS,'kaugg490@gmail.com','kauavinicius.cortez@gmail.com','kauavinicius.cortezz@gmail.com']);
+const KAUA_EMAILS=new Set(['kaugg490@gmail.com','kauavinicius.cortez@gmail.com','kauavinicius.cortezz@gmail.com']);
+const RESTRICTED_SERVICE_EMAILS=new Set([...GUSTAVO_EMAILS,...FABIO_EMAILS,...KAUA_EMAILS]);
 
 const headers=(token,extra={})=>({apikey:SUPABASE_KEY,Authorization:`Bearer ${token||SUPABASE_KEY}`,'Content-Type':'application/json',...extra});
 const json=async response=>{const data=await response.json().catch(()=>null);if(!response.ok)throw new Error(data?.msg||data?.message||data?.error_description||data?.hint||`Supabase respondeu ${response.status}`);return data};
@@ -33,6 +34,8 @@ export async function restoreOperationalBackup(backup){if(currentEmail()!==OWNER
 export function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}}
 export function getCurrentUser(){const user=getSession()?.user,metadata=user?.user_metadata||{};return{id:user?.id||'',name:metadata.name||metadata.nome||user?.email?.split('@')[0]||'Usuário',email:user?.email||'',deviceId:localStorage.getItem(DEVICE_KEY)||metadata.device_id||''}}
 const currentEmail=()=>getCurrentUser().email.trim().toLowerCase();
+export const canHandleRequestNotifications=()=>currentEmail()===OWNER_EMAIL||KAUA_EMAILS.has(currentEmail());
+export const isKauaUser=()=>KAUA_EMAILS.has(currentEmail());
 export function canManageServices(){return hasPermission('manageValues')}
 export function canAddOrderItems(){return canManageServices()||hasPermission('addOrderItems')}
 const defaultMechanicForEmail=email=>GUSTAVO_EMAILS.has(email)?'Gustavo':FABIO_EMAILS.has(email)?'Fabio':'';
@@ -139,7 +142,7 @@ export async function saveServiceQuoteRequest(order,items){
   if(!session?.access_token)throw new Error('Sessão expirada');
   const user=getCurrentUser(),id=crypto.randomUUID(),cleanItems=(items||[]).map(item=>({quantity:Number(item.quantity),description:clean(item.description),reason:clean(item.reason)}));
   if(!order?.id||!cleanItems.length||cleanItems.some(item=>!Number.isInteger(item.quantity)||item.quantity<1||!item.description))throw new Error('Preencha quantidade e descrição de todos os serviços.');
-  const data={id,orderId:order.id,orderNumber:String(order.number||''),vehicle:{plate:clean(order.vehicle?.plate),model:clean(order.vehicle?.model),year:clean(order.vehicle?.year),color:clean(order.vehicle?.color)},items:cleanItems,requestedBy:{id:user.id,email:user.email,name:user.name},status:'Pendente',createdAt:new Date().toISOString()};
+  const data={id,orderId:order.id,orderNumber:String(order.number||''),vehicle:{plate:clean(order.vehicle?.plate),model:clean(order.vehicle?.model),year:clean(order.vehicle?.year),color:clean(order.vehicle?.color)},items:cleanItems,requestedBy:{id:user.id,email:user.email,name:user.name},status:'Pendente',individualNotifications:true,viewedBy:{},createdAt:new Date().toISOString()};
   await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'app',entidade:'solicitacao_orcamento_servicos',registro_id:id,dados:data}});
   return data;
 }
@@ -163,17 +166,17 @@ export async function deleteServiceQuoteRequest(requestId){
 }
 
 export async function acknowledgeServiceQuoteRequests(ids){
-  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode conferir estas solicitações.');
+  if(!canHandleRequestNotifications())throw new Error('Você não tem permissão para conferir estas solicitações.');
   const session=await refreshSession();
   if(!session?.access_token)throw new Error('Sessão expirada');
   for(const id of ids){
     const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_orcamento_servicos&registro_id=eq.${encodeURIComponent(id)}&select=id,dados&limit=1`,{token:session.access_token}),row=rows[0];
-    if(row&&row.dados?.status==='Pendente')await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:{...row.dados,status:'Visualizada',viewedAt:new Date().toISOString()}}});
+    if(row&&!row.dados?.viewedBy?.[currentEmail()]){const viewedAt=new Date().toISOString();await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:{...row.dados,status:currentEmail()===OWNER_EMAIL?'Visualizada':row.dados.status,viewedAt:currentEmail()===OWNER_EMAIL?viewedAt:row.dados.viewedAt,viewedBy:{...row.dados.viewedBy,[currentEmail()]:viewedAt}}}})}
   }
 }
 
 export async function markPartRequestSent(requestId){
-  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode enviar pedidos ao fornecedor.');
+  if(!canHandleRequestNotifications())throw new Error('Você não tem permissão para enviar pedidos ao fornecedor.');
   const session=await refreshSession();
   if(!session?.access_token)throw new Error('Sessão expirada');
   const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&registro_id=eq.${encodeURIComponent(requestId)}&select=id,dados&limit=1`,{token:session.access_token}),row=rows[0];
@@ -203,6 +206,7 @@ export async function updatePartRequest(requestId,items){
 }
 
 export async function deletePartRequest(requestId){
+  if(isKauaUser())throw new Error('Kauã não pode excluir solicitações de peças.');
   if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem excluir solicitações.');
   const session=await refreshSession();
   if(!session?.access_token)throw new Error('Sessão expirada');
