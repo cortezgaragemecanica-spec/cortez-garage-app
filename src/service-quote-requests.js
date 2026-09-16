@@ -1,4 +1,4 @@
-import{acknowledgeServiceQuoteRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCurrentUser,hasPermission,readServiceQuoteRequests,saveServiceQuoteRequest}from'./supabase.js?v=20260916-1';
+import{acknowledgeServiceQuoteRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCurrentUser,hasPermission,readServiceQuoteRequests,saveServiceQuoteRequest}from'./supabase.js?v=20260916-2';
 import{isServiceQuotePendingForViewer}from'./request-notification-state.js';
 
 const DB_KEY='cortez-garage-v1',OWNER='cortezgaragemecanica@gmail.com';
