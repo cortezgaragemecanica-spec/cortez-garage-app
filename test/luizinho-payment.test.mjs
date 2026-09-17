@@ -57,6 +57,6 @@ test('acerto Luizinho separa notas por semana e mostra os totais de cada períod
   assert.match(style,/\.luizinho-week-heading td/);
   assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
   assert.match(index,/style\.css\?v=20260917-3/);
-  assert.match(index,/admin\.js\?v=20260917-2/);
-  assert.match(worker,/cortez-garage-v209/);
+  assert.match(index,/admin\.js\?v=20260917-3/);
+  assert.match(worker,/cortez-garage-v210/);
 });
