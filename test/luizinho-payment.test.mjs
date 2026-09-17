@@ -45,3 +45,18 @@ test('caixa pergunta antes de salvar e painel de acertos respeita a resposta',as
   assert.match(supabase,/!luizinho\?await matchingPayable/);
   assert.match(supabase,/select=descricao,valor,vencimento,referencia/);
 });
+
+test('acerto Luizinho separa notas por semana e mostra os totais de cada período',async()=>{
+  const[admin,style,index,worker]=await Promise.all(['src/admin.js','src/style.css','index.html','public/sw.js'].map(file=>readFile(file,'utf8')));
+  assert.match(admin,/function separateLuizinhoWeeks\(target\)/);
+  assert.match(admin,/Semana: \$\{esc\(label\)\}/);
+  assert.match(admin,/Total das notas: <strong>\$\{money\(week\.total\)\}/);
+  assert.match(admin,/Pago: <strong>\$\{money\(week\.paid\)\}/);
+  assert.match(admin,/week\.settled\?'Quitada':'Saldo'/);
+  assert.match(admin,/if\(activeSupplier==='luizinho'\)separateLuizinhoWeeks\(target\)/);
+  assert.match(style,/\.luizinho-week-heading td/);
+  assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
+  assert.match(index,/style\.css\?v=20260917-1/);
+  assert.match(index,/admin\.js\?v=20260917-1/);
+  assert.match(worker,/cortez-garage-v206/);
+});
