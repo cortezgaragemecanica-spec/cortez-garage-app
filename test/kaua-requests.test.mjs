@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {canHandleRequestNotifications,deletePartRequest,deleteServiceQuoteRequest,isKauaUser,markPartRequestSent} from '../src/supabase.js';
+import {canHandleRequestNotifications,deletePartRequest,deleteServiceQuoteRequest,isKauaUser,markPartRequestSent,sendServiceQuoteToOrder} from '../src/supabase.js';
 import {isServiceQuotePendingForViewer} from '../src/request-notification-state.js';
 
 const originalStorage=globalThis.localStorage;
@@ -15,6 +15,7 @@ test('as três contas do Kauã recebem solicitações, mas não podem excluir',a
       assert.equal(isKauaUser(),true);
       await assert.rejects(deletePartRequest('id'),/não pode excluir/);
       await assert.rejects(deleteServiceQuoteRequest('id'),/Somente o proprietário/);
+      await assert.rejects(sendServiceQuoteToOrder('id',[]),/Somente o proprietário/);
     }
     asUser('cortezgaragemecanica@gmail.com');
     assert.equal(canHandleRequestNotifications(),true);

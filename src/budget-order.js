@@ -106,6 +106,7 @@ function wire(order,db){
 function mount(preserveScroll=false){const target=document.querySelector('.os-grid>div'),existing=document.querySelector('#budgetSection'),{db,order}=currentOrder();if(!target||!order)return;const previousScroll=window.scrollY;if(existing)existing.remove();target.insertAdjacentHTML('beforeend',budgetHtml(order));wire(order,db);if(preserveScroll)window.scrollTo(0,previousScroll)}
 
 new MutationObserver(()=>{if(document.querySelector('.os-grid')&&!document.querySelector('#budgetSection'))mount()}).observe(document.querySelector('#app'),{childList:true,subtree:true});
+document.addEventListener('cortez:service-quote-imported',()=>{if(document.querySelector('.os-grid'))mount(true)});
 mount();
 
 

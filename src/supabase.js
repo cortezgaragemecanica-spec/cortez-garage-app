@@ -175,6 +175,31 @@ export async function acknowledgeServiceQuoteRequests(ids){
   }
 }
 
+export async function sendServiceQuoteToOrder(requestId,items){
+  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode enviar solicitações de serviços para a O.S.');
+  if(!isUuid(requestId))throw new Error('Identificador da solicitação inválido.');
+  const prepared=(items||[]).map(item=>({quantity:Math.max(1,Number(item.quantity)||1),description:clean(item.description),mechanic:clean(item.mechanic),value:Number(item.value)}));
+  if(!prepared.length||prepared.some(item=>!item.description||!item.mechanic||!Number.isFinite(item.value)||item.value<=0))throw new Error('Preencha descrição, mecânico e valor de todos os serviços.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const requestRows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_orcamento_servicos&registro_id=eq.${encodeURIComponent(requestId)}&select=id,dados&limit=1`,{token:session.access_token}),requestRow=requestRows[0],requestData=requestRow?.dados||{};
+  if(!requestRow)throw new Error('Solicitação de orçamento não encontrada.');
+  if(requestData.importedAt)throw new Error('Esta solicitação já foi enviada para a O.S.');
+  const orderRows=await request(`/rest/v1/ordens_servico?id=eq.${encodeURIComponent(requestData.orderId)}&select=*`,{token:session.access_token}),orderRow=orderRows[0];
+  if(!orderRow)throw new Error('A ordem de serviço vinculada não foi encontrada.');
+  if(orderRow.status==='Entregue')throw new Error('Não é possível incluir serviços em uma O.S. entregue.');
+  const extras=orderRow.dados_extras||{},budget=repairedBudget(orderRow,extras),services=prepared.map(item=>({description:item.quantity>1?`${item.quantity}x ${item.description}`:item.description,mechanic:item.mechanic,value:Number(item.value.toFixed(2)),refused:false,sourceRequestId:requestId,requestedQuantity:item.quantity}));
+  const alreadyImported=(budget.services||[]).filter(item=>item.sourceRequestId===requestId);
+  if(alreadyImported.length){const servicesTotal=(budget.services||[]).filter(item=>!item.refused).reduce((sum,item)=>sum+Number(item.value||0),0),partsTotal=(budget.parts||[]).filter(item=>!item.refused).reduce((sum,item)=>sum+Math.max(1,Number(item.quantity)||1)*Number(item.value||0),0),total=Math.max(0,partsTotal+servicesTotal-Number(orderRow.desconto||0)),updatedAt=new Date().toISOString(),importedData={...requestData,status:'Enviada para O.S.',individualNotifications:false,importedAt:updatedAt,importedBy:getCurrentUser().email,importedItems:alreadyImported};await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(requestRow.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:importedData}});return{request:{...importedData,id:requestId,rowId:requestRow.id},budget,labor:servicesTotal,partsValue:partsTotal,total,updatedAt}}
+  const nextBudget={...budget,services:[...(budget.services||[]),...services]},servicesTotal=nextBudget.services.filter(item=>!item.refused).reduce((sum,item)=>sum+Number(item.value||0),0),partsTotal=(nextBudget.parts||[]).filter(item=>!item.refused).reduce((sum,item)=>sum+Math.max(1,Number(item.quantity)||1)*Number(item.value||0),0),total=Math.max(0,partsTotal+servicesTotal-Number(orderRow.desconto||0)),user=getCurrentUser(),updatedAt=new Date().toISOString(),updatedBy={id:user.id,name:user.name,email:user.email,deviceId:getDeviceId(),at:updatedAt};
+  nextBudget.servicesTotal=servicesTotal;nextBudget.partsTotal=partsTotal;nextBudget.total=total;
+  const condition=orderRow.atualizado_em?`&atualizado_em=eq.${encodeURIComponent(orderRow.atualizado_em)}`:'',saved=await request(`/rest/v1/ordens_servico?id=eq.${encodeURIComponent(orderRow.id)}${condition}`,{token:session.access_token,method:'PATCH',prefer:'return=representation',body:{mao_obra:servicesTotal,valor_pecas:partsTotal,total,mecanico:clean(orderRow.mecanico)||services[0]?.mechanic||null,dados_extras:{...extras,budget:nextBudget,updatedBy}}});
+  if(!saved.length)throw new Error('A O.S. foi alterada em outro aparelho. Abra a solicitação novamente antes de enviar.');
+  const importedData={...requestData,status:'Enviada para O.S.',individualNotifications:false,importedAt:updatedAt,importedBy:user.email,importedItems:services};
+  await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(requestRow.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:importedData}});
+  return{request:{...importedData,id:requestId,rowId:requestRow.id},budget:nextBudget,labor:servicesTotal,partsValue:partsTotal,total,updatedAt};
+}
+
 export async function markPartRequestSent(requestId){
   if(!canHandleRequestNotifications())throw new Error('Você não tem permissão para enviar pedidos ao fornecedor.');
   const session=await refreshSession();
