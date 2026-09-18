@@ -56,7 +56,21 @@ test('acerto Luizinho separa notas por semana e mostra os totais de cada períod
   assert.match(admin,/if\(activeSupplier==='luizinho'\)separateLuizinhoWeeks\(target\)/);
   assert.match(style,/\.luizinho-week-heading td/);
   assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
-  assert.match(index,/style\.css\?v=20260918-1/);
-  assert.match(index,/admin\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v211/);
+  assert.match(index,/style\.css\?v=20260918-2/);
+  assert.match(index,/admin\.js\?v=20260918-2/);
+  assert.match(worker,/cortez-garage-v212/);
+});
+
+test('nota do Luizinho usa tabela no computador e cartões completos no celular',async()=>{
+  const [admin,style,index,worker]=await Promise.all(['src/admin.js','src/style.css','index.html','public/sw.js'].map(file=>readFile(file,'utf8')));
+  assert.match(admin,/supplier-note-editor-popup/);
+  for(const label of ['Código','Marca','Quantidade','Descrição','Valor unitário','Valor total'])assert.ok(admin.includes(`data-label="${label}"`));
+  assert.match(style,/\.supplier-note-items table\{min-width:940px\}/);
+  assert.match(style,/@media\(max-width:640px\)[\s\S]*\.supplier-note-editor-popup \.supplier-note-popup\{[\s\S]*height:100dvh/);
+  assert.match(style,/\.supplier-note-editor-popup \.supplier-note-items tr\{display:grid/);
+  assert.match(style,/\.supplier-note-editor-popup \.supplier-note-items thead\{display:none\}/);
+  assert.match(style,/\.note-description\{grid-column:1\/-1\}/);
+  assert.match(index,/style\.css\?v=20260918-2/);
+  assert.match(index,/admin\.js\?v=20260918-2/);
+  assert.match(worker,/cortez-garage-v212/);
 });
