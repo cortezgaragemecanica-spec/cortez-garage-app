@@ -12,6 +12,7 @@ test('Kauã pode anexar peça e serviço com valores sem modificar os existentes
   assert.equal(result.servicesTotal,300);
   assert.equal(result.total,510);
   assert.deepEqual(result.budget.parts[0],base.parts[0]);
+  assert.equal(result.budget.services[1].commissionRate,.5);
 });
 
 test('inclusão não libera exclusão, alteração de item anterior nem estoque',()=>{
@@ -19,6 +20,7 @@ test('inclusão não libera exclusão, alteração de item anterior nem estoque'
   assert.throws(()=>appendOrderItemsOnly(base,{...base,parts:[{...base.parts[0],value:200},{description:'Óleo',quantity:1,value:50}]},0),/não permite alterar itens/);
   assert.throws(()=>appendOrderItemsOnly(base,{...base,parts:[...base.parts,{description:'Óleo',quantity:1,value:50,stockMode:'include'}]},0),/Inclusão no estoque não está liberada/);
   assert.throws(()=>appendOrderItemsOnly(base,{...base,paymentTerms:'A prazo',services:[...base.services,{description:'Serviço',value:50}]},0),/apenas incluir/);
+  assert.throws(()=>appendOrderItemsOnly({...base,services:[{...base.services[0],commissionRate:.5}]},{...base,services:[{...base.services[0],commissionRate:.8},{description:'Novo',value:50}]},0),/não permite alterar itens/);
 });
 
 test('peça antiga sem campos de custo e quantidade continua intacta',()=>{

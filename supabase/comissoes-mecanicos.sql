@@ -224,7 +224,10 @@ begin
   insert into public.lancamentos_financeiros
     (categoria, movimento, descricao, valor, vencimento, status, mecanico, os_id, referencia, semana_inicio)
   select 'Comissões', 'Saída', 'Comissão O.S. #' || numero_os,
-    round(sum(coalesce(nullif(servico ->> 'value', '')::numeric, 0)) * 0.5, 2),
+    round(sum(
+      coalesce(nullif(servico ->> 'value', '')::numeric, 0)
+      * greatest(0, least(1, coalesce(nullif(servico ->> 'commissionRate', '')::numeric, 0.5)))
+    ), 2),
     data_comissao, 'Pendente', trim(servico ->> 'mechanic'), p_os_id,
     'comissao-os-' || p_os_id::text || '-' || trim(both '-' from regexp_replace(lower(trim(servico ->> 'mechanic')), '[^a-z0-9]+', '-', 'g')),
     inicio_semana
