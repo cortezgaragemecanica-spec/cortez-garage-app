@@ -55,12 +55,17 @@ declare
   mecanico_atual text;
   conferido timestamptz;
   itens jsonb;
+  vales jsonb;
   total numeric(12,2);
+  total_gerado numeric(12,2);
+  total_vales numeric(12,2);
+  mecanico_busca text;
 begin
   inicio_semana := agora_local::date - ((extract(dow from agora_local)::integer + 1) % 7);
   fim_semana := inicio_semana + 6;
   mecanico_atual := public.mecanico_atual_do_usuario();
   if mecanico_atual is null then raise exception 'Este usuário não possui um mecânico vinculado.'; end if;
+  mecanico_busca := split_part(regexp_replace(translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '[^a-z0-9]+', ' ', 'g'), ' ', 1);
 
   select c.conferido_em into conferido
   from public.conferencia_comissoes_mecanicos c
@@ -78,7 +83,8 @@ begin
           and coalesce(servico ->> 'refused', 'false') <> 'true'
       ), ''), 'Serviço da O.S.'),
       'amount', f.valor,
-      'status', f.status
+      'status', f.status,
+      'kind', 'commission'
     ) order by f.vencimento desc, o.numero desc), '[]'::jsonb),
     coalesce(sum(f.valor), 0)
   into itens, total
@@ -89,8 +95,33 @@ begin
     and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
     and coalesce(f.semana_inicio, f.vencimento - ((extract(dow from f.vencimento)::integer + 1) % 7)) = inicio_semana;
 
+  total_gerado := total;
+  select coalesce(jsonb_agg(jsonb_build_object(
+      'id', f.id,
+      'date', f.vencimento,
+      'orderNumber', null,
+      'vehicle', coalesce(nullif(f.forma_pagamento, ''), 'Caixa'),
+      'service', f.descricao,
+      'amount', -f.valor,
+      'status', 'Vale descontado',
+      'kind', 'advance'
+    ) order by f.vencimento desc, f.criado_em desc), '[]'::jsonb),
+    coalesce(sum(f.valor), 0)
+  into vales, total_vales
+  from public.lancamentos_financeiros f
+  where f.categoria = 'Fluxo de caixa'
+    and f.movimento = 'Saída'
+    and f.status = 'Realizado'
+    and f.vencimento - ((extract(dow from f.vencimento)::integer + 1) % 7) = inicio_semana
+    and concat(' ', regexp_replace(translate(lower(coalesce(f.descricao, '')), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '[^a-z0-9]+', ' ', 'g'), ' ') like '% vale %'
+    and concat(' ', regexp_replace(translate(lower(coalesce(f.descricao, '')), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '[^a-z0-9]+', ' ', 'g'), ' ') like '% ' || mecanico_busca || ' %';
+
+  itens := itens || vales;
+  total := greatest(0, total_gerado - total_vales);
+
   return jsonb_build_object(
     'mechanic', mecanico_atual, 'weekStart', inicio_semana, 'weekEnd', fim_semana,
+    'generated', total_gerado, 'advances', total_vales,
     'total', total, 'items', itens, 'confirmedAt', conferido,
     'canConfirm', conferido is null and extract(isodow from agora_local) = 5
       and agora_local::time >= time '17:00' and agora_local::time <= time '21:00'
