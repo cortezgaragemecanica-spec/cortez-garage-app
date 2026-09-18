@@ -26,7 +26,7 @@ jobs:
       - name: Validar JavaScript
         run: for file in src/*.js; do node --check "$file"; done
       - name: Validar comissões, ordens, estoque, baixa do Luizinho, inclusão de itens, PDF e solicitações
-        run: node --test test/mechanic-commissions.test.mjs test/order-change.test.mjs test/order-stock-links.test.mjs test/closed-order-receipt.test.mjs test/luizinho-payment.test.mjs test/add-order-items.test.mjs test/pdf-order-status.test.mjs test/kaua-requests.test.mjs test/user-access-history.test.mjs
+        run: node --test test/mechanic-commissions.test.mjs test/order-change.test.mjs test/order-stock-links.test.mjs test/closed-order-receipt.test.mjs test/luizinho-payment.test.mjs test/add-order-items.test.mjs test/pdf-order-status.test.mjs test/kaua-requests.test.mjs test/user-access-history.test.mjs test/inactive-cortez-mechanic.test.mjs
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
