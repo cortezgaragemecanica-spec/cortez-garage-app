@@ -538,11 +538,13 @@ test('solicitações de serviços e peças ocupam a tela inteira no computador',
   assert.match(worker,/cortez-garage-v212/);
 });
 
-test('proprietário altera internamente as comissões somente da semana atual sem mudar os textos exibidos',async()=>{
+test('proprietário altera internamente as comissões abertas sem mudar pagamentos ou textos exibidos',async()=>{
   const [admin,reports,supabase,index,worker]=await Promise.all([read('src/admin.js'),read('src/reports.js'),read('src/supabase.js'),read('index.html'),read('public/sw.js')]);
   assert.match(admin,/id="editPartnerRates">Alterar comissões dos sócios/);
   assert.match(admin,/function openPartnerRatePopup/);
   assert.match(admin,/await savePartnerCommissionRates\(currentWeek\.start,\{Fabiano:fabiano\/100,Marcelino:marcelino\/100\}\)/);
+  assert.match(admin,/revalueOpenPartnerCommission\(ledger,currentRates\[partner\]\)/);
+  assert.match(admin,/Pagamentos já arquivados não são alterados/);
   assert.match(admin,/rates=partnerRatesForDate\(date\)/);
   assert.match(admin,/allocation\*rates\.Fabiano/);
   assert.match(admin,/allocation\*rates\.Marcelino/);

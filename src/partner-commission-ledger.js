@@ -21,3 +21,19 @@ export function allocatePartnerCommission(events=[],payments=[]){
     unappliedCredit:Math.max(0,credit)
   };
 }
+
+export function revalueOpenPartnerCommission(ledger,rate){
+  rate=Math.max(0,Number(rate)||0);
+  const events=ledger.events.map(event=>{
+    if(event.remaining<=.009)return event;
+    const commission=Math.max(0,Number(event.real)||0)*rate;
+    return{...event,commission,remaining:Math.max(0,commission-event.paid)};
+  });
+  return{
+    ...ledger,
+    events,
+    open:events.filter(event=>event.remaining>.009),
+    generatedTotal:events.reduce((sum,event)=>sum+event.commission,0),
+    outstandingTotal:events.reduce((sum,event)=>sum+event.remaining,0)
+  };
+}
