@@ -23,7 +23,7 @@ test('atalho de comissões dos mecânicos fica ao lado do Financeiro',async()=>{
   assert.match(view,/finance\.insertAdjacentHTML\('afterend'/);
   assert.match(view,/mechanic-commission-shortcut/);
   assert.match(index,/mechanic-commissions\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('conferência é aceita apenas sexta-feira das 17h às 21h e some após confirmar',async()=>{
@@ -132,7 +132,7 @@ test('ações do orçamento ficam juntas e o salvamento manual é removido',asyn
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(index,/budget-order\.js\?v=20260918-1/);
   assert.match(index,/order-workflow\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('peça de orçamento ignora o estoque e mantém todos os campos comerciais',async()=>{
@@ -167,8 +167,8 @@ test('contas a pagar possuem pesquisa, agrupamento, edição e pagamento parcial
   assert.match(supabase,/status:remaining<=\.01\?'Realizado':'Pendente'/);
   assert.match(supabase,/pagamento-conta-\$\{row\.id\}-\$\{crypto\.randomUUID\(\)\}/);
   assert.match(style,/\.payable-period-group\[hidden\]/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('contas pagas são arquivadas e a pesquisa soma apenas saldos em aberto',async()=>{
@@ -177,8 +177,8 @@ test('contas pagas são arquivadas e a pesquisa soma apenas saldos em aberto',as
   assert.match(admin,/showPayableArchive\?archived:open/);
   assert.match(admin,/if\(row\.dataset\.payableOpen===['"]true['"]\)openTotal\+=Number/);
   assert.match(admin,/id="payableSearchTotal"/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('contas a pagar permitem selecionar a semana e mostram o total pendente do período',async()=>{
@@ -187,8 +187,8 @@ test('contas a pagar permitem selecionar a semana e mostram o total pendente do 
   assert.match(admin,/selectedPayableWeek/);
   assert.match(admin,/payablePeriodKey\(record\.dueDate,['"]week['"]\)===selectedPayableWeek/);
   assert.match(admin,/id="payableWeekTotal"/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('saúde da empresa detalha cada compromisso previsto ao clicar',async()=>{
@@ -198,8 +198,8 @@ test('saúde da empresa detalha cada compromisso previsto ao clicar',async()=>{
   assert.match(admin,/function openCompanyCommitments/);
   assert.match(admin,/wireCompanyHealth\(\)/);
   assert.match(style,/\.company-health-commitments/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('cada separação semanal ou mensal de contas mostra o total do período',async()=>{
@@ -208,8 +208,8 @@ test('cada separação semanal ou mensal de contas mostra o total do período',a
   assert.match(admin,/showPayableArchive\?['"]Total pago['"]:['"]Total em aberto['"]/);
   assert.match(admin,/payablePeriod===['"]week['"]\?['"]Semana['"]:['"]Mês['"]/);
   assert.match(style,/\.payable-period-heading strong/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('cada compromisso da saúde abre a lista dos registros que formam o total',async()=>{
@@ -219,8 +219,8 @@ test('cada compromisso da saúde abre a lista dos registros que formam o total',
   assert.match(admin,/function openCompanyCommitmentList/);
   assert.match(admin,/data-commitment=/);
   assert.match(style,/\.company-commitment-open/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('plano de custos abre os lançamentos registrados por categoria',async()=>{
@@ -231,8 +231,8 @@ test('plano de custos abre os lançamentos registrados por categoria',async()=>{
   assert.match(admin,/expenseKind\(record\.description\)===category/);
   assert.match(admin,/openCostPlanDetails\(row\.dataset\.costCategory\)/);
   assert.match(style,/\.cost-plan-detail-popup/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('plano de custos permite informar e salvar valores já pagos',async()=>{
@@ -242,8 +242,8 @@ test('plano de custos permite informar e salvar valores já pagos',async()=>{
   assert.match(admin,/paid:Number\(row\.querySelector\('\.cost-plan-paid'\)\.value\)\|\|0/);
   assert.match(admin,/não cria uma nova saída no caixa/);
   assert.match(supabase,/paid:item\?\.paid===null\|\|item\?\.paid===undefined\?null/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('ano e cor são obrigatórios na nova entrada',async()=>{
@@ -252,7 +252,7 @@ test('ano e cor são obrigatórios na nova entrada',async()=>{
   assert.match(main,/\['year','Ano \*'\],\['color','Cor \*'\]/);
   assert.match(main,/input\.required=true/);
   assert.match(index,/main\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('telefone cadastrado abre seleção entre veículo existente e novo veículo',async()=>{
@@ -263,7 +263,7 @@ test('telefone cadastrado abre seleção entre veículo existente e novo veícul
   assert.match(main,/clientVehiclePopup\(client,input\)/);
   assert.match(style,/\.entry-client-vehicles/);
   assert.match(index,/main\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',async()=>{
@@ -275,7 +275,7 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   assert.match(main,/card\.hidden=!match/);
   assert.match(style,/\.people-toolbar/);
   assert.match(index,/main\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('Fábio mantém o vínculo e enxerga comissões mesmo com agenda antiga vazia ou acentuada',async()=>{
@@ -287,7 +287,7 @@ test('Fábio mantém o vínculo e enxerga comissões mesmo com agenda antiga vaz
   assert.match(sql,/translate\(lower\(trim\(coalesce\(f\.mecanico/);
   assert.match(view,/mechanic-commission-route/);
   assert.match(index,/mechanic-commissions\.js\?v=20260914-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('nova entrada gera comprovante em PDF e encaminha para o WhatsApp do cliente',async()=>{
@@ -339,7 +339,7 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(activity,/shareTextToWhatsApp[\s\S]*?setPackage\("com\.whatsapp"\)[\s\S]*?setPackage\("com\.whatsapp\.w4b"\)/);
   assert.match(index,/order-workflow\.js\?v=20260918-1/);
   assert.match(index,/access-control\.js\?v=20260915-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('APK recupera falha de carregamento e não bloqueia a abertura com permissões',async()=>{
@@ -453,7 +453,7 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(index,/budget-order\.js\?v=20260918-1/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
   assert.match(worker,/supabase\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('solicitações de serviços ficam no histórico da O.S. fora do PDF e aviso do dono reaparece',async()=>{
@@ -474,7 +474,7 @@ test('botão de solicitar orçamento de serviços aparece em azul',async()=>{
   assert.match(style,/#requestServiceQuote\{[^}]*background:#1764c8;[^}]*color:#fff/);
   assert.match(index,/style\.css\?v=20260918-2/);
   assert.match(worker,/style\.css\?v=20260918-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('somente o proprietário exclui solicitação de orçamento de serviços no banco',async()=>{
@@ -490,7 +490,7 @@ test('somente o proprietário exclui solicitação de orçamento de serviços no
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
   assert.match(worker,/supabase\.js\?v=20260915-3/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('painel de solicitações de peças fica junto ao de orçamentos de serviços no início',async()=>{
@@ -505,7 +505,7 @@ test('painel de solicitações de peças fica junto ao de orçamentos de serviç
   assert.match(style,/\.part-request-dashboard-alert\{/);
   assert.match(index,/order-workflow\.js\?v=20260918-1/);
   assert.match(worker,/order-workflow\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('solicitações de peças enviadas ficam recolhidas em Já enviadas e abrem ao clicar',async()=>{
@@ -523,7 +523,7 @@ test('solicitações de peças enviadas ficam recolhidas em Já enviadas e abrem
   assert.match(workflow,/Reenviar para o fornecedor/);
   assert.match(style,/\.part-request-archive summary\{/);
   assert.match(index,/order-workflow\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('solicitações de serviços e peças ocupam a tela inteira no computador',async()=>{
@@ -535,7 +535,7 @@ test('solicitações de serviços e peças ocupam a tela inteira no computador',
   assert.match(style,/\.service-quote-owner-list[^}]*flex:1[^}]*overflow:auto/);
   assert.match(index,/style\.css\?v=20260918-2/);
   assert.match(worker,/style\.css\?v=20260918-2/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
 
 test('proprietário altera internamente as comissões abertas sem mudar pagamentos ou textos exibidos',async()=>{
@@ -561,8 +561,8 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/partnerCommissionRatesByWeek:weeks/);
   assert.match(supabase,/weekStart!==partnerCommissionWeekStart\(\)/);
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
-  assert.match(index,/admin\.js\?v=20260921-2/);
+  assert.match(index,/admin\.js\?v=20260921-3/);
   assert.match(index,/reports\.js\?v=20260918-1/);
   assert.match(worker,/supabase\.js\?v=20260918-1/);
-  assert.match(worker,/cortez-garage-v214/);
+  assert.match(worker,/cortez-garage-v215/);
 });
