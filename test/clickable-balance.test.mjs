@@ -29,9 +29,9 @@ test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
 });
 
 test('publicação invalida os caches do módulo e do estilo',()=>{
-  assert.match(index,/admin\.js\?v=20260922-2/);
+  assert.match(index,/admin\.js\?v=20260922-3/);
   assert.match(index,/style\.css\?v=20260922-2/);
-  assert.match(worker,/cortez-garage-v217/);
-  assert.match(worker,/admin\.js\?v=20260922-2/);
+  assert.match(worker,/cortez-garage-v218/);
+  assert.match(worker,/admin\.js\?v=20260922-3/);
   assert.match(worker,/style\.css\?v=20260922-2/);
 });

@@ -2,7 +2,7 @@ const normalized=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u03
 
 export function isLuizinhoPaymentDescription(description){
   const text=normalized(description);
-  return /\bluizinho\b/.test(text)&&/\b(?:pago|pagamento)\b/.test(text);
+  return /\bluizinho\b/.test(text)&&/\b(?:acerto|pago|pagamento)\b/.test(text);
 }
 
 export function previousLuizinhoWeek(date){

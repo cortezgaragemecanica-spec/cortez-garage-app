@@ -15,6 +15,25 @@ test('pagamento Luizinho identificado só abate acerto com confirmação',()=>{
   assert.equal(luizinhoPaymentIsApplied({description:'Pago Luizinho',dueDate:'2026-09-15',reference:declined}),false);
 });
 
+test('Acerto Luizinho em qualquer valor é vinculado à semana anterior',()=>{
+  for(const description of ['Acerto Luizinho','acerto do luizinho','ACERTO LUIZINHO parcial']){
+    assert.equal(isLuizinhoPaymentDescription(description),true);
+    const reference=luizinhoPaymentReference('', '2026-09-22',true,crypto.randomUUID());
+    assert.equal(luizinhoPaymentWeek({descricao:description,valor:.01,vencimento:'2026-09-22',referencia:reference}),'2026-09-14');
+    assert.equal(luizinhoPaymentWeek({descricao:description,valor:9999,vencimento:'2026-09-22',referencia:reference}),'2026-09-14');
+  }
+});
+
+test('Acerto Luizinho baixa automaticamente e recalcula conta a pagar e acerto',async()=>{
+  const[admin,supabase]=await Promise.all(['src/admin.js','src/supabase.js'].map(file=>readFile(file,'utf8')));
+  assert.match(admin,/if\(\/\\bacerto\\b\/\.test\(text\)&&\/\\bluizinho\\b\/\.test\(text\)\)return true/);
+  assert.match(admin,/automaticCashExpense=.*isLuizinhoPaymentDescription\(text\)/);
+  assert.match(supabase,/automaticCashExpense=.*isLuizinhoPaymentDescription\(text\)/);
+  assert.match(supabase,/group\.paid\+=Number\(payment\.valor\|\|0\)/);
+  assert.match(supabase,/balance=Math\.max\(0,week\.total-week\.paid\)/);
+  assert.match(supabase,/valor:Number\(\(settled\?week\.total:balance\)\.toFixed\(2\)\)/);
+});
+
 test('dívida antiga fica fora do acerto mesmo sendo paga pela aba Contas a pagar',()=>{
   const oldPayable=luizinhoPaymentReference(`pagamento-conta-${id}-abc`,'2026-09-15',false,id);
   assert.match(oldPayable,new RegExp(`^pagamento-conta-${id}-fora-acerto-luizinho-`));
@@ -57,8 +76,8 @@ test('acerto Luizinho separa notas por semana e mostra os totais de cada períod
   assert.match(style,/\.luizinho-week-heading td/);
   assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
   assert.match(index,/style\.css\?v=20260922-2/);
-  assert.match(index,/admin\.js\?v=20260922-2/);
-  assert.match(worker,/cortez-garage-v217/);
+  assert.match(index,/admin\.js\?v=20260922-3/);
+  assert.match(worker,/cortez-garage-v218/);
 });
 
 test('nota do Luizinho usa tabela no computador e cartões completos no celular',async()=>{
@@ -71,6 +90,6 @@ test('nota do Luizinho usa tabela no computador e cartões completos no celular'
   assert.match(style,/\.supplier-note-editor-popup \.supplier-note-items thead\{display:none\}/);
   assert.match(style,/\.note-description\{grid-column:1\/-1\}/);
   assert.match(index,/style\.css\?v=20260922-2/);
-  assert.match(index,/admin\.js\?v=20260922-2/);
-  assert.match(worker,/cortez-garage-v217/);
+  assert.match(index,/admin\.js\?v=20260922-3/);
+  assert.match(worker,/cortez-garage-v218/);
 });

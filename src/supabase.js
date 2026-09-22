@@ -1,5 +1,5 @@
 import{orderContentFingerprint}from'./order-change.js?v=20260915-1';
-import{isLuizinhoPaymentDescription,luizinhoPaymentReference,luizinhoPaymentWeek}from'./luizinho-payment.js?v=20260915-1';
+import{isLuizinhoPaymentDescription,luizinhoPaymentReference,luizinhoPaymentWeek}from'./luizinho-payment.js?v=20260922-1';
 import{appendOrderItemsOnly}from'./add-order-items.js?v=20260918-1';
 
 const SUPABASE_URL='https://pqldixrfvmkwkwbbysyl.supabase.co';
@@ -285,7 +285,7 @@ export async function consumeStockForOrder(order,selections=[]){
 }
 
 const mapFinance=row=>({id:row.id,category:row.categoria,kind:row.movimento,description:row.descricao,amount:Number(row.valor)||0,dueDate:row.vencimento,status:row.status,mechanic:row.mecanico||'',paymentType:row.forma_pagamento||'',orderId:row.os_id||'',reference:row.referencia||'',weekStart:row.semana_inicio||'',createdAt:row.criado_em,updatedAt:row.atualizado_em});
-const automaticCashExpense=description=>{const text=clean(description).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();return /\bcompr\w*\b.*\bpecas?\b|\bpecas?\b.*\bcompr\w*\b/.test(text)||/\b(pagamento|pagar|pago|quitacao)\b.*\bboletos?\b|\bboletos?\b.*\b(pagamento|pagar|pago|quitacao)\b/.test(text)||/\b(?:pago|pagamento)\b.*\bluizinho\b|\bluizinho\b.*\b(?:pago|pagamento)\b/.test(text)||/\bcomiss(?:ao|oes)\b/.test(text)||/\bvale\b/.test(text)};
+const automaticCashExpense=description=>{const text=clean(description).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();return /\bcompr\w*\b.*\bpecas?\b|\bpecas?\b.*\bcompr\w*\b/.test(text)||/\b(pagamento|pagar|pago|quitacao)\b.*\bboletos?\b|\bboletos?\b.*\b(pagamento|pagar|pago|quitacao)\b/.test(text)||isLuizinhoPaymentDescription(text)||/\bcomiss(?:ao|oes)\b/.test(text)||/\bvale\b/.test(text)};
 const financeText=value=>clean(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 function paidBillSupplier(description){const text=financeText(description),match=text.match(/\bpago\s+boletos?\s+(?:d[oa]\s+|de\s+)?(.+)$/)||text.match(/\bboletos?\s+pago\s+(?:d[oa]\s+|de\s+)?(.+)$/);return clean(match?.[1])}
 async function duplicateFinanceRecord(session,record,kind,excludeId=''){const rows=await request(`/rest/v1/lancamentos_financeiros?select=id,descricao,valor,forma_pagamento&categoria=eq.${encodeURIComponent(record.category)}&movimento=eq.${encodeURIComponent(kind)}&vencimento=eq.${encodeURIComponent(record.dueDate)}`,{token:session.access_token});return rows.find(row=>row.id!==excludeId&&financeText(row.descricao)===financeText(record.description)&&Math.abs(Number(row.valor||0)-Number(record.amount||0))<.01&&financeText(row.forma_pagamento)===financeText(record.paymentType))}
