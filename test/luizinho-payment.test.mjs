@@ -34,6 +34,16 @@ test('Acerto Luizinho baixa automaticamente e recalcula conta a pagar e acerto',
   assert.match(supabase,/valor:Number\(\(settled\?week\.total:balance\)\.toFixed\(2\)\)/);
 });
 
+test('pagamento do acerto fica vinculado à conta e contas antigas são reconciliadas',async()=>{
+  const[admin,supabase]=await Promise.all(['src/admin.js','src/supabase.js'].map(file=>readFile(file,'utf8')));
+  assert.match(supabase,/async function linkedLuizinhoPayable\(session,record\)/);
+  assert.match(supabase,/referencia=eq\.\$\{encodeURIComponent\(reference\)\}/);
+  assert.match(supabase,/pagamento-conta-\$\{luizinhoPayable\.id\}/);
+  assert.match(supabase,/export async function reconcileLuizinhoPayables\(\)/);
+  assert.match(admin,/if\(financeOwner\(\)\)await reconcileLuizinhoPayables\(\)/);
+  assert.match(admin,/luizinhoWeek&&luizinhoPaymentWeek/);
+});
+
 test('dívida antiga fica fora do acerto mesmo sendo paga pela aba Contas a pagar',()=>{
   const oldPayable=luizinhoPaymentReference(`pagamento-conta-${id}-abc`,'2026-09-15',false,id);
   assert.match(oldPayable,new RegExp(`^pagamento-conta-${id}-fora-acerto-luizinho-`));
@@ -76,8 +86,8 @@ test('acerto Luizinho separa notas por semana e mostra os totais de cada períod
   assert.match(style,/\.luizinho-week-heading td/);
   assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
   assert.match(index,/style\.css\?v=20260922-2/);
-  assert.match(index,/admin\.js\?v=20260922-3/);
-  assert.match(worker,/cortez-garage-v218/);
+  assert.match(index,/admin\.js\?v=20260922-4/);
+  assert.match(worker,/cortez-garage-v219/);
 });
 
 test('nota do Luizinho usa tabela no computador e cartões completos no celular',async()=>{
@@ -90,6 +100,6 @@ test('nota do Luizinho usa tabela no computador e cartões completos no celular'
   assert.match(style,/\.supplier-note-editor-popup \.supplier-note-items thead\{display:none\}/);
   assert.match(style,/\.note-description\{grid-column:1\/-1\}/);
   assert.match(index,/style\.css\?v=20260922-2/);
-  assert.match(index,/admin\.js\?v=20260922-3/);
-  assert.match(worker,/cortez-garage-v218/);
+  assert.match(index,/admin\.js\?v=20260922-4/);
+  assert.match(worker,/cortez-garage-v219/);
 });
