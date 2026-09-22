@@ -1,6 +1,7 @@
 import{orderContentFingerprint}from'./order-change.js?v=20260915-1';
 import{isLuizinhoPaymentDescription,luizinhoPaymentReference,luizinhoPaymentWeek}from'./luizinho-payment.js?v=20260922-1';
 import{appendOrderItemsOnly}from'./add-order-items.js?v=20260918-1';
+import{planStockUpsert}from'./stock-save-plan.js';
 
 const SUPABASE_URL='https://pqldixrfvmkwkwbbysyl.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe';
@@ -257,8 +258,18 @@ async function stockMetadataConfig(session){const rows=await request('/rest/v1/s
 const stockMetadataItems=row=>row?.dados?.items&&typeof row.dados.items==='object'?row.dados.items:{};
 async function writeStockMetadataConfig(session,row,items){const body={origem:'app',entidade:'configuracao',registro_id:'estoque-metadados',dados:{items,updatedAt:new Date().toISOString()}};if(row)await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});else await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body})}
 const mapStock=(row,metadata={})=>{const brand=clean(metadata.brand||row.aplicacao),value=Number(row.valor_unitario)||0,cost=Number(metadata.cost??value)||0,markup=Number(metadata.markup??(cost>0?Math.max(0,(value/cost-1)*100):0))||0;return{id:row.id,code:row.codigo||'',description:row.descricao,brand,supplier:clean(metadata.supplier),application:brand,quantity:Number(row.quantidade)||0,cost,markup,value,photo:row.foto||'',updatedAt:row.atualizado_em}};
-export async function readStock(){const session=await refreshSession(),[rows,metadataRow]=await Promise.all([request('/rest/v1/estoque?select=*&order=quantidade.desc,descricao.asc',{token:session.access_token}),stockMetadataConfig(session)]),metadata=stockMetadataItems(metadataRow);return rows.filter(row=>clean(row.descricao)).map(row=>mapStock(row,metadata[row.id]))}
-export async function saveStockItems(items,{absolute=false}={}){if(hasPermission('addOrderItems')&&!canManageServices())throw new Error('Esta permissão permite incluir peças na O.S., mas não alterar o estoque.');const session=await refreshSession(),[current,metadataRow]=await Promise.all([request('/rest/v1/estoque?select=*',{token:session.access_token}),stockMetadataConfig(session)]),byKey=new Map(current.map(row=>[stockKey(row),row])),metadata={...stockMetadataItems(metadataRow)},saved=[];for(const item of items){const key=stockKey(item);if(!key)continue;const found=(item.id&&current.find(row=>row.id===item.id))||byKey.get(key),previous=found?metadata[found.id]||{}:{},quantity=absolute?Number(item.quantity||0):Number(found?.quantidade||0)+Number(item.quantity||0),brand=clean(item.brand??item.application??previous.brand??found?.aplicacao),supplier=clean(item.supplier??previous.supplier),cost=Number(item.cost??previous.cost??found?.valor_unitario??0)||0,markup=Number(item.markup??previous.markup??0)||0,value=Number(item.value??cost*(1+markup/100))||0,body={codigo:clean(item.code)||null,descricao:clean(item.description),aplicacao:brand||null,quantidade:quantity,valor_unitario:value,foto:item.photo||found?.foto||null};let rows;if(found)rows=await request(`/rest/v1/estoque?id=eq.${found.id}`,{token:session.access_token,method:'PATCH',prefer:'return=representation',body});else rows=await request('/rest/v1/estoque',{token:session.access_token,method:'POST',prefer:'return=representation',body});const row=rows[0],details={brand,supplier,cost,markup};metadata[row.id]=details;byKey.set(stockKey(row),row);saved.push(mapStock(row,details))}await writeStockMetadataConfig(session,metadataRow,metadata);return saved}
+export async function readStock(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const[rows,metadataRow]=await Promise.all([request('/rest/v1/estoque?select=*&order=quantidade.desc,descricao.asc',{token:session.access_token}),stockMetadataConfig(session)]),metadata=stockMetadataItems(metadataRow);return rows.filter(row=>clean(row.descricao)).map(row=>mapStock(row,metadata[row.id]))}
+export async function saveStockItems(items,{absolute=false}={}){
+  if(hasPermission('addOrderItems')&&!canManageServices())throw new Error('Esta permissão permite incluir peças na O.S., mas não alterar o estoque.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const[current,metadataRow]=await Promise.all([request('/rest/v1/estoque?select=*',{token:session.access_token}),stockMetadataConfig(session)]),plan=planStockUpsert(items,current,stockMetadataItems(metadataRow),{absolute});
+  if(!plan.rows.length)return[];
+  const rows=await request('/rest/v1/estoque?on_conflict=id',{token:session.access_token,method:'POST',prefer:'resolution=merge-duplicates,return=representation',body:plan.rows});
+  const saved=rows.map(row=>mapStock(row,plan.metadata[row.id]));
+  try{await writeStockMetadataConfig(session,metadataRow,plan.metadata)}catch(error){console.error('Estoque salvo, mas os detalhes comerciais não foram atualizados:',error);saved.warning=`As quantidades foram salvas, mas fornecedor, custo ou markup podem não ter sido atualizados: ${error.message}`}
+  return saved;
+}
 // O fluxo guiado substitui requireServiceManagement('dar baixa em ordem de serviço') para que todo usuário autorizado a marcar a O.S. como pronta conclua a conferência.
 export async function consumeStockForOrder(order,selections=[]){
   const session=await refreshSession();
