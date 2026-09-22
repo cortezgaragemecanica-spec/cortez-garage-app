@@ -145,3 +145,7 @@
   .part-request-notifications-view .part-request-archive .part-request-list{max-height:none}
   .service-quote-modal .check-popup-actions,.part-request-notifications-view .check-popup-actions{margin-top:auto}
 }
+
+.payable-entry.payable-overdue td{background:rgba(190,34,34,.16);border-color:rgba(255,92,92,.35)}
+.payable-entry.payable-overdue td:nth-child(2),.payable-entry.payable-overdue .status{color:#ff7777;font-weight:800}
+.payable-entry.payable-overdue td:first-child{box-shadow:inset 4px 0 #d93838}
