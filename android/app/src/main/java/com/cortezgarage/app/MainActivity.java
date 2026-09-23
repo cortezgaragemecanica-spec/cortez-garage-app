@@ -116,8 +116,8 @@ public class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if (!url.startsWith(APP_URL) && !url.startsWith(FALLBACK_URL)) return;
                 String activeBase = url.startsWith(FALLBACK_URL) ? FALLBACK_URL : APP_URL;
-                String script = "(function(){var cacheKey='cortez-apk-cache-version',cacheValue='" + APK_CACHE_VERSION + "';"
-                    + "if(localStorage.getItem(cacheKey)===cacheValue)return;localStorage.setItem(cacheKey,cacheValue);"
+                String script = "(function(){var cacheKey='cortez-apk-cache-version',cacheValue='" + APK_CACHE_VERSION + "',syncKey='cortez-garage-sync-v1';"
+                    + "if(localStorage.getItem(cacheKey)===cacheValue)return;localStorage.setItem(cacheKey,cacheValue);localStorage.removeItem(syncKey);"
                     + "var tasks=[];if(window.caches&&caches.keys)tasks.push(caches.keys().then(function(keys){return Promise.all(keys.map(function(key){return caches.delete(key);}));}));"
                     + "if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)tasks.push(navigator.serviceWorker.getRegistrations().then(function(items){return Promise.all(items.map(function(item){return item.unregister();}));}));"
                     + "Promise.all(tasks).then(function(){location.replace('" + activeBase + "?apk=" + APK_CACHE_VERSION + "');},function(){location.replace('" + activeBase + "?apk=" + APK_CACHE_VERSION + "');});})()";
