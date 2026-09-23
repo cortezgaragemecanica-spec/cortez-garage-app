@@ -350,7 +350,7 @@ test('APK recupera falha de carregamento e não bloqueia a abertura com permiss�
   assert.match(activity,/recoverAppLoad/);
   assert.match(activity,/Tentar novamente/);
   assert.match(activity,/view\.postDelayed/);
-  assert.match(activity,/APK_CACHE_VERSION = "115"/);
+  assert.match(activity,/APK_CACHE_VERSION = "116"/);
   assert.doesNotMatch(activity,/super\.onCreate\(state\);\s*if \(Build\.VERSION\.SDK_INT >= 33[\s\S]*?requestPermissions/);
   assert.match(activity,/@JavascriptInterface public void requestNotificationPermission/);
   assert.match(activity,/requestCode == NOTIFICATION_REQUEST/);
@@ -578,7 +578,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20260923-4/);
   assert.match(worker,/supabase\.js\?v=20260923-2/);
-  assert.match(worker,/cortez-garage-v225/);
+  assert.match(worker,/cortez-garage-v226/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -605,5 +605,5 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20260923-2/);
   assert.match(index,/admin\.js\?v=20260923-4/);
-  assert.match(worker,/cortez-garage-v225/);
+  assert.match(worker,/cortez-garage-v226/);
 });
