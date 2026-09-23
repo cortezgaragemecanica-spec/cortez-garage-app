@@ -153,5 +153,6 @@
 
 .finance-balance-sheet{cursor:pointer;transition:border-color .15s,transform .15s}
 .finance-balance-sheet:hover,.finance-balance-sheet:focus{border-color:var(--yellow)!important;outline:2px solid rgba(255,215,0,.22);transform:translateY(-1px)}
+.commission-total-card,.commission-group-open{cursor:pointer;outline:none;transition:border-color .15s,transform .15s}.commission-total-card:hover,.commission-total-card:focus{border-color:var(--yellow)!important;outline:2px solid rgba(255,215,0,.22);transform:translateY(-1px)}.commission-total-card small,.commission-group-open small{display:block;margin-top:6px;color:#aaa;font-size:9px}.commission-group-open:hover td,.commission-group-open:focus td{background:#302907!important}.commission-summary-table table{min-width:0}
 .balance-details-popup .check-popup-card{width:min(620px,calc(100vw - 24px));max-width:620px}
 .balance-details-table{margin:16px 0}.balance-details-table td:nth-child(2){width:70px;text-align:center;font-size:20px;font-weight:900}.balance-operation.positive{color:#69d37c}.balance-operation.negative{color:#ff7777}.balance-details-formula{display:block;margin:0 0 16px;color:#aaa;line-height:1.5}
