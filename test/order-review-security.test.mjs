@@ -40,6 +40,7 @@ test('APK não contém credencial fixa de sincronização',async()=>{
   const activity=await read('android/app/src/main/java/com/cortezgarage/app/MainActivity.java');
   const manifest=await read('android/app/src/main/AndroidManifest.xml');
   assert.doesNotMatch(activity,/SYNC_TOKEN|SYNC_URL|setItem\('cortez-sync/);
+  assert.match(activity,/localStorage\.removeItem\(syncKey\)/);
   assert.doesNotMatch(manifest,/OrderNotificationService/);
 });
 
