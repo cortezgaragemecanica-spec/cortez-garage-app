@@ -39,19 +39,12 @@ public class MainActivity extends Activity {
     private static final int NOTIFICATION_REQUEST = 1003;
     private static final String APP_URL = "https://cortez-garage-app.pages.dev/";
     private static final String FALLBACK_URL = "https://cortezgaragemecanica-spec.github.io/cortez-garage-app/";
-    private static final String APK_CACHE_VERSION = "115";
-    static final String SYNC_URL = "https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec";
-    static final String SYNC_TOKEN = "CG-89529eb4f7c34a46824f51a4ba42fb7d";
+    private static final String APK_CACHE_VERSION = "116";
     private WebView webView;
     private ValueCallback<Uri[]> fileCallback;
     private Uri cameraUri;
     private PermissionRequest microphonePermissionRequest;
     private boolean fallbackTried = false;
-
-    private void startNotificationServiceIfAllowed() {
-        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return;
-        ContextCompat.startForegroundService(this, new Intent(this, OrderNotificationService.class));
-    }
 
     private void loadApp(String baseUrl) {
         webView.loadUrl(baseUrl + "?apk=" + APK_CACHE_VERSION);
@@ -69,7 +62,6 @@ public class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
-        startNotificationServiceIfAllowed();
         webView = new WebView(this);
         webView.setBackgroundColor(android.graphics.Color.BLACK);
         webView.addJavascriptInterface(new PdfBridge(), "CortezAndroid");
@@ -124,9 +116,7 @@ public class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if (!url.startsWith(APP_URL) && !url.startsWith(FALLBACK_URL)) return;
                 String activeBase = url.startsWith(FALLBACK_URL) ? FALLBACK_URL : APP_URL;
-                String config = "{\"url\":\"" + SYNC_URL + "\",\"token\":\"" + SYNC_TOKEN + "\"}";
-                String script = "(function(){var syncKey='cortez-garage-sync-v1',syncValue='" + config + "',cacheKey='cortez-apk-cache-version',cacheValue='" + APK_CACHE_VERSION + "';"
-                    + "if(localStorage.getItem(syncKey)!==syncValue){localStorage.setItem(syncKey,syncValue);location.reload();return;}"
+                String script = "(function(){var cacheKey='cortez-apk-cache-version',cacheValue='" + APK_CACHE_VERSION + "';"
                     + "if(localStorage.getItem(cacheKey)===cacheValue)return;localStorage.setItem(cacheKey,cacheValue);"
                     + "var tasks=[];if(window.caches&&caches.keys)tasks.push(caches.keys().then(function(keys){return Promise.all(keys.map(function(key){return caches.delete(key);}));}));"
                     + "if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations)tasks.push(navigator.serviceWorker.getRegistrations().then(function(items){return Promise.all(items.map(function(item){return item.unregister();}));}));"
@@ -255,7 +245,7 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> {
                 if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_REQUEST);
-                } else startNotificationServiceIfAllowed();
+                }
             });
         }
     }
@@ -263,7 +253,6 @@ public class MainActivity extends Activity {
     @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == NOTIFICATION_REQUEST) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) startNotificationServiceIfAllowed();
             return;
         }
         if (requestCode != MICROPHONE_REQUEST || microphonePermissionRequest == null) return;
