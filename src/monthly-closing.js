@@ -24,10 +24,20 @@ function serviceRows(order){
   return[{mechanic:order?.mechanic||'Não informado',production:number(order?.labor),commission:number(order?.labor)*.5}];
 }
 
+function fallbackOrderProfit(order){
+  const laborCommission=serviceRows(order).reduce((sum,item)=>sum+item.commission,0),partsCost=(order?.budget?.parts||[]).filter(item=>!item.refused).reduce((sum,item)=>sum+number(item.cost)*Math.max(1,number(item.quantity)||1),0),real=number(order?.total)-laborCommission-partsCost;
+  return{order,orderValue:number(order?.total),laborCommission,partsCost,real,net:real};
+}
+
 function grouped(rows,keyField,valueFields){
   const result=new Map();
   for(const row of rows){const key=row[keyField]||'Não informado',current=result.get(key)||Object.fromEntries(valueFields.map(field=>[field,0]));for(const field of valueFields)current[field]+=number(row[field]);result.set(key,current)}
   return[...result].map(([name,values])=>({name,...values})).sort((a,b)=>b[valueFields[0]]-a[valueFields[0]]||a.name.localeCompare(b.name));
+}
+
+function mechanicOrderRows(order,profit){
+  const people=grouped(serviceRows(order),'mechanic',['production','commission']),productionTotal=people.reduce((sum,item)=>sum+item.production,0),equalShare=people.length?1/people.length:0;
+  return people.map(item=>{const share=productionTotal>0?item.production/productionTotal:equalShare,billing=number(order.total)*share;return{mechanic:item.name,carCount:1,production:item.production,billing,profit:number(profit?.real)*share,commission:item.commission}});
 }
 
 function supplierPurchases(month,suppliers,records){
@@ -38,13 +48,13 @@ function supplierPurchases(month,suppliers,records){
   return grouped(rows,'name',['amount','credits']);
 }
 
-export function summarizeMonthlyClosing({month,orders=[],records=[],suppliers={},profitEvents=[],partnerNames=[]}){
+export function summarizeMonthlyClosing({month,orders=[],records=[],suppliers={},profitEvents=[],orderProfits=[],partnerNames=[]}){
   const delivered=orders.filter(order=>inMonth(deliveredDate(order),month)),previous=previousMonth(month),previousDelivered=orders.filter(order=>inMonth(deliveredDate(order),previous)),billed=delivered.reduce((sum,order)=>sum+number(order.total),0),previousBilled=previousDelivered.reduce((sum,order)=>sum+number(order.total),0),firstOrderByClient=new Map();
   for(const order of orders){const key=clientKey(order),created=dateOnly(order.created);if(key&&created&&(!firstOrderByClient.has(key)||created<firstOrderByClient.get(key)))firstOrderByClient.set(key,created)}
-  const newClients=[...firstOrderByClient.values()].filter(value=>inMonth(value,month)).length,mechanicRows=delivered.flatMap(serviceRows),mechanics=grouped(mechanicRows,'mechanic',['production','commission']),receipts=profitEvents.filter(item=>inMonth(item.date,month));
+  const deliveredClientKeys=new Set(delivered.map(clientKey).filter(Boolean)),newClients=[...deliveredClientKeys].filter(key=>inMonth(firstOrderByClient.get(key),month)).length,profitByOrder=new Map(orderProfits.map(item=>[item.order?.id||item.order?.number,item])),deliveredProfits=delivered.map(order=>profitByOrder.get(order.id||order.number)||fallbackOrderProfit(order)),mechanics=grouped(delivered.flatMap((order,index)=>mechanicOrderRows(order,deliveredProfits[index])),'mechanic',['production','billing','profit','commission','carCount']).map(item=>({...item,ticketAverage:item.carCount?item.billing/item.carCount:0})),deliveredIds=new Set(delivered.flatMap(order=>[order.id,order.number].filter(Boolean))),receipts=profitEvents.filter(item=>deliveredIds.has(item.order?.id)||deliveredIds.has(item.order?.number));
   let partsProfit=0,laborProfit=0;
-  for(const event of receipts){const gross=Math.max(0,number(event.order?.partsValue)+number(event.order?.labor)),partsShare=gross?number(event.order?.partsValue)/gross:0,laborShare=gross?number(event.order?.labor)/gross:1;partsProfit+=number(event.orderValue)*partsShare-number(event.partsCost);laborProfit+=number(event.orderValue)*laborShare-number(event.laborCommission)}
-  const partners=partnerNames.map(name=>({name,commission:receipts.reduce((sum,item)=>sum+number(item[normalize(name)]),0)})),paymentTypes=grouped(receipts.map(item=>({name:item.record?.paymentType||'Não informado',amount:item.orderValue})),'name',['amount']),purchases=supplierPurchases(month,suppliers,records),paidAccounts=records.filter(record=>record.category==='Fluxo de caixa'&&record.kind==='Saída'&&record.status==='Realizado'&&inMonth(record.dueDate||record.createdAt,month)&&String(record.reference||'').startsWith('pagamento-conta-')).reduce((sum,record)=>sum+number(record.amount),0),received=receipts.reduce((sum,item)=>sum+number(item.orderValue),0);
-  return{month,deliveredCount:delivered.length,newClients,ticketAverage:delivered.length?billed/delivered.length:0,billed,received,partsProfit,laborProfit,paidAccounts,mechanics,partners,paymentTypes,purchases,purchasesTotal:purchases.reduce((sum,item)=>sum+item.amount,0),growth:previousBilled>0?(billed-previousBilled)/previousBilled*100:null,previousBilled};
+  for(let index=0;index<delivered.length;index++){const order=delivered[index],profit=deliveredProfits[index],gross=Math.max(0,number(order.partsValue)+number(order.labor)),partsShare=gross?number(order.partsValue)/gross:0,laborShare=gross?number(order.labor)/gross:1;partsProfit+=number(profit.orderValue)*partsShare-number(profit.partsCost);laborProfit+=number(profit.orderValue)*laborShare-number(profit.laborCommission)}
+  const partners=partnerNames.map(name=>({name,commission:deliveredProfits.reduce((sum,item)=>sum+number(item[normalize(name)]),0)})),paymentTypes=grouped(receipts.map(item=>({name:item.record?.paymentType||'Não informado',amount:item.orderValue})),'name',['amount']),purchases=supplierPurchases(month,suppliers,records),paidAccounts=records.filter(record=>record.category==='Fluxo de caixa'&&record.kind==='Saída'&&record.status==='Realizado'&&inMonth(record.dueDate||record.createdAt,month)&&String(record.reference||'').startsWith('pagamento-conta-')).reduce((sum,record)=>sum+number(record.amount),0),received=receipts.reduce((sum,item)=>sum+number(item.orderValue),0),totalProfit=deliveredProfits.reduce((sum,item)=>sum+number(item.real),0),netProfit=deliveredProfits.reduce((sum,item)=>sum+number(item.net),0);
+  return{month,deliveredCount:delivered.length,newClients,ticketAverage:delivered.length?billed/delivered.length:0,billed,received,partsProfit,laborProfit,totalProfit,netProfit,paidAccounts,mechanics,partners,paymentTypes,purchases,purchasesTotal:purchases.reduce((sum,item)=>sum+item.amount,0),growth:previousBilled>0?(billed-previousBilled)/previousBilled*100:null,previousBilled};
 }
 
