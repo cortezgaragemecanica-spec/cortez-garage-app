@@ -45,6 +45,12 @@ function enhancePeopleTable(){
   const config=TABLES.find(item=>list.querySelector(item.selector));
   if(!config)return;
 
+  if(config.className==='client-table'){
+    [...list.querySelectorAll('.people-card')]
+      .sort((a,b)=>String(a.querySelector('h3')?.textContent||'').localeCompare(String(b.querySelector('h3')?.textContent||''),'pt-BR',{sensitivity:'base'}))
+      .forEach(row=>list.append(row));
+  }
+
   list.dataset.peopleTable='ready';
   list.classList.add('people-table',config.className);
   list.setAttribute('role','table');

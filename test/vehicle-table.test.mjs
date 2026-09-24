@@ -7,13 +7,19 @@ const [moduleCode,style,index]=await Promise.all([
 ].map(path=>readFile(new URL(`../${path}`,import.meta.url),'utf8')));
 
 test('abas veículos e clientes carregam a visualização em tabela',()=>{
-  assert.match(index,/vehicle-table\.js\?v=20260924-2/);
+  assert.match(index,/vehicle-table\.js\?v=20260924-3/);
   for(const heading of ['Placa','Veículo','Ano','Cor','Quilometragem','Ações'])assert.ok(moduleCode.includes(`'${heading}'`));
   for(const heading of ['Cliente','Telefone','CPF','Endereço','Veículos'])assert.ok(moduleCode.includes(`'${heading}'`));
   assert.match(moduleCode,/className:'vehicle-table'/);
   assert.match(moduleCode,/className:'client-table'/);
   assert.match(moduleCode,/setAttribute\('role','table'\)/);
   assert.match(style,/\.people-table-head,\.people-table>\.people-card\{display:grid/);
+});
+
+test('clientes são exibidos em ordem alfabética',()=>{
+  assert.match(moduleCode,/if\(config\.className==='client-table'\)/);
+  assert.match(moduleCode,/localeCompare\(String\(b\.querySelector\('h3'\)\?\.textContent\|\|''\),'pt-BR',\{sensitivity:'base'\}\)/);
+  assert.match(moduleCode,/\.forEach\(row=>list\.append\(row\)\)/);
 });
 
 test('linhas preservam pesquisa, histórico e exclusão',()=>{
