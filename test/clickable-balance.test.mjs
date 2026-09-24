@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
 
 const [admin,style,index,worker]=await Promise.all([
   'src/admin.js','src/style.css','index.html','public/sw.js'
@@ -21,6 +22,14 @@ test('detalhamento apresenta todos os componentes da fórmula',()=>{
   assert.match(admin,/items\.map/);
 });
 
+test('acerto Luizinho da semana vigente entra no balanço antes do vencimento',()=>{
+  const start=admin.indexOf('function balancePayableWindow('),end=admin.indexOf('function totals()',start),context=vm.createContext({localDateOnly:value=>String(value).slice(0,10),workWeek:()=>({start:'2026-09-21',end:'2026-09-25'}),Date});
+  const payable=vm.runInContext(`${admin.slice(start,end)};payableForBalance`,context),record=(week,dueDate='2026-09-28')=>({category:'Conta a pagar',status:'Pendente',dueDate,reference:`acerto-luizinho-${week}`});
+  assert.equal(payable(record('2026-09-21')),true);
+  assert.equal(payable(record('2026-09-14')),true);
+  assert.equal(payable(record('2026-09-28')),false);
+});
+
 test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
   assert.match(style,/\.finance-balance-sheet\{cursor:pointer/);
   assert.match(style,/\.finance-balance-sheet:hover,.finance-balance-sheet:focus/);
@@ -35,3 +44,4 @@ test('publicação invalida os caches do módulo e do estilo',()=>{
   assert.match(worker,/admin\.js\?v=20260923-4/);
   assert.match(worker,/style\.css\?v=20260923-2/);
 });
+
