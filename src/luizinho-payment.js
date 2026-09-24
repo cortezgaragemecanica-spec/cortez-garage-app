@@ -30,6 +30,15 @@ export function luizinhoPaymentWeek(payment){
   return tagged?tagged[1]:previousLuizinhoWeek(payment?.vencimento);
 }
 
+export function defaultLuizinhoReturnWeek(date){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))return'';
+  const day=new Date(`${date}T12:00:00`);
+  if(Number.isNaN(day.getTime()))return'';
+  const weekday=day.getDay();
+  day.setDate(day.getDate()-(weekday===0?6:weekday-1)+(weekday>=1&&weekday<=3?0:7));
+  return `${day.getFullYear()}-${String(day.getMonth()+1).padStart(2,'0')}-${String(day.getDate()).padStart(2,'0')}`;
+}
+
 export function allocateLuizinhoPayments(weekRows,payments){
   const weeks=[...(weekRows||[])].map(week=>({...week,paid:0,payments:[]})).sort((a,b)=>String(a.start).localeCompare(String(b.start)));
   const byStart=new Map(weeks.map(week=>[week.start,week])),allocations=[];
@@ -61,3 +70,4 @@ export function allocateLuizinhoPayments(weekRows,payments){
 export function luizinhoPaymentIsApplied(payment){
   return Boolean(luizinhoPaymentWeek({descricao:payment?.description??payment?.descricao,referencia:payment?.reference??payment?.referencia,vencimento:payment?.dueDate??payment?.vencimento}));
 }
+
