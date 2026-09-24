@@ -1,0 +1,28 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+
+const [moduleCode,style,index]=await Promise.all([
+  'src/vehicle-table.js','src/style.css','index.html'
+].map(path=>readFile(new URL(`../${path}`,import.meta.url),'utf8')));
+
+test('aba veículos carrega a visualização em tabela',()=>{
+  assert.match(index,/vehicle-table\.js\?v=20260924-1/);
+  for(const heading of ['Placa','Veículo','Ano','Cor','Quilometragem','Ações'])assert.ok(moduleCode.includes(`'${heading}'`));
+  assert.match(moduleCode,/classList\.add\('vehicle-table'\)/);
+  assert.match(moduleCode,/setAttribute\('role','table'\)/);
+  assert.match(style,/\.vehicle-table-head,\.vehicle-table>\.people-card\{display:grid/);
+});
+
+test('linhas preservam pesquisa, histórico e exclusão',()=>{
+  assert.match(moduleCode,/querySelectorAll\('\.people-card'\)/);
+  assert.match(moduleCode,/const remove=row\.querySelector\('\.delete-vehicle'\)/);
+  assert.match(moduleCode,/row\.insertBefore\(cell\(plate,'vehicle-plate'\),remove\)/);
+  assert.match(moduleCode,/row\.click\(\)/);
+  assert.doesNotMatch(moduleCode,/remove\.remove/);
+});
+
+test('tabela possui rolagem horizontal em telas pequenas',()=>{
+  assert.match(style,/\.vehicle-table\{display:block;overflow-x:auto/);
+  assert.match(style,/@media\(max-width:700px\).*min-width:730px/);
+});
