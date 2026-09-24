@@ -1,4 +1,29 @@
-const COLUMNS=['Placa','Veículo','Ano','Cor','Quilometragem','Ações'];
+const TABLES=[
+  {
+    selector:'.delete-vehicle',className:'vehicle-table',label:'Veículos cadastrados',
+    columns:['Placa','Veículo','Ano','Cor','Quilometragem','Ações'],
+    values(source){
+      const plate=source?.querySelector('h3')?.textContent?.trim()||'Sem placa';
+      const [model,year]=splitLast(source?.querySelector('p')?.textContent,'Ano não informado');
+      const [color,km]=splitLast(source?.querySelector('small')?.textContent,'0 km');
+      return {label:`${plate}, ${model}. Abrir histórico do veículo`,removeLabel:`Excluir veículo ${plate}`,cells:[[plate,'vehicle-plate'],[model,'vehicle-model'],[year,'vehicle-year'],[color,'vehicle-color'],[km,'vehicle-km']]};
+    }
+  },
+  {
+    selector:'.delete-client',className:'client-table',label:'Clientes cadastrados',
+    columns:['Cliente','Telefone','CPF','Endereço','Veículos','Ações'],
+    values(source){
+      const name=source?.querySelector('h3')?.textContent?.trim()||'Sem nome';
+      const phone=source?.querySelector('p')?.textContent?.trim()||'Não informado';
+      const details=String(source?.querySelector('small')?.textContent||'').split(' · ').filter(Boolean);
+      if(details.at(-1)?.toLowerCase().includes('toque para'))details.pop();
+      const vehicles=details.pop()||'0 veículos';
+      const cpf=details[0]?.startsWith('CPF ')?details.shift().slice(4):'Não informado';
+      const address=details.join(' · ')||'Não informado';
+      return {label:`${name}. Abrir histórico do cliente`,removeLabel:`Excluir cliente ${name}`,cells:[[name,'client-name'],[phone,'client-phone'],[cpf,'client-cpf'],[address,'client-address'],[vehicles,'client-vehicles']]};
+    }
+  }
+];
 
 function splitLast(value,fallback){
   const parts=String(value||'').split(' · ');
@@ -8,25 +33,27 @@ function splitLast(value,fallback){
 
 function cell(value,className){
   const element=document.createElement('span');
-  element.className=`vehicle-table-cell ${className}`;
+  element.className=`people-table-cell ${className}`;
   element.setAttribute('role','cell');
   element.textContent=value;
   return element;
 }
 
-function enhanceVehicleTable(){
+function enhancePeopleTable(){
   const list=document.querySelector('.people-cards');
-  if(!list?.querySelector('.delete-vehicle')||list.dataset.vehicleTable==='ready')return;
+  if(!list||list.dataset.peopleTable==='ready')return;
+  const config=TABLES.find(item=>list.querySelector(item.selector));
+  if(!config)return;
 
-  list.dataset.vehicleTable='ready';
-  list.classList.add('vehicle-table');
+  list.dataset.peopleTable='ready';
+  list.classList.add('people-table',config.className);
   list.setAttribute('role','table');
-  list.setAttribute('aria-label','Veículos cadastrados');
+  list.setAttribute('aria-label',config.label);
 
   const header=document.createElement('div');
-  header.className='vehicle-table-head';
+  header.className='people-table-head';
   header.setAttribute('role','row');
-  COLUMNS.forEach(label=>{
+  config.columns.forEach(label=>{
     const heading=document.createElement('span');
     heading.setAttribute('role','columnheader');
     heading.textContent=label;
@@ -36,33 +63,27 @@ function enhanceVehicleTable(){
 
   list.querySelectorAll('.people-card').forEach(row=>{
     const source=row.querySelector(':scope > div');
-    const plate=source?.querySelector('h3')?.textContent?.trim()||'Sem placa';
-    const [model,year]=splitLast(source?.querySelector('p')?.textContent,'Ano não informado');
-    const [color,km]=splitLast(source?.querySelector('small')?.textContent,'0 km');
-    const remove=row.querySelector('.delete-vehicle');
+    const {label,removeLabel,cells}=config.values(source);
+    const remove=row.querySelector(config.selector);
 
     row.querySelector(':scope > i')?.remove();
     source?.remove();
     row.setAttribute('role','row');
     row.tabIndex=0;
-    row.setAttribute('aria-label',`${plate}, ${model}. Abrir histórico do veículo`);
-    row.insertBefore(cell(plate,'vehicle-plate'),remove);
-    row.insertBefore(cell(model,'vehicle-model'),remove);
-    row.insertBefore(cell(year,'vehicle-year'),remove);
-    row.insertBefore(cell(color,'vehicle-color'),remove);
-    row.insertBefore(cell(km,'vehicle-km'),remove);
-    remove?.setAttribute('aria-label',`Excluir veículo ${plate}`);
+    row.setAttribute('aria-label',label);
+    cells.forEach(([value,className])=>row.insertBefore(cell(value,className),remove));
+    remove?.setAttribute('aria-label',removeLabel);
   });
 }
 
-new MutationObserver(enhanceVehicleTable).observe(document.querySelector('#app'),{childList:true,subtree:true});
-enhanceVehicleTable();
+new MutationObserver(enhancePeopleTable).observe(document.querySelector('#app'),{childList:true,subtree:true});
+enhancePeopleTable();
 
 document.addEventListener('keydown',event=>{
-  const row=event.target.closest?.('.vehicle-table .people-card');
+  const row=event.target.closest?.('.people-table .people-card');
   if(!row||event.target.closest?.('button,input,select,textarea,a')||!['Enter',' '].includes(event.key))return;
   event.preventDefault();
   row.click();
 });
 
-export {enhanceVehicleTable,splitLast};
+export {enhancePeopleTable,splitLast};
