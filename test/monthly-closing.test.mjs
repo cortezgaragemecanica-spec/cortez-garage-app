@@ -35,3 +35,8 @@ test('painel fica oculto até o clique no botão e permite trocar o mês',async(
   assert.match(style,/monthly-closing-popup/);
 });
 
+test('compra sem fornecedor explícito não transforma veículo em nome de fornecedor',()=>{
+  const result=summarizeMonthlyClosing({month:'2026-09',records:[{category:'Fluxo de caixa',kind:'Saída',status:'Realizado',dueDate:'2026-09-20',description:'Compra de peças Outlander ASX',amount:250},{category:'Fluxo de caixa',kind:'Saída',status:'Realizado',dueDate:'2026-09-21',description:'Compra de peças — New Parts',amount:100}]});
+  assert.deepEqual(result.purchases,[{name:'Fornecedor não informado',amount:250,credits:0},{name:'New Parts',amount:100,credits:0}]);
+});
+

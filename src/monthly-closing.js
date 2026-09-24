@@ -34,7 +34,7 @@ function supplierPurchases(month,suppliers,records){
   const luizinho=(suppliers?.luizinho||[]).filter(item=>inMonth(item.date,month)).reduce((sum,item)=>sum+number(item.amount),0),luizinhoCredits=(suppliers?.luizinhoReturns||[]).filter(item=>inMonth(item.date,month)).reduce((sum,item)=>sum+number(item.amount),0),retifica=(suppliers?.retifica||[]).filter(item=>inMonth(item.date,month)).reduce((sum,item)=>sum+number(item.debit),0),rows=[];
   if(luizinho||luizinhoCredits)rows.push({name:'Luizinho',amount:luizinho,credits:luizinhoCredits});
   if(retifica)rows.push({name:'Retífica',amount:retifica,credits:0});
-  for(const record of records){const text=normalize(record.description);if(record.category!=='Fluxo de caixa'||record.kind!=='Saída'||record.status!=='Realizado'||!inMonth(record.dueDate||record.createdAt,month)||!/compr\w*.*pecas?|pecas?.*compr\w*/.test(text)||/luizinho|retifica/.test(text))continue;rows.push({name:String(record.description||'Outro fornecedor').replace(/^\s*(pagamento\s+)?(de\s+)?compras?\s+(de\s+)?pe[cç]as?\s*[-–—:]?\s*/i,'')||'Outro fornecedor',amount:number(record.amount),credits:0})}
+  for(const record of records){const text=normalize(record.description);if(record.category!=='Fluxo de caixa'||record.kind!=='Saída'||record.status!=='Realizado'||!inMonth(record.dueDate||record.createdAt,month)||!/compr\w*.*pecas?|pecas?.*compr\w*/.test(text)||/luizinho|retifica/.test(text))continue;const identified=String(record.description||'').match(/(?:compr\w*.*pe[cç]as?|pe[cç]as?.*compr\w*)\s*[-–—:·]\s*(.+)$/i)?.[1]?.trim();rows.push({name:identified||'Fornecedor não informado',amount:number(record.amount),credits:0})}
   return grouped(rows,'name',['amount','credits']);
 }
 
