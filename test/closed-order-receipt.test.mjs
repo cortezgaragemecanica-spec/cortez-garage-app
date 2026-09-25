@@ -38,7 +38,7 @@ test('botão de recibo aparece depois do fechamento e persiste os dados',async()
   assert.match(receipt,/%PDF-1\.4/);
   assert.match(workflow,/cortez:order-delivered/);
   assert.match(supabase,/closingReceipt/);
-  assert.match(supabase,/dados_extras:\{\.\.\.\(orderRow\.dados_extras\|\|\{\}\),closingReceipt\}/);
+  assert.match(supabase,/dados_extras:\{\.\.\.\(orderRow\.dados_extras\|\|\{\}\),closingReceipt,warranty,warrantyPayCommissions/);
   assert.match(index,/closed-order-receipt\.js\?v=20260916-1/);
   assert.match(worker,/closed-order-receipt\.js\?v=20260916-1/);
 });
