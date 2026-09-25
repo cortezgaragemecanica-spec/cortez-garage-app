@@ -44,6 +44,18 @@ test('liberação antecipada pendente pode ser cancelada sem permitir estorno da
   assert.match(workflow,/Uma liberação pendente pode ser cancelada/);
 });
 
+test('janela de comissões usa tabela ampla no computador e cartões no celular',async()=>{
+  const[workflow,style,index]=await Promise.all([read('src/order-workflow.js'),read('src/style.css'),read('index.html')]);
+  assert.match(workflow,/commission-release-columns/);
+  assert.match(workflow,/commission-service-row/);
+  assert.match(workflow,/modal\.classList\.add\('commission-release-popup'\)/);
+  assert.match(style,/\.commission-release-popup \.check-popup-card\{[^}]*width:min\(1180px,[^}]*height:min\(820px/);
+  assert.match(style,/\.commission-release-columns,.commission-service-row\{[^}]*grid-template-columns:/);
+  assert.match(style,/@media\(max-width:760px\)[\s\S]*\.commission-service-row\{grid-template-columns:1fr 1fr/);
+  assert.match(index,/style\.css\?v=20260925-3/);
+  assert.match(index,/order-workflow\.js\?v=20260925-3/);
+});
+
 test('entrega não duplica comissão antecipada nem reabre comissão já paga',async()=>{
   const supabase=await read('src/supabase.js');
   assert.match(supabase,/usesLegacyCommission=.*legacyOrderCommissionRecords/);
