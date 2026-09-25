@@ -1,4 +1,4 @@
-import{getCurrentUser}from'./supabase.js?v=20260916-2&w=4';
+import{getCurrentUser}from'./supabase.js?v=20260916-2&w=5';
 import{closedOrderReceiptData}from'./closed-order-receipt-data.js?w=4';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1',LOGO_URL=new URL('../official-logo.png',import.meta.url).href;

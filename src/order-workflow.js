@@ -1,4 +1,4 @@
-import{cancelOrderCommission,canHandleRequestNotifications,consumeStockForOrder,deletePartRequest,getCurrentUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,recordOrderReadyReceivable,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20260925-2&w=4';
+import{cancelOrderCommission,canHandleRequestNotifications,consumeStockForOrder,deletePartRequest,getCurrentUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,recordOrderReadyReceivable,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20260925-2&w=5';
 import{resolveOrderStockLinks}from'./order-stock-links.js';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1';
