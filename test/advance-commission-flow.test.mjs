@@ -18,13 +18,15 @@ test('cada novo adiantamento é somado e lançado separadamente no caixa',async(
   assert.match(change,/['"]advances['"]/);
 });
 
-test('comissão pode ser liberada antes da entrega e paga com saída no caixa',async()=>{
+test('comissão pode ser liberada por serviço antes da entrega e paga com saída no caixa',async()=>{
   const[supabase,workflow,admin]=await Promise.all([read('src/supabase.js'),read('src/order-workflow.js'),read('src/admin.js')]);
   assert.match(workflow,/recordOrderCommissions/);
-  assert.match(workflow,/R\$ Liberar comissões/);
-  assert.match(workflow,/mesmo antes da entrega do veículo/);
+  assert.match(workflow,/R\$ Comissões antecipadas/);
+  assert.match(workflow,/liberar por serviço/);
+  assert.match(workflow,/release-one-commission/);
+  assert.match(workflow,/recordOrderCommissions\(order,\[Number\(button\.dataset\.index\)\]\)/);
   assert.match(supabase,/export async function recordOrderCommissions/);
-  assert.match(supabase,/referencia:`comissao-\$\{base\}-\$\{financeSlug\(mechanic\)\}`/);
+  assert.match(supabase,/serviceCommissionReference=\(order,index\)=>`comissao-os-\$\{order\.id\}-servico-\$\{index\+1\}`/);
   assert.match(supabase,/export async function payCommission/);
   assert.match(supabase,/pagamento-comissao-[\s\S]*referencia:reference/);
   assert.match(admin,/Pagar comissão/);
@@ -32,8 +34,19 @@ test('comissão pode ser liberada antes da entrega e paga com saída no caixa',a
   assert.match(admin,/await payCommission\(record\.id,account\)/);
 });
 
+test('liberação antecipada pendente pode ser cancelada sem permitir estorno da paga',async()=>{
+  const[supabase,workflow]=await Promise.all([read('src/supabase.js'),read('src/order-workflow.js')]);
+  assert.match(supabase,/export async function cancelOrderCommission/);
+  assert.match(supabase,/row\.status==='Realizado'.*não pode ter a liberação cancelada/);
+  assert.match(supabase,/orders\[0\]\?\.status==='Entregue'.*não pode ser cancelada/);
+  assert.match(workflow,/Cancelar liberação/);
+  assert.match(workflow,/await cancelOrderCommission\(button\.dataset\.id\)/);
+  assert.match(workflow,/Uma liberação pendente pode ser cancelada/);
+});
+
 test('entrega não duplica comissão antecipada nem reabre comissão já paga',async()=>{
   const supabase=await read('src/supabase.js');
+  assert.match(supabase,/usesLegacyCommission=.*legacyOrderCommissionRecords/);
   assert.match(supabase,/select=id,status&referencia=eq\.\$\{encodeURIComponent\(row\.referencia\)\}/);
   assert.match(supabase,/if\(existing\[0\]\.status!=='Realizado'\).*method:'PATCH'/);
 });
