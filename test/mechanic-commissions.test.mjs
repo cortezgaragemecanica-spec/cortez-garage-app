@@ -568,6 +568,17 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
 
 });
 
+test('conta recebida gera comissão dos sócios e a conferência pode ser cancelada',async()=>{
+  const [admin,reports,supabase]=await Promise.all([read('src/admin.js'),read('src/reports.js'),read('src/supabase.js')]);
+  assert.match(admin,/if\(!order\)continue;const full=orderProfit\(order\)/);
+  assert.doesNotMatch(admin,/if\(!order\|\|order\.status!==['"]Entregue['"]\)continue/);
+  assert.doesNotMatch(reports,/if\(!order\|\|order\.status!==['"]Entregue['"]\)continue/);
+  assert.match(admin,/Cancelar conferência/);
+  assert.match(admin,/await cancelPartnerConference\(partner,\[\.\.\.lockedIds\]\)/);
+  assert.match(supabase,/export async function cancelPartnerConference/);
+  assert.match(supabase,/canceledAt,canceledBy:currentEmail\(\)/);
+});
+
 test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',async()=>{
   const [admin,supabase,index,worker]=await Promise.all(['src/admin.js','src/supabase.js','index.html','public/sw.js'].map(file=>readFile(file,'utf8')));
   assert.match(admin,/function openReceivableSettlement\(record\)/);
