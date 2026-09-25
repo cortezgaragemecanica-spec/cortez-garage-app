@@ -22,3 +22,12 @@ export function mechanicAdvanceRows(records,names,weekStart){
     .map(record=>({...record,advanceMechanic:mechanicAdvanceName(record.description,names),advanceWeek:commissionWeekRange(record.dueDate||record.createdAt).start}))
     .filter(record=>record.advanceMechanic&&(!weekStart||record.advanceWeek===weekStart));
 }
+
+export function appliedMechanicAdvanceRows(records,applied){
+  let remaining=Math.max(0,Number(applied)||0);
+  return records.flatMap(record=>{
+    const amount=Math.min(Math.max(0,Number(record.amount)||0),remaining);
+    remaining-=amount;
+    return amount?[{...record,amount}]:[];
+  });
+}

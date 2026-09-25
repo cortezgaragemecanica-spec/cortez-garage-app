@@ -1,6 +1,6 @@
 import test from'node:test';
 import assert from'node:assert/strict';
-import{commissionWeekRange,mechanicAdvanceName,mechanicAdvanceRows}from'../src/mechanic-advances.js';
+import{appliedMechanicAdvanceRows,commissionWeekRange,mechanicAdvanceName,mechanicAdvanceRows}from'../src/mechanic-advances.js';
 
 test('identifica vale pelo nome de qualquer mecânico',()=>{
   const names=['Gustavo Ribas','Fábio','Tony'];
@@ -18,4 +18,10 @@ test('considera somente saídas realizadas na semana de sábado a sexta',()=>{
   ],['Gustavo','Fabio'],'2026-09-12');
   assert.equal(rows.length,1);
   assert.equal(rows[0].advanceMechanic,'Gustavo');
+});
+
+test('oculta o vale quando nenhuma comissão aberta usa o desconto',()=>{
+  const advances=[{id:'vale-1',amount:150,description:'vale gustavo'}];
+  assert.deepEqual(appliedMechanicAdvanceRows(advances,0),[]);
+  assert.deepEqual(appliedMechanicAdvanceRows(advances,100).map(item=>item.amount),[100]);
 });
