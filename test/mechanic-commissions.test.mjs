@@ -543,8 +543,9 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(admin,/id="editPartnerRates">Alterar comissões dos sócios/);
   assert.match(admin,/function openPartnerRatePopup/);
   assert.match(admin,/await savePartnerCommissionRates\(currentWeek\.start,\{Fabiano:fabiano\/100,Marcelino:marcelino\/100\}\)/);
-  assert.match(admin,/revalueOpenPartnerCommission\(ledger,currentRates\[partner\]\)/);
-  assert.match(admin,/Pagamentos já arquivados não são alterados/);
+  assert.match(admin,/return reconciledPartnerLedger\(events,payments,partner/);
+  assert.doesNotMatch(admin,/revalueOpenPartnerCommission\(ledger,currentRates\[partner\]\)/);
+  assert.match(admin,/Saldos anteriores confirmados e lançamentos protegidos são preservados/);
   assert.match(admin,/rates=partnerRatesForDate\(date\)/);
   assert.match(admin,/allocation\*rates\.Fabiano/);
   assert.match(admin,/allocation\*rates\.Marcelino/);
@@ -607,4 +608,3 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(index,/admin\.js\?v=20260925-2/);
   assert.match(worker,/cortez-garage-v232/);
 });
-
