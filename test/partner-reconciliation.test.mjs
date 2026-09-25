@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {reconciledPartnerLedger} from '../src/partner-reconciliation.js';
+import {activePartnerConferences,reconciledPartnerLedger} from '../src/partner-reconciliation.js';
 const event=(id,date,commission)=>({record:{id},order:{number:id},date,commission,real:commission*4});
 const payout=(id,dueDate,amount)=>({id,dueDate,amount});
 test('saldos confirmados substituem o passado sem descontar fechamento anterior novamente',()=>{
@@ -26,4 +26,12 @@ test('valor conferido fica preservado quando a origem muda ou desaparece',()=>{
 test('recebimento repetido não gera comissão duas vezes',()=>{
   const row=event('os1','2026-09-24',100),result=reconciledPartnerLedger([row,row],[payout('f','2026-09-20',1890.68)],'Fabiano');
   assert.equal(result.outstandingTotal,100);assert.equal(result.issues.length,1);
+});
+test('cancelamento reabre a conferência sem apagar o histórico',()=>{
+  const saved={partner:'Fabiano',event:event('os1','2026-09-24',100),confirmedAt:'2026-09-25T10:00:00Z'};
+  const canceled={partner:'Fabiano',eventKey:'os1',canceledAt:'2026-09-25T11:00:00Z'};
+  assert.equal(activePartnerConferences([saved],'Fabiano').length,1);
+  assert.equal(activePartnerConferences([saved,canceled],'Fabiano').length,0);
+  const reconfirmed={...saved,confirmedAt:'2026-09-25T12:00:00Z'};
+  assert.equal(activePartnerConferences([saved,canceled,reconfirmed],'Fabiano').length,1);
 });

@@ -8,6 +8,17 @@ const day = row => String(row.dueDate||row.createdAt||'').slice(0,10);
 const cents = value => Math.round((Number(value)||0)*100);
 export const partnerEventKey = event => String(event.record?.id||event.id||'');
 
+export function activePartnerConferences(entries=[],partner=''){
+  const active=new Map();
+  for(const entry of [...entries].sort((a,b)=>String(a.confirmedAt||a.canceledAt||'').localeCompare(String(b.confirmedAt||b.canceledAt||'')))){
+    if(entry.partner!==partner)continue;
+    const key=String(entry.eventKey||partnerEventKey(entry.event));
+    if(!key)continue;
+    if(entry.canceledAt)active.delete(key);else if(entry.event)active.set(key,entry);
+  }
+  return[...active.values()];
+}
+
 export function reconciledPartnerLedger(events,payments,partner,locked=[]){
   const opening=PARTNER_OPENING.balances[partner]||0, issues=[],unique=new Map();
   for(const event of events){
