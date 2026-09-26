@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {activePartnerConferences,reconciledPartnerLedger} from '../src/partner-reconciliation.js';
+import {activePartnerConferences,excludedPartnerCommissions,reconciledPartnerLedger} from '../src/partner-reconciliation.js';
 const event=(id,date,commission)=>({record:{id},order:{number:id},date,commission,real:commission*4});
 const payout=(id,dueDate,amount)=>({id,dueDate,amount});
 test('saldos confirmados substituem o passado sem descontar fechamento anterior novamente',()=>{
@@ -34,4 +34,10 @@ test('cancelamento reabre a conferência sem apagar o histórico',()=>{
   assert.equal(activePartnerConferences([saved,canceled],'Fabiano').length,0);
   const reconfirmed={...saved,confirmedAt:'2026-09-25T12:00:00Z'};
   assert.equal(activePartnerConferences([saved,canceled,reconfirmed],'Fabiano').length,1);
+});
+test('exclusão individual pode ser restaurada e mantém o histórico',()=>{
+  const saved=event('os2','2026-09-24',80),excluded={partner:'Marcelino',eventKey:'os2',event:saved,excludedAt:'2026-09-25T13:00:00Z'};
+  const restored={partner:'Marcelino',eventKey:'os2',event:saved,restoredAt:'2026-09-25T14:00:00Z'};
+  assert.deepEqual(excludedPartnerCommissions([excluded],'Marcelino').map(item=>item.eventKey),['os2']);
+  assert.equal(excludedPartnerCommissions([excluded,restored],'Marcelino').length,0);
 });

@@ -579,6 +579,16 @@ test('conta recebida gera comissão dos sócios e a conferência pode ser cancel
   assert.match(supabase,/canceledAt,canceledBy:currentEmail\(\)/);
 });
 
+test('conferência permite excluir e restaurar uma comissão individual do sócio',async()=>{
+  const [admin,supabase,reconciliation]=await Promise.all([read('src/admin.js'),read('src/supabase.js'),read('src/partner-reconciliation.js')]);
+  assert.match(admin,/Excluir comissão/);
+  assert.match(admin,/Restaurar comissão/);
+  assert.match(admin,/await setPartnerCommissionExcluded\(partner,item,true\)/);
+  assert.match(admin,/await setPartnerCommissionExcluded\(partner,entry\.event,false\)/);
+  assert.match(supabase,/export async function setPartnerCommissionExcluded/);
+  assert.match(reconciliation,/export function excludedPartnerCommissions/);
+});
+
 test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',async()=>{
   const [admin,supabase,index,worker]=await Promise.all(['src/admin.js','src/supabase.js','index.html','public/sw.js'].map(file=>readFile(file,'utf8')));
   assert.match(admin,/function openReceivableSettlement\(record\)/);
