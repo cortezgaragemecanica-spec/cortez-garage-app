@@ -9,6 +9,12 @@ const cents = value => Math.round((Number(value)||0)*100);
 export const partnerEventKey = event => String(event.record?.id||event.id||'');
 export const deliveredPartnerOrder = order => order?.status==='Entregue';
 
+export function partnerCommissionReceiptDate(event,lockedKeys=new Set()){
+  const receiptDate=String(event?.date||'').slice(0,10),deliveryDate=String(event?.deliveryDate||'').slice(0,10);
+  if(!event?.advance||!deliveryDate||!receiptDate||deliveryDate<=receiptDate||lockedKeys.has(partnerEventKey(event)))return receiptDate;
+  return deliveryDate;
+}
+
 export function deliveredPartnerEvents(events=[],orders=[]){
   const byId=new Map(orders.filter(order=>order?.id).map(order=>[String(order.id),order]));
   const byNumber=new Map(orders.filter(order=>order?.number!=null).map(order=>[String(order.number).replace(/^0+/,''),order]));
@@ -65,4 +71,5 @@ export function reconciledPartnerLedger(events,payments,partner,locked=[]){
   const ledger=allocatePartnerCommission([...(opening?[openingEvent]:[]),...unique.values()],activePayments);
   return {...ledger,openingBalance:opening,historicalPayments,issues,lockedCount:locked.length};
 }
+
 

@@ -2,7 +2,9 @@ const CACHE='cortez-garage-v232-partner-delivered-only',ROOT=new URL('./',self.l
 ASSETS.push('./src/partner-reconciliation.js?v=20260925-2','./src/supabase.js?v=20260925-2&w=9','./src/admin.js?v=20260925-2&w=9','./src/reports.js?v=20260918-1&w=2');
 ASSETS.push('./src/partner-reconciliation.js?v=20260925-3','./src/supabase.js?v=20260925-2&w=10','./src/admin.js?v=20260925-2&w=10');
 ASSETS.push('./src/partner-reconciliation.js?v=20260926-1','./src/admin.js?v=20260925-2&w=11');
+ASSETS.push('./src/partner-reconciliation.js?v=20260926-2','./src/admin.js?v=20260925-2&w=12');
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS.map(path=>new URL(path,self.location).href))).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||!new URL(event.request.url).pathname.startsWith(ROOT))return;event.respondWith(fetch(event.request).then(response=>{if(response.ok)caches.open(CACHE).then(cache=>cache.put(event.request,response.clone()));return response}).catch(()=>caches.match(event.request,{ignoreSearch:true}).then(response=>response||(event.request.mode==='navigate'?caches.match(new URL('./index.html',self.location).href,{ignoreSearch:true}):undefined))))});
+
 

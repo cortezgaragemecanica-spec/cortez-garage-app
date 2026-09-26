@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {activePartnerConferences,deliveredPartnerEvents,excludedPartnerCommissions,reconciledPartnerLedger} from '../src/partner-reconciliation.js';
+import {activePartnerConferences,deliveredPartnerEvents,excludedPartnerCommissions,partnerCommissionReceiptDate,reconciledPartnerLedger} from '../src/partner-reconciliation.js';
 const event=(id,date,commission)=>({record:{id},order:{number:id},date,commission,real:commission*4});
 const payout=(id,dueDate,amount)=>({id,dueDate,amount});
 test('saldos confirmados substituem o passado sem descontar fechamento anterior novamente',()=>{
@@ -47,4 +47,14 @@ test('comissão de sócio considera somente O.S. entregue, inclusive em valores 
   const orders=[{id:'os-entregue',number:'entregue',status:'Entregue'},{id:'os-aberta',number:'aberta',status:'Em andamento'}];
   assert.deepEqual(deliveredPartnerEvents(events,orders).map(item=>item.record.id),['entregue']);
 });
+test('adiantamento ainda não comissionado entra na data da entrega',()=>{
+  const advance={...event('adiantamento','2026-09-15',100),advance:true,deliveryDate:'2026-09-24'};
+  assert.equal(partnerCommissionReceiptDate(advance),'2026-09-24');
+  assert.equal(partnerCommissionReceiptDate(advance,new Set(['adiantamento'])),'2026-09-15');
+});
+test('parcela recebida depois da entrega permanece na semana do recebimento',()=>{
+  const credit={...event('credito','2026-09-25',100),advance:false,deliveryDate:'2026-09-24'};
+  assert.equal(partnerCommissionReceiptDate(credit),'2026-09-25');
+});
+
 
