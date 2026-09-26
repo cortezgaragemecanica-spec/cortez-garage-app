@@ -7,6 +7,16 @@ const previousPayments = {Fabiano:{date:'2026-09-20',amount:1890.68},Marcelino:{
 const day = row => String(row.dueDate||row.createdAt||'').slice(0,10);
 const cents = value => Math.round((Number(value)||0)*100);
 export const partnerEventKey = event => String(event.record?.id||event.id||'');
+export const deliveredPartnerOrder = order => order?.status==='Entregue';
+
+export function deliveredPartnerEvents(events=[],orders=[]){
+  const byId=new Map(orders.filter(order=>order?.id).map(order=>[String(order.id),order]));
+  const byNumber=new Map(orders.filter(order=>order?.number!=null).map(order=>[String(order.number).replace(/^0+/,''),order]));
+  return events.filter(event=>{
+    const order=byId.get(String(event.order?.id||''))||byNumber.get(String(event.order?.number||'').replace(/^0+/,''));
+    return deliveredPartnerOrder(order);
+  });
+}
 
 export function activePartnerConferences(entries=[],partner=''){
   const active=new Map();
@@ -55,3 +65,4 @@ export function reconciledPartnerLedger(events,payments,partner,locked=[]){
   const ledger=allocatePartnerCommission([...(opening?[openingEvent]:[]),...unique.values()],activePayments);
   return {...ledger,openingBalance:opening,historicalPayments,issues,lockedCount:locked.length};
 }
+

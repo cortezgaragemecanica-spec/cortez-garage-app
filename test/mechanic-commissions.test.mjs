@@ -568,11 +568,11 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
 
 });
 
-test('conta recebida gera comissão dos sócios e a conferência pode ser cancelada',async()=>{
-  const [admin,reports,supabase]=await Promise.all([read('src/admin.js'),read('src/reports.js'),read('src/supabase.js')]);
-  assert.match(admin,/if\(!order\)continue;const full=orderProfit\(order\)/);
-  assert.doesNotMatch(admin,/if\(!order\|\|order\.status!==['"]Entregue['"]\)continue/);
-  assert.doesNotMatch(reports,/if\(!order\|\|order\.status!==['"]Entregue['"]\)continue/);
+test('conta recebida só gera comissão dos sócios depois da entrega e a conferência pode ser cancelada',async()=>{
+  const [admin,supabase]=await Promise.all([read('src/admin.js'),read('src/supabase.js')]);
+  assert.match(admin,/if\(!deliveredPartnerOrder\(order\)\)continue;const full=orderProfit\(order\)/);
+  assert.match(admin,/locked=deliveredPartnerEvents\(/);
+  assert.match(admin,/Pagamentos a prazo entram pelo valor e pela semana em que forem creditados no caixa/);
   assert.match(admin,/Cancelar conferência/);
   assert.match(admin,/await cancelPartnerConference\(partner,\[\.\.\.lockedIds\]\)/);
   assert.match(supabase,/export async function cancelPartnerConference/);
@@ -629,3 +629,4 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(index,/admin\.js\?v=20260925-2/);
   assert.match(worker,/cortez-garage-v232/);
 });
+
