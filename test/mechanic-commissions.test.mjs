@@ -539,20 +539,20 @@ test('solicitações de serviços e peças ocupam a tela inteira no computador',
 });
 
 test('proprietário altera internamente as comissões abertas sem mudar pagamentos ou textos exibidos',async()=>{
-  const [admin,reports,supabase,index,worker]=await Promise.all([read('src/admin.js'),read('src/reports.js'),read('src/supabase.js'),read('index.html'),read('public/sw.js')]);
+  const [admin,reports,supabase,index,worker,reconciliation]=await Promise.all([read('src/admin.js'),read('src/reports.js'),read('src/supabase.js'),read('index.html'),read('public/sw.js'),read('src/partner-reconciliation.js')]);
   assert.match(admin,/id="editPartnerRates">Alterar comissões dos sócios/);
   assert.match(admin,/function openPartnerRatePopup/);
   assert.match(admin,/await savePartnerCommissionRates\(currentWeek\.start,\{Fabiano:fabiano\/100,Marcelino:marcelino\/100\}\)/);
-  assert.match(admin,/return reconciledPartnerLedger\(events,payments,partner/);
-  assert.doesNotMatch(admin,/revalueOpenPartnerCommission\(ledger,currentRates\[partner\]\)/);
-  assert.match(admin,/Saldos anteriores confirmados e lançamentos protegidos são preservados/);
+  assert.match(admin,/return reconciledPartnerLedger\(events,payments,partner,locked,currentRate\)/);
+  assert.match(reconciliation,/revalueOpenPartnerCommission\(allocated,currentRate\)/);
+  assert.match(admin,/recalculam todas as comissões em aberto, preservam os valores já pagos e permanecem ativos até a próxima alteração/);
   assert.match(admin,/rates=partnerRatesForDate\(date\)/);
   assert.match(admin,/allocation\*rates\.Fabiano/);
   assert.match(admin,/allocation\*rates\.Marcelino/);
-  assert.match(admin,/partnerRateWeeks\[commissionWeek/);
+  assert.match(admin,/Object\.keys\(partnerRateWeeks\).*item<=start/);
   assert.match(admin,/PARTNER_DISPLAY_RATES=\{Fabiano:\.25,Marcelino:\.2\}/);
   assert.match(admin,/readPartnerCommissionRates\(\)/);
-  assert.match(reports,/partnerRatesForWeek=range=>partnerRateWeeks\[range\.start\]/);
+  assert.match(reports,/Object\.keys\(partnerRateWeeks\).*item<=range\.start/);
   assert.match(reports,/Math\.max\(0,profit\)\*rates\.Marcelino/);
   assert.match(reports,/Math\.max\(0,profit\)\*rates\.Fabiano/);
   assert.match(reports,/Marcelino · 20%/);
@@ -629,4 +629,5 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(index,/admin\.js\?v=20260925-2/);
   assert.match(worker,/cortez-garage-v232/);
 });
+
 

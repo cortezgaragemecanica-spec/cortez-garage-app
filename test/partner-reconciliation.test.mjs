@@ -56,5 +56,16 @@ test('parcela recebida depois da entrega permanece na semana do recebimento',()=
   const credit={...event('credito','2026-09-25',100),advance:false,deliveryDate:'2026-09-24'};
   assert.equal(partnerCommissionReceiptDate(credit),'2026-09-25');
 });
+test('novo percentual recalcula saldo aberto e preserva o valor já pago',()=>{
+  const result=reconciledPartnerLedger([{...event('parcial','2026-09-24',100),real:400}],[payout('pago','2026-09-25',40)],'Fabiano',[],.5);
+  assert.equal(result.paidTotal,40);
+  assert.equal(result.events[0].commission,200);
+  assert.equal(result.outstandingTotal,160);
+});
+test('novo percentual não reabre comissão totalmente paga',()=>{
+  const result=reconciledPartnerLedger([{...event('quitada','2026-09-24',100),real:400}],[payout('pago','2026-09-25',100)],'Fabiano',[],.5);
+  assert.equal(result.outstandingTotal,0);
+});
+
 
 
