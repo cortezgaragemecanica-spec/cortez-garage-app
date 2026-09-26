@@ -47,3 +47,17 @@ test('mudança de percentual preserva saldo inicial confirmado sem O.S. de orige
   assert.equal(after.outstandingTotal,298);
 });
 
+test('pagamento integral após a alteração não deixa resíduo entre lançamentos',()=>{
+  const events=[
+    {date:'2026-09-24',real:400,commission:100},
+    {date:'2026-09-25',real:400,commission:100}
+  ];
+  const payment={dueDate:'2026-09-26',amount:160};
+  const allocated=allocatePartnerCommission(events,[payment]);
+  const after=revalueOpenPartnerCommission(allocated,.2,'2026-09-26');
+  assert.equal(after.paidTotal,160);
+  assert.equal(after.outstandingTotal,0);
+  assert.equal(after.unappliedCredit,0);
+});
+
+
