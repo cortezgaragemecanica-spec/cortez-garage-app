@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {activePartnerConferences,excludedPartnerCommissions,reconciledPartnerLedger} from '../src/partner-reconciliation.js';
+import {activePartnerConferences,deliveredPartnerEvents,excludedPartnerCommissions,reconciledPartnerLedger} from '../src/partner-reconciliation.js';
 const event=(id,date,commission)=>({record:{id},order:{number:id},date,commission,real:commission*4});
 const payout=(id,dueDate,amount)=>({id,dueDate,amount});
 test('saldos confirmados substituem o passado sem descontar fechamento anterior novamente',()=>{
@@ -41,3 +41,10 @@ test('exclusão individual pode ser restaurada e mantém o histórico',()=>{
   assert.deepEqual(excludedPartnerCommissions([excluded],'Marcelino').map(item=>item.eventKey),['os2']);
   assert.equal(excludedPartnerCommissions([excluded,restored],'Marcelino').length,0);
 });
+test('comissão de sócio considera somente O.S. entregue, inclusive em valores protegidos',()=>{
+  const events=[event('entregue','2026-09-25',100),event('aberta','2026-09-25',80)];
+  events[0].order.id='os-entregue';events[1].order.id='os-aberta';
+  const orders=[{id:'os-entregue',number:'entregue',status:'Entregue'},{id:'os-aberta',number:'aberta',status:'Em andamento'}];
+  assert.deepEqual(deliveredPartnerEvents(events,orders).map(item=>item.record.id),['entregue']);
+});
+
