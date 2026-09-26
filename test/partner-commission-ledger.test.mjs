@@ -1,6 +1,6 @@
 import test from'node:test';
 import assert from'node:assert/strict';
-import{allocatePartnerCommission,revalueOpenPartnerCommission}from'../src/partner-commission-ledger.js';
+import{allocatePartnerCommission,isFullPartnerCommissionPayment,revalueOpenPartnerCommission}from'../src/partner-commission-ledger.js';
 
 test('carrega comissão antiga não paga para o saldo em aberto',()=>{
   const ledger=allocatePartnerCommission([
@@ -58,6 +58,43 @@ test('pagamento integral após a alteração não deixa resíduo entre lançamen
   assert.equal(after.paidTotal,160);
   assert.equal(after.outstandingTotal,0);
   assert.equal(after.unappliedCredit,0);
+});
+
+test('quitação integral impede que lançamento anterior sincronizado depois reabra o saldo',()=>{
+  const events=[
+    {date:'2026-09-24',real:400,commission:88,record:{id:'antigo'}},
+    {date:'2026-09-25',real:1688.14,commission:371.39,record:{id:'sincronizado-depois'}}
+  ];
+  const payment={dueDate:'2026-09-26',amount:88,description:'pago comissões fabiano'};
+  const result=allocatePartnerCommission(events,[payment]);
+  assert.equal(result.paidTotal,88);
+  assert.equal(result.settlementAdjustment,371.39);
+  assert.equal(result.outstandingTotal,0);
+  assert.equal(result.open.length,0);
+});
+
+test('pagamento parcial não fecha lançamentos além do valor pago',()=>{
+  const result=allocatePartnerCommission([
+    {date:'2026-09-24',commission:100},
+    {date:'2026-09-25',commission:80}
+  ],[{dueDate:'2026-09-26',amount:100,description:'pagamento parcial comissão Fabiano'}]);
+  assert.equal(result.outstandingTotal,80);
+  assert.equal(result.settlementAdjustment,0);
+});
+
+test('identifica somente descrições de quitação integral de comissão',()=>{
+  assert.equal(isFullPartnerCommissionPayment({description:'pago comissões fabiano'}),true);
+  assert.equal(isFullPartnerCommissionPayment({description:'Comissão Marcelino quitada'}),true);
+  assert.equal(isFullPartnerCommissionPayment({description:'pagamento parcial comissão Fabiano'}),false);
+});
+
+test('arredonda geração e abatimento por lançamento em centavos',()=>{
+  const result=allocatePartnerCommission([
+    {date:'2026-09-24',commission:10.005},
+    {date:'2026-09-25',commission:19.995}
+  ],[{dueDate:'2026-09-26',amount:30,description:'pagamento parcial comissão Fabiano'}]);
+  assert.equal(result.generatedTotal,30.01);
+  assert.equal(result.outstandingTotal,.01);
 });
 
 
