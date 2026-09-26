@@ -1,4 +1,4 @@
-import {allocatePartnerCommission,revalueOpenPartnerCommission} from './partner-commission-ledger.js?v=20260926-2';
+import {allocatePartnerCommission,revalueOpenPartnerCommission} from './partner-commission-ledger.js?v=20260926-3';
 
 // Saldos remanescentes confirmados pelo proprietário em 25/09/2026,
 // após os pagamentos do fechamento anterior registrados em 19 e 20/09.
