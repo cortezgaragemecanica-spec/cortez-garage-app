@@ -19,6 +19,17 @@ export function activePartnerConferences(entries=[],partner=''){
   return[...active.values()];
 }
 
+export function excludedPartnerCommissions(entries=[],partner=''){
+  const excluded=new Map();
+  for(const entry of [...entries].sort((a,b)=>String(a.excludedAt||a.restoredAt||'').localeCompare(String(b.excludedAt||b.restoredAt||'')))){
+    if(entry.partner!==partner)continue;
+    const key=String(entry.eventKey||partnerEventKey(entry.event));
+    if(!key)continue;
+    if(entry.restoredAt)excluded.delete(key);else if(entry.excludedAt)excluded.set(key,entry);
+  }
+  return[...excluded.values()];
+}
+
 export function reconciledPartnerLedger(events,payments,partner,locked=[]){
   const opening=PARTNER_OPENING.balances[partner]||0, issues=[],unique=new Map();
   for(const event of events){
