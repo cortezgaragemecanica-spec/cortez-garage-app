@@ -34,7 +34,7 @@ function stockReport(){const quantity=stock.reduce((sum,item)=>sum+Number(item.q
 const isoDate=value=>String(value||'').slice(0,10);
 function weekRange(value=new Date().toISOString().slice(0,10)){const reference=new Date(`${value}T12:00:00`),saturday=new Date(reference);saturday.setDate(reference.getDate()-((reference.getDay()+1)%7));const friday=new Date(saturday);friday.setDate(saturday.getDate()+6);return{start:saturday.toISOString().slice(0,10),end:friday.toISOString().slice(0,10)}}
 const inWeek=(value,range)=>{const current=isoDate(value);return current>=range.start&&current<=range.end};
-const partnerRatesForWeek=range=>partnerRateWeeks[range.start]||{Fabiano:.25,Marcelino:.2};
+const partnerRatesForWeek=range=>{const key=Object.keys(partnerRateWeeks).filter(item=>item<=range.start).sort().at(-1);return key?partnerRateWeeks[key]:{Fabiano:.25,Marcelino:.2}};
 const THIS_WEEK_EXCLUDED_ORDERS=new Set(['0003','0005','0007','0008','0013','0020','0024','0026','0027']);
 const isCurrentClosingWeek=range=>range.start==='2026-08-29'&&range.end==='2026-09-04';
 const normalizedOrderNumber=order=>String(order?.number||'').padStart(4,'0');
@@ -59,6 +59,7 @@ new MutationObserver(install).observe(document.querySelector('#app'),{childList:
 
 const openWeeklyClosingBase=openWeeklyClosing;
 openWeeklyClosing=function(){openWeeklyClosingBase();const card=document.querySelector('.weekly-closing-popup .check-popup-card');if(!card)return;const title=card.querySelector('h3'),description=card.querySelector('h3+p');if(title)title.textContent='Relatórios de sábado a sexta';if(description)description.textContent='Escolha um dia da semana. Os PDFs usarão o período de sábado a sexta correspondente.'};
+
 
 
 

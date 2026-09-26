@@ -40,3 +40,10 @@ test('mudança de percentual não reabre comissão que já foi totalmente paga',
   assert.equal(after.outstandingTotal,0);
   assert.equal(after.paidTotal,100);
 });
+
+test('mudança de percentual preserva saldo inicial confirmado sem O.S. de origem',()=>{
+  const before=allocatePartnerCommission([{date:'2026-09-18',commission:298,real:0,opening:true}],[]);
+  const after=revalueOpenPartnerCommission(before,.1);
+  assert.equal(after.outstandingTotal,298);
+});
+

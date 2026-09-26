@@ -1,4 +1,4 @@
-import {allocatePartnerCommission} from './partner-commission-ledger.js?v=20260919-2';
+import {allocatePartnerCommission,revalueOpenPartnerCommission} from './partner-commission-ledger.js?v=20260926-1';
 
 // Saldos remanescentes confirmados pelo proprietário em 25/09/2026,
 // após os pagamentos do fechamento anterior registrados em 19 e 20/09.
@@ -46,7 +46,7 @@ export function excludedPartnerCommissions(entries=[],partner=''){
   return[...excluded.values()];
 }
 
-export function reconciledPartnerLedger(events,payments,partner,locked=[]){
+export function reconciledPartnerLedger(events,payments,partner,locked=[],currentRate=null){
   const opening=PARTNER_OPENING.balances[partner]||0, issues=[],unique=new Map();
   for(const event of events){
     if(event.date<PARTNER_OPENING.start)continue;
@@ -68,8 +68,10 @@ export function reconciledPartnerLedger(events,payments,partner,locked=[]){
   }
   if(previous&&!matched)issues.push('Pagamento do fechamento anterior não localizado: conferir o histórico do caixa.');
   const openingEvent={id:`opening-${partner}`,date:'2026-09-18',week:{start:'2026-09-12',end:'2026-09-18'},commission:opening,real:0,opening:true,order:{number:'Saldo confirmado',vehicle:{model:'Fechamento anterior'}},record:{description:'Saldo confirmado pelo proprietário'}};
-  const ledger=allocatePartnerCommission([...(opening?[openingEvent]:[]),...unique.values()],activePayments);
+  const allocated=allocatePartnerCommission([...(opening?[openingEvent]:[]),...unique.values()],activePayments);
+  const ledger=currentRate!==null&&Number.isFinite(Number(currentRate))?revalueOpenPartnerCommission(allocated,currentRate):allocated;
   return {...ledger,openingBalance:opening,historicalPayments,issues,lockedCount:locked.length};
 }
+
 
 
