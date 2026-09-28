@@ -118,19 +118,19 @@ test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',
   assert.match(index,/main\.js\?v=20260925-2/);
 });
 
-test('ações do orçamento ficam juntas e o salvamento manual é removido',async()=>{
+test('ações do orçamento ficam juntas e o salvamento manual confirma os itens',async()=>{
   const [budget,workflow,access,index,worker]=await Promise.all([read('src/budget-order.js'),read('src/order-workflow.js'),read('src/access-control.js'),read('index.html'),read('public/sw.js')]);
   assert.match(budget,/id="sendBudget"/);
   assert.match(budget,/order\.status='Aguardando aprovação'/);
   assert.match(budget,/await persist\(true\)/);
   assert.match(budget,/if\(!canManageServices\(\)\)await updateOrderStatus/);
   assert.match(budget,/id="approveBudget"/);
-  assert.doesNotMatch(budget,/id="saveBudget"/);
-  assert.doesNotMatch(budget,/Salvar orçamento e execução/);
+  assert.match(budget,/id="saveBudgetValues"/);
+  assert.match(budget,/Salvar peças e serviços/);
   assert.match(workflow,/approval\.insertBefore\(ready,approval\.querySelector\('#previousStatus'\)\)/);
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
-  assert.match(index,/budget-order\.js\?v=20260922-1/);
+  assert.match(index,/budget-order\.js\?v=20260928-1/);
   assert.match(index,/order-workflow\.js\?v=20260925-3/);
 
 });
@@ -144,8 +144,8 @@ test('peça de orçamento ignora o estoque e mantém todos os campos comerciais'
   assert.match(budget,/brand:tr\.querySelector/);
   assert.match(budget,/supplier:tr\.querySelector/);
   assert.match(style,/\.part-code-field\[hidden\],#partStockArea\[hidden\]/);
-  assert.match(index,/budget-order\.js\?v=20260922-1/);
-  assert.match(worker,/budget-order\.js\?v=20260922-1/);
+  assert.match(index,/budget-order\.js\?v=20260928-1/);
+  assert.match(worker,/budget-order\.js\?v=20260928-1/);
 });
 
 test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
@@ -153,8 +153,8 @@ test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
   assert.match(pdf,/description:item\.description,brand:item\.brand,quantity:item\.quantity,value:item\.value,refused:item\.refused/);
   assert.doesNotMatch(pdf,/item\.supplier/);
   assert.match(pdf,/\[item\.description,item\.brand\]\.filter\(Boolean\)/);
-  assert.match(index,/pdf-order\.js\?v=20260915-2/);
-  assert.match(worker,/pdf-order\.js\?v=20260915-2/);
+  assert.match(index,/pdf-order\.js\?v=20260928-1/);
+  assert.match(worker,/pdf-order\.js\?v=20260928-1/);
 });
 
 test('contas a pagar possuem pesquisa, agrupamento, edição e pagamento parcial',async()=>{
@@ -381,7 +381,7 @@ test('campo Serviços a executar passa a se chamar Observação',async()=>{
   assert.match(pdf,/paragraph\('Observação',order\.services\)/);
   assert.doesNotMatch(pdf,/Serviços a executar/);
   assert.match(index,/order-workflow\.js\?v=20260925-3/);
-  assert.match(index,/pdf-order\.js\?v=20260915-2/);
+  assert.match(index,/pdf-order\.js\?v=20260928-1/);
 });
 
 test('proprietário altera o markup de todas as peças da O.S.',async()=>{
@@ -394,8 +394,8 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
   assert.match(budget,/querySelector\('\[data-field="margin"\]'\)\.value=markup/);
   assert.match(budget,/autoSave\(\)/);
   assert.match(style,/\.budget-part-actions/);
-  assert.match(index,/budget-order\.js\?v=20260922-1/);
-  assert.match(worker,/budget-order\.js\?v=20260922-1/);
+  assert.match(index,/budget-order\.js\?v=20260928-1/);
+  assert.match(worker,/budget-order\.js\?v=20260928-1/);
 });
 
 test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',async()=>{
@@ -449,8 +449,8 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(service,/cortez:service-quote-imported/);
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
-  assert.match(index,/style\.css\?v=20260925-3/);
-  assert.match(index,/budget-order\.js\?v=20260922-1/);
+  assert.match(index,/style\.css\?v=20260928-1/);
+  assert.match(index,/budget-order\.js\?v=20260928-1/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
   assert.match(worker,/supabase\.js\?v=20260918-1/);
 
@@ -472,8 +472,8 @@ test('solicitações de serviços ficam no histórico da O.S. fora do PDF e avis
 test('botão de solicitar orçamento de serviços aparece em azul',async()=>{
   const [style,index,worker]=await Promise.all([read('src/style.css'),read('index.html'),read('public/sw.js')]);
   assert.match(style,/#requestServiceQuote\{[^}]*background:#1764c8;[^}]*color:#fff/);
-  assert.match(index,/style\.css\?v=20260925-3/);
-  assert.match(worker,/style\.css\?v=20260925-3/);
+  assert.match(index,/style\.css\?v=20260928-1/);
+  assert.match(worker,/style\.css\?v=20260928-1/);
 
 });
 
@@ -533,8 +533,8 @@ test('solicitações de serviços e peças ocupam a tela inteira no computador',
   assert.match(style,/\.os-workflow-modal:has\(\.part-request-list\)/);
   assert.match(style,/\.service-quote-modal>\.check-popup-card\{[^}]*width:100%[^}]*height:calc\(100dvh - 28px\)[^}]*max-height:none/);
   assert.match(style,/\.service-quote-owner-list[^}]*flex:1[^}]*overflow:auto/);
-  assert.match(index,/style\.css\?v=20260925-3/);
-  assert.match(worker,/style\.css\?v=20260925-3/);
+  assert.match(index,/style\.css\?v=20260928-1/);
+  assert.match(worker,/style\.css\?v=20260928-1/);
 
 });
 
@@ -600,7 +600,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20260925-2/);
   assert.match(worker,/supabase\.js\?v=20260923-2/);
-  assert.match(worker,/cortez-garage-v232/);
+  assert.match(worker,/cortez-garage-v233/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -625,9 +625,9 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-popup \.check-popup-card/);
   assert.match(style,/width:min\(1180px/);
   assert.match(style,/\.commission-summary-card b/);
-  assert.match(index,/style\.css\?v=20260925-3/);
+  assert.match(index,/style\.css\?v=20260928-1/);
   assert.match(index,/admin\.js\?v=20260925-2/);
-  assert.match(worker,/cortez-garage-v232/);
+  assert.match(worker,/cortez-garage-v233/);
 });
 
 
