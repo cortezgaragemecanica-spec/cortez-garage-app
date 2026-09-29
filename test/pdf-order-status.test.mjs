@@ -31,6 +31,34 @@ test('observação independente não é apagada no orçamento',()=>{
   assert.equal(budgetObservation({...order,services:'Cliente pede contato antes da troca'}),'Cliente pede contato antes da troca');
 });
 
+test('orçamento inclui diagnóstico e observações preenchidos',()=>{
+  const originalDocument=globalThis.document;
+  globalThis.document={createElement:()=>{
+    const canvas={texts:[]};
+    canvas.getContext=()=>( {
+      font:'',fillStyle:'',strokeStyle:'',lineWidth:0,
+      drawImage(){},fillRect(){},strokeRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},
+      fillText(value){canvas.texts.push(String(value))},
+      measureText(value){return{width:String(value).length*9}}
+    });
+    return canvas;
+  }};
+  try{
+    for(const status of ['Aguardando diagnóstico','Aguardando aprovação']){
+      const report={...order,status,number:'0069',created:'2026-09-29T10:00:00',complaint:'Ruído no motor',diagnosis:'Tensor da correia com folga',services:'Cliente pede contato antes da troca',notes:'Veículo deve permanecer na oficina',client:{name:'Cliente teste'},vehicle:{model:'Carro teste'},checklist:[],budget:{services:[],parts:[]}};
+      const texts=drawReport(report,{}).flatMap(page=>page.texts);
+      assert.ok(texts.includes('Diagnóstico técnico:'));
+      assert.ok(texts.includes(report.diagnosis));
+      assert.ok(texts.includes('Observação:'));
+      assert.ok(texts.includes(report.services));
+      assert.ok(texts.includes('Observações adicionais:'));
+      assert.ok(texts.includes(report.notes));
+    }
+  }finally{
+    if(originalDocument===undefined)delete globalThis.document;else globalThis.document=originalDocument;
+  }
+});
+
 test('tabela de serviços que cabe na página seguinte não cria segundo campo',()=>{
   const originalDocument=globalThis.document;
   globalThis.document={createElement:()=>{
