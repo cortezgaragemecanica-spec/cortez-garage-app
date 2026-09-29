@@ -17,3 +17,4 @@ self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||!new URL(
 
 ASSETS.push('./src/style.css?v=20260928-1','./src/main.js?v=20260925-2&w=6','./src/supabase.js?v=20260928-1','./src/budget-order.js?v=20260928-1','./src/pdf-order.js?v=20260928-1','./src/order-budget-consistency.js?v=20260928-1');
 ASSETS.push('./src/style.css?v=20260928-2','./src/main.js?v=20260925-2&w=7','./src/supabase.js?v=20260928-2','./src/order-workflow.js?v=20260928-1','./src/order-installments.js?v=20260928-1','./src/closed-order-receipt.js?v=20260928-1','./src/closed-order-receipt-data.js?v=20260928-1');
+ASSETS.push('./src/pdf-order.js?v=20260929-1');
