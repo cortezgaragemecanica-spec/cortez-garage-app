@@ -23,9 +23,10 @@ test('Financeiro preserva incluir e editar Luizinho para Kauã sem liberar exclu
 });
 
 test('proteção de acesso financeiro agrupa mutações em um único quadro',async()=>{
-  const admin=await read('src/admin.js');
+  const [admin,events]=await Promise.all([read('src/admin.js'),read('src/ui-events.js')]);
   assert.match(admin,/function scheduleFinanceAccess\(\)\{if\(financeAccessFrame\)return;/);
-  assert.match(admin,/requestAnimationFrame\(\(\)=>\{financeAccessFrame=0;install\(\);applyFinanceReadOnly\(\)\}\)/);
-  assert.match(admin,/new MutationObserver\(scheduleFinanceAccess\)/);
-  assert.doesNotMatch(admin,/new MutationObserver\(\(\)=>\{install\(\);applyFinanceReadOnly\(\)\}\)/);
+  assert.match(admin,/requestAnimationFrame\(\(\)=>\{financeAccessFrame=0;install\(\);applyFinanceReadOnly\(\);enableProgressiveTables/);
+  assert.match(admin,/onUiUpdated\(scheduleFinanceAccess\)/);
+  assert.doesNotMatch(admin,/new MutationObserver/);
+  assert.match(events,/new MutationObserver\(schedule\)/);
 });
