@@ -1,13 +1,13 @@
-const CACHE='cortez-garage-v238-modern-home';
+const CACHE='cortez-garage-v239-modern-home-polish';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20260928-2&w=6',
+  './src/style.css?v=20260928-2&w=7',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20260924-2',
   './src/boot.js?v=20260930-1',
-  './src/main.js?v=20260925-2&w=10',
+  './src/main.js?v=20260925-2&w=11',
   './src/access-control.js?v=20260915-1',
   './src/budget-order.js?v=20260928-1',
   './src/pdf-order.js?v=20260929-1',

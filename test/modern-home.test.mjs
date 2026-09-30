@@ -11,6 +11,7 @@ test('página inicial moderna prioriza ação, atalhos e fluxo da oficina',async
   assert.match(main,/class="home-menu dashboard-home"/);
   assert.match(main,/focusGroups=visibleOrderGroups\(\)\.filter/);
   assert.match(main,/hasPermission\('createEntries'\)\?/);
+  assert.match(main,/rawName\.length>18\?'equipe'/);
 });
 
 test('página inicial adapta cartões e ações para computador e celular',async()=>{
@@ -19,4 +20,5 @@ test('página inicial adapta cartões e ações para computador e celular',async
   assert.match(style,/\.dashboard-home\{grid-template-columns:repeat\(5/);
   assert.match(style,/@media\(max-width:750px\)[\s\S]*?\.dashboard-home\{grid-template-columns:1fr 1fr/);
   assert.match(style,/@media\(max-width:480px\)[\s\S]*?\.dashboard-hero-actions\{grid-template-columns:1fr/);
+  assert.match(style,/\.mobile-nav::\-webkit-scrollbar\{display:none\}/);
 });
