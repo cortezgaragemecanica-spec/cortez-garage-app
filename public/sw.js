@@ -20,3 +20,4 @@ ASSETS.push('./src/style.css?v=20260928-2','./src/main.js?v=20260925-2&w=7','./s
 ASSETS.push('./src/pdf-order.js?v=20260929-1');
 ASSETS.push('./src/owner-diagnosis-observation.js?v=20260929-1');
 ASSETS.push('./src/supabase.js?v=20260930-1','./src/admin.js?v=20260925-2&w=16');
+ASSETS.push('./src/style.css?v=20260928-2&w=5','./src/main.js?v=20260925-2&w=8','./src/stock.js?v=20260922-1&w=2','./src/admin.js?v=20260925-2&w=17','./src/reports.js?v=20260918-1&w=4','./src/pagination.js?v=20260930-1');

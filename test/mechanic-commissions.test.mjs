@@ -271,8 +271,8 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   for(const label of ['Pesquisar por nome, telefone, CPF ou endereço','Pesquisar por marca, modelo ou placa','Nenhum resultado'])assert.ok(main.includes(label));
   assert.match(main,/id="peopleSearch"/);
   assert.match(main,/data-person-search/);
-  assert.match(main,/event\.target\?\.id!==['"]peopleSearch['"]/);
-  assert.match(main,/card\.hidden=!match/);
+  assert.match(main,/peopleSearch=e\.target\.value;peoplePage=1;render\(\)/);
+  assert.match(main,/paginate\(filtered,peoplePage,30\)/);
   assert.match(style,/\.people-toolbar/);
   assert.match(index,/main\.js\?v=20260925-2/);
 
