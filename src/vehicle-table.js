@@ -1,3 +1,5 @@
+import{onUiUpdated}from'./ui-events.js?v=20260930-1';
+
 const TABLES=[
   {
     selector:'.delete-vehicle',className:'vehicle-table',label:'Veículos cadastrados',
@@ -82,8 +84,7 @@ function enhancePeopleTable(){
   });
 }
 
-new MutationObserver(enhancePeopleTable).observe(document.querySelector('#app'),{childList:true,subtree:true});
-enhancePeopleTable();
+onUiUpdated(enhancePeopleTable);
 
 document.addEventListener('keydown',event=>{
   const row=event.target.closest?.('.people-table .people-card');

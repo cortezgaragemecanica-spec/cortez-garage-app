@@ -1,4 +1,5 @@
 import{agendaMechanicForCurrentUser,confirmCurrentMechanicCommissions,getCurrentUser,readCurrentMechanicCommissions}from'./supabase.js?v=20260914-1';
+import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 
 const OWNER='cortezgaragemecanica@gmail.com';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -33,6 +34,5 @@ function render(data={}){
   document.querySelector('#confirmMechanicCommission')?.addEventListener('click',async event=>{const button=event.currentTarget;if(!confirm('Confirmar que você conferiu as comissões desta semana?'))return;button.disabled=true;button.textContent='Confirmando…';try{await confirmCurrentMechanicCommissions();await open()}catch(error){button.disabled=false;button.textContent='Conferido';alert(error.message)}});
 }
 
-new MutationObserver(installButtons).observe(document.documentElement,{childList:true,subtree:true});
+onUiUpdated(installButtons);
 addEventListener('cortez:user-access-updated',installButtons);
-installButtons();
