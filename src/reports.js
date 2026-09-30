@@ -1,6 +1,7 @@
 import{getCurrentUser,readFinance,readStock,readPartnerCommissionRates}from'./supabase.js?v=20260918-1';
 import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
 import{commissionWeekRange,mechanicAdvanceRows,normalizeCommissionText}from'./mechanic-advances.js?v=20260918-1';
+import{enableProgressiveTables}from'./pagination.js?v=20260930-1';
 
 const DB_KEY='cortez-garage-v1';
 const FINANCE_EMAIL='cortezgaragemecanica@gmail.com';
@@ -59,6 +60,8 @@ new MutationObserver(install).observe(document.querySelector('#app'),{childList:
 
 const openWeeklyClosingBase=openWeeklyClosing;
 openWeeklyClosing=function(){openWeeklyClosingBase();const card=document.querySelector('.weekly-closing-popup .check-popup-card');if(!card)return;const title=card.querySelector('h3'),description=card.querySelector('h3+p');if(title)title.textContent='Relatórios de sábado a sexta';if(description)description.textContent='Escolha um dia da semana. Os PDFs usarão o período de sábado a sexta correspondente.'};
+
+let reportPaginationFrame=0;new MutationObserver(()=>{if(reportPaginationFrame)return;reportPaginationFrame=requestAnimationFrame(()=>{reportPaginationFrame=0;enableProgressiveTables(document.querySelector('#reportContent'))})}).observe(document.querySelector('#app'),{childList:true,subtree:true});
 
 
 
