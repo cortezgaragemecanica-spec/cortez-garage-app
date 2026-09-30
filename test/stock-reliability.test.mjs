@@ -31,7 +31,7 @@ test('tela informa cache, falha do banco e oferece atualização manual',async()
   assert.match(html,/style\.css\?v=20260928-2/);
   assert.match(worker,/supabase\.js\?v=20260930-1/);
   assert.match(worker,/stock-save-plan\.js/);
-  assert.match(worker,/cortez-garage-v237-phase2/);
+  assert.match(worker,/cortez-garage-v238-modern-home/);
   assert.match(style,/\.stock-summary/);
 });
 

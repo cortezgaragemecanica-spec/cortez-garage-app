@@ -400,7 +400,7 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
 
 test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',async()=>{
   const [main,supabase,index,worker]=await Promise.all([read('src/main.js'),read('src/supabase.js'),read('index.html'),read('public/sw.js')]);
-  assert.match(main,/const recent=visibleOrders\(\)\.filter\(order=>order\.status!=='Entregue'\)\.sort\(\(a,b\)=>new Date\(b\.updatedAt\|\|b\.created\)-new Date\(a\.updatedAt\|\|a\.created\)\)/);
+  assert.match(main,/const orders=visibleOrders\(\),recent=orders\.filter\(order=>order\.status!=='Entregue'\)\.sort\(\(a,b\)=>new Date\(b\.updatedAt\|\|b\.created\)-new Date\(a\.updatedAt\|\|a\.created\)\)/);
   assert.doesNotMatch(main,/open=allOrders\.filter\(order=>status\(order\)!=='entregue'\)/);
   assert.match(main,/Ordens modificadas recentemente/);
   assert.match(main,/<th>Atualização<\/th>/);
@@ -600,7 +600,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20260925-2/);
   assert.match(worker,/supabase\.js\?v=20260930-1/);
-  assert.match(worker,/cortez-garage-v237-phase2/);
+  assert.match(worker,/cortez-garage-v238-modern-home/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -627,7 +627,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20260928-2/);
   assert.match(index,/admin\.js\?v=20260925-2/);
-  assert.match(worker,/cortez-garage-v237-phase2/);
+  assert.match(worker,/cortez-garage-v238-modern-home/);
 });
 
 
