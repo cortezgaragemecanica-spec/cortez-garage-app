@@ -5,9 +5,9 @@ import vm from 'node:vm';
 
 const source=await readFile(new URL('../src/admin.js',import.meta.url),'utf8');
 const functionSource=source.slice(source.indexOf('function remainingFixedCommitments('),source.indexOf('function companyHealth('));
-function remaining(records,paid=0,extra=[]){
-  const context=vm.createContext({records,costPlanRows:()=>[{category:'Aluguel',difference:4000-paid},...extra],expenseKind:description=>/aluguel/i.test(description)?'Aluguel':'',payableForBalance:r=>r.category==='Conta a pagar'&&r.status!=='Realizado'&&Boolean(r.dueDate)&&r.dueDate<='2026-09-25'});
-  return vm.runInContext(functionSource+'remainingFixedCommitments("2026-09")',context);
+function remaining(records,paid=0,extra=[],value='2026-09-25',month='2026-09'){
+  const context=vm.createContext({records,SECOND_HALF_FIXED_COSTS:new Set(['Aluguel','Água','Luz','Internet','Segurança']),costPlanRows:()=>[{category:'Aluguel',difference:4000-paid},...extra],expenseKind:description=>/aluguel/i.test(description)?'Aluguel':'',payableForBalance:r=>r.category==='Conta a pagar'&&r.status!=='Realizado'&&Boolean(r.dueDate)&&r.dueDate<='2026-09-25'});
+  return vm.runInContext(functionSource+`remainingFixedCommitments("${month}","${value}")`,context);
 }
 const rent=(amount=4000,dueDate='2026-09-10')=>({category:'Conta a pagar',status:'Pendente',description:'Aluguel da oficina',amount,dueDate});
 test('aluguel contado nas contas a pagar não é repetido no custo previsto',()=>{
@@ -31,4 +31,14 @@ test('custos pagos não geram valores negativos nem escondem outras obrigações
 test('resumo e detalhamento usam o mesmo cálculo sem duplicidade',()=>{
   assert.match(source,/plan=remainingFixedCommitments\(month\),remainingFixed=plan.reduce/);
   assert.match(source,/rows=remainingFixedCommitments\(month\).filter/);
+});
+test('primeira quinzena adia aluguel, água, luz, internet e segurança',()=>{
+  const extra=['Água','Luz','Internet','Segurança'].map(category=>({category,difference:100})).concat({category:'Software',difference:500}),firstHalf=remaining([],0,extra,'2026-10-10','2026-10'),secondHalf=remaining([],0,extra,'2026-10-16','2026-10');
+  for(const category of ['Aluguel','Água','Luz','Internet','Segurança']){
+    assert.equal(firstHalf.find(item=>item.category===category).difference,0);
+    assert.equal(firstHalf.find(item=>item.category===category).dueDate,'2026-10-16');
+    assert.ok(secondHalf.find(item=>item.category===category).difference>0);
+  }
+  assert.equal(firstHalf.find(item=>item.category==='Software').difference,500);
+  assert.equal(firstHalf.find(item=>item.category==='Software').dueDate,'2026-10-01');
 });

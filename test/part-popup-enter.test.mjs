@@ -15,6 +15,6 @@ test('Enter avança os campos visíveis e inclui a peça no último campo',async
   assert.match(budget,/modal\.querySelector\('#includePart'\)\.click\(\)/);
   assert.match(html,/budget-order\.js\?v=20260928-1/);
   assert.match(worker,/budget-order\.js\?v=20260928-1/);
-  assert.match(worker,/cortez-garage-v239-modern-home-polish/);
+  assert.match(worker,/cortez-garage-v240-partial-costs-closing-pdf/);
 });
 
