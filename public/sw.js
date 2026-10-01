@@ -1,11 +1,11 @@
-const CACHE='cortez-garage-v239-modern-home-polish';
+const CACHE='cortez-garage-v240-partial-costs-closing-pdf';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
   './src/style.css?v=20260928-2&w=7',
   './src/checklist.css?v=20260829-3',
-  './src/monthly-closing.css?v=20260924-2',
+  './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20260930-1',
   './src/main.js?v=20260925-2&w=11',
   './src/access-control.js?v=20260915-1',
@@ -21,7 +21,7 @@ const SHELL=[
   './src/checklist-history.js?v=20260924-1',
   './src/client-history.js?v=20260924-1',
   './src/stock.js?v=20260922-1&w=3',
-  './src/admin.js?v=20260925-2&w=18',
+  './src/admin.js?v=20260925-2&w=19',
   './src/luizinho-returns.js?v=20260924-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20260908-2',
