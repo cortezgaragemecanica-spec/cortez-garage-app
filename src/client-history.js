@@ -1,3 +1,5 @@
+import{mechanicDisplayName}from'./mechanic-privacy.js?v=20261002-1';
+
 const DATABASE_KEY='cortez-garage-v1';
 const normalizePhone=value=>String(value||'').replace(/\D/g,'');
 const normalizePlate=value=>String(value||'').replace(/[^a-z0-9]/gi,'').toUpperCase();
@@ -42,9 +44,9 @@ function orderDetail(order){
   const serviceSection=document.createElement('section');
   serviceSection.append(text('h4','Serviços executados'));
   if(services.length){
-    services.forEach(service=>serviceSection.append(detailRow(service.description||'Serviço',`Mecânico: ${service.mechanic||order.mechanic||'Não informado'}`,money(service.value))));
+    services.forEach(service=>serviceSection.append(detailRow(service.description||'Serviço',`Mecânico: ${mechanicDisplayName(service.mechanic||order.mechanic)||'Não informado'}`,money(service.value))));
   }else{
-    serviceSection.append(detailRow(order.services||order.complaint||'Serviço não informado',`Mecânico: ${order.mechanic||'Não informado'}`,money(order.labor)));
+    serviceSection.append(detailRow(order.services||order.complaint||'Serviço não informado',`Mecânico: ${mechanicDisplayName(order.mechanic)||'Não informado'}`,money(order.labor)));
   }
   body.append(serviceSection);
 

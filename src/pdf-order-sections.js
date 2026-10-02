@@ -1,3 +1,5 @@
+import{mechanicDisplayName}from'./mechanic-privacy.js?v=20261002-1';
+
 const EXECUTION_STATUSES=new Set(['Em andamento','Aguardando peça','Aguardando peças','Pronto para entrega','Entregue']);
 
 export const isExecutionPdf=order=>EXECUTION_STATUSES.has(order.status);
@@ -8,7 +10,7 @@ export function servicePdfSection(order,formatMoney){
   const rows=services.map(item=>{
     const description=`${item.refused?'RECUSADO — ':''}${item.description||'—'}`;
     const value=item.refused?'R$ 0,00':formatMoney(item.value);
-    return budgetOnly?[description,value]:[description,item.mechanic||order.mechanic||'—',value];
+    return budgetOnly?[description,value]:[description,mechanicDisplayName(item.mechanic||order.mechanic)||'—',value];
   });
   return budgetOnly
     ? {title:'Serviços orçados',headers:['Serviço','Valor'],widths:[850,250],rows}

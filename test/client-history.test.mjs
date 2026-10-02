@@ -7,7 +7,7 @@ const [moduleCode,style,index]=await Promise.all([
 ].map(path=>readFile(new URL(`../${path}`,import.meta.url),'utf8')));
 
 test('histórico do cliente agrupa as O.S. por veículo cadastrado',()=>{
-  assert.match(index,/client-history\.js\?v=20260924-1/);
+  assert.match(index,/client-history\.js\?v=20261002-1/);
   assert.match(moduleCode,/vehicle\.clientId===client\.id/);
   assert.match(moduleCode,/vehicles\.get\(key\)\.orders\.push\(order\)/);
   assert.match(moduleCode,/VEÍCULO CADASTRADO/);

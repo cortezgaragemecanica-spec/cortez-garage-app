@@ -13,8 +13,8 @@ test('Enter avança os campos visíveis e inclui a peça no último campo',async
   assert.match(budget,/filter\(input=>input&&!input\.disabled&&!input\.closest\('\[hidden\]'\)\)/);
   assert.match(budget,/if\(next\)\{next\.focus\(\);next\.select\?\.\(\);return\}/);
   assert.match(budget,/modal\.querySelector\('#includePart'\)\.click\(\)/);
-  assert.match(html,/budget-order\.js\?v=20260928-1/);
-  assert.match(worker,/budget-order\.js\?v=20260928-1/);
-  assert.match(worker,/cortez-garage-v240-partial-costs-closing-pdf/);
+  assert.match(html,/budget-order\.js\?v=20261002-1/);
+  assert.match(worker,/budget-order\.js\?v=20261002-1/);
+  assert.match(worker,/cortez-garage-v241-private-cortez-agenda/);
 });
 
