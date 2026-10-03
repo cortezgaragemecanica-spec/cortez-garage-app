@@ -29,10 +29,10 @@ test('somente contas abertas com vencimento anterior a hoje recebem destaque',()
 });
 
 test('versões publicadas invalidam cache do módulo e do estilo',()=>{
-  assert.match(index,/admin\.js\?v=20261003-1/);
+  assert.match(index,/admin\.js\?v=20261003-2/);
   assert.match(index,/style\.css\?v=20261002-1/);
-  assert.match(worker,/cortez-garage-v242-saturday-commissions-agenda/);
-  assert.match(worker,/admin\.js\?v=20261003-1&w=21/);
+  assert.match(worker,/cortez-garage-v243-monday-saturday-commissions/);
+  assert.match(worker,/admin\.js\?v=20261003-2&w=21/);
   assert.match(worker,/style\.css\?v=20261002-1&w=8/);
 });
 

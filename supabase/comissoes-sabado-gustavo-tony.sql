@@ -1,22 +1,16 @@
--- Permite que Gustavo e Tony fechem a comissão na sexta ou no sábado.
--- Se ainda houver comissão pendente na virada para sábado, os serviços do sábado
--- permanecem no mesmo fechamento. Execute no SQL Editor do projeto Supabase.
+-- Gustavo e Tony trabalham com comissão de segunda a sábado.
+-- O botão Conferido fica disponível de sexta às 17h até sábado às 18h.
 
 create or replace function public.inicio_semana_comissao_mecanico(p_mecanico text, p_data date)
 returns date language plpgsql stable security definer set search_path = public
 as $$
 declare
-  inicio_base date := p_data - ((extract(dow from p_data)::integer + 1) % 7);
   nome text := translate(lower(trim(coalesce(p_mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc');
 begin
-  if extract(isodow from p_data) = 6 and nome in ('gustavo', 'tony') and exists (
-    select 1 from public.lancamentos_financeiros f
-    where f.categoria = 'Comissões'
-      and f.status <> 'Realizado'
-      and translate(lower(trim(coalesce(f.mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') = nome
-      and coalesce(f.semana_inicio, f.vencimento - ((extract(dow from f.vencimento)::integer + 1) % 7)) = inicio_base - 7
-  ) then return inicio_base - 7; end if;
-  return inicio_base;
+  if nome in ('gustavo', 'tony') then
+    return p_data - (extract(isodow from p_data)::integer - 1);
+  end if;
+  return p_data - ((extract(dow from p_data)::integer + 1) % 7);
 end;
 $$;
 
@@ -24,13 +18,11 @@ revoke all on function public.inicio_semana_comissao_mecanico(text,date) from pu
 grant execute on function public.inicio_semana_comissao_mecanico(text,date) to authenticated;
 
 -- As duas funções abaixo substituem as versões equivalentes de comissoes-mecanicos.sql.
--- Elas mantêm o mesmo retorno e acrescentam apenas a prorrogação de sábado.
 create or replace function public.comissoes_semana_mecanico()
 returns jsonb language plpgsql stable security definer set search_path = public
 as $$
 declare
   agora_local timestamp := timezone('America/Sao_Paulo', now());
-  inicio_base date;
   inicio_semana date;
   fim_semana date;
   mecanico_atual text;
@@ -42,15 +34,14 @@ declare
   total_vales numeric(12,2);
   mecanico_busca text;
   nome_normalizado text;
-  fechamento_sabado boolean;
+  periodo_segunda_sabado boolean;
 begin
   mecanico_atual := public.mecanico_atual_do_usuario();
   if mecanico_atual is null then raise exception 'Este usuário não possui um mecânico vinculado.'; end if;
-  inicio_base := agora_local::date - ((extract(dow from agora_local)::integer + 1) % 7);
   inicio_semana := public.inicio_semana_comissao_mecanico(mecanico_atual, agora_local::date);
-  fechamento_sabado := inicio_semana < inicio_base;
-  fim_semana := inicio_semana + case when fechamento_sabado then 7 else 6 end;
   nome_normalizado := translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc');
+  periodo_segunda_sabado := nome_normalizado in ('gustavo', 'tony');
+  fim_semana := inicio_semana + case when periodo_segunda_sabado then 5 else 6 end;
   mecanico_busca := split_part(regexp_replace(nome_normalizado, '[^a-z0-9]+', ' ', 'g'), ' ', 1);
 
   select c.conferido_em into conferido from public.conferencia_comissoes_mecanicos c
@@ -94,8 +85,14 @@ begin
     'generated', total_gerado, 'advances', total_vales, 'total', total, 'items', itens,
     'confirmedAt', conferido,
     'canConfirm', conferido is null
-      and (extract(isodow from agora_local) = 5 or (nome_normalizado in ('gustavo','tony') and extract(isodow from agora_local) = 6))
-      and agora_local::time >= time '17:00' and agora_local::time <= time '21:00'
+      and (
+        (periodo_segunda_sabado and (
+          (extract(isodow from agora_local) = 5 and agora_local::time >= time '17:00')
+          or (extract(isodow from agora_local) = 6 and agora_local::time <= time '18:00')
+        ))
+        or (not periodo_segunda_sabado and extract(isodow from agora_local) = 5
+          and agora_local::time >= time '17:00' and agora_local::time <= time '21:00')
+      )
       and jsonb_array_length(itens) > 0
   );
 end;
@@ -118,9 +115,14 @@ begin
   if mecanico_atual is null then raise exception 'Este usuário não possui um mecânico vinculado.'; end if;
   nome_normalizado := translate(lower(trim(mecanico_atual)), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc');
   inicio_semana := public.inicio_semana_comissao_mecanico(mecanico_atual, agora_local::date);
-  if not (extract(isodow from agora_local) = 5 or (nome_normalizado in ('gustavo','tony') and extract(isodow from agora_local) = 6))
-     or agora_local::time < time '17:00' or agora_local::time > time '21:00' then
-    raise exception 'A conferência de Gustavo e Tony fica disponível sexta ou sábado, das 17h às 21h; para os demais, somente sexta.';
+  if (nome_normalizado in ('gustavo','tony') and not (
+        (extract(isodow from agora_local) = 5 and agora_local::time >= time '17:00')
+        or (extract(isodow from agora_local) = 6 and agora_local::time <= time '18:00')
+     )) or (nome_normalizado not in ('gustavo','tony') and not (
+        extract(isodow from agora_local) = 5
+        and agora_local::time >= time '17:00' and agora_local::time <= time '21:00'
+     )) then
+    raise exception 'A conferência de Gustavo e Tony fica disponível de sexta às 17h até sábado às 18h; para os demais, somente sexta, das 17h às 21h.';
   end if;
   if not exists (
     select 1 from public.lancamentos_financeiros f
@@ -139,6 +141,13 @@ $$;
 
 revoke all on function public.conferir_comissoes_semana_mecanico() from public, anon;
 grant execute on function public.conferir_comissoes_semana_mecanico() to authenticated;
+
+-- Reagrupa as comissões já existentes de Gustavo e Tony na semana de segunda a sábado.
+update public.lancamentos_financeiros
+set semana_inicio = vencimento - (extract(isodow from vencimento)::integer - 1)
+where categoria = 'Comissões'
+  and translate(lower(trim(coalesce(mecanico, ''))), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') in ('gustavo', 'tony')
+  and semana_inicio is distinct from vencimento - (extract(isodow from vencimento)::integer - 1);
 
 -- Proteção no banco: domingo é fechado; sábado é exclusivo de Gustavo e Tony.
 create or replace function public.owner_save_agendamento(

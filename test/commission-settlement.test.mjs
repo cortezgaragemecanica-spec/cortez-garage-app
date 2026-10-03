@@ -3,7 +3,7 @@ import assert from'node:assert/strict';
 import fs from'node:fs';
 import{planMechanicCommissionSettlements}from'../src/commission-settlement.js';
 
-const commission=(id,value,status='Pendente',date='2026-09-25')=>({id,categoria:'Comissões',movimento:'Saída',descricao:`Comissão ${id}`,valor:value,vencimento:date,status,mecanico:'Gustavo',semana_inicio:'2026-09-19'});
+const commission=(id,value,status='Pendente',date='2026-09-25')=>({id,categoria:'Comissões',movimento:'Saída',descricao:`Comissão ${id}`,valor:value,vencimento:date,status,mecanico:'Gustavo',semana_inicio:'2026-09-21'});
 const cash=(description,value,date='2026-09-25')=>({id:description,categoria:'Fluxo de caixa',movimento:'Saída',descricao:description,valor:value,vencimento:date,status:'Realizado'});
 
 test('pagamento líquido mais vale baixa todas as comissões da semana',()=>{

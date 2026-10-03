@@ -1,7 +1,7 @@
 import test from'node:test';
 import assert from'node:assert/strict';
 import{readFile}from'node:fs/promises';
-import{commissionWeekStart,hasSaturdaySchedule,mechanicWorksOnDate,previousCommissionWeekStart,shouldRollSaturdayCommission}from'../src/mechanic-saturday.js';
+import{commissionWeekStart,hasSaturdaySchedule,mechanicCommissionWeekEnd,mechanicCommissionWeekStart,mechanicWorksOnDate}from'../src/mechanic-saturday.js';
 import{planMechanicCommissionSettlements}from'../src/commission-settlement.js';
 
 const read=path=>readFile(new URL(`../${path}`,import.meta.url),'utf8');
@@ -16,29 +16,29 @@ test('somente Gustavo e Tony possuem agenda aos sábados',()=>{
   assert.equal(mechanicWorksOnDate('Gustavo','2026-10-04'),false);
 });
 
-test('sábado permanece no fechamento anterior apenas quando ainda há saldo pendente',()=>{
+test('Gustavo e Tony usam semana de comissão de segunda a sábado',()=>{
   assert.equal(commissionWeekStart('2026-10-03'),'2026-10-03');
-  assert.equal(previousCommissionWeekStart('2026-10-03'),'2026-09-26');
-  assert.equal(shouldRollSaturdayCommission('Gustavo','2026-10-03',true),true);
-  assert.equal(shouldRollSaturdayCommission('Tony','2026-10-03',true),true);
-  assert.equal(shouldRollSaturdayCommission('Gustavo','2026-10-03',false),false);
-  assert.equal(shouldRollSaturdayCommission('Fabio','2026-10-03',true),false);
+  assert.equal(mechanicCommissionWeekStart('Gustavo','2026-10-03'),'2026-09-28');
+  assert.equal(mechanicCommissionWeekStart('Tony','2026-10-02'),'2026-09-28');
+  assert.equal(mechanicCommissionWeekEnd('Gustavo','2026-10-02'),'2026-10-03');
+  assert.equal(mechanicCommissionWeekStart('Fabio','2026-10-03'),'2026-10-03');
 });
 
-test('pagamento de sábado quita o fechamento anterior prorrogado',()=>{
+test('pagamento de sábado quita as comissões de segunda a sábado',()=>{
   const rows=[
-    {id:'sexta',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sexta',valor:100,vencimento:'2026-10-02',status:'Pendente',mecanico:'Gustavo',semana_inicio:'2026-09-26'},
-    {id:'sabado',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sábado',valor:50,vencimento:'2026-10-03',status:'Pendente',mecanico:'Gustavo',semana_inicio:'2026-09-26'},
+    {id:'sexta',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sexta',valor:100,vencimento:'2026-10-02',status:'Pendente',mecanico:'Gustavo',semana_inicio:'2026-09-28'},
+    {id:'sabado',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sábado',valor:50,vencimento:'2026-10-03',status:'Pendente',mecanico:'Gustavo',semana_inicio:'2026-09-28'},
     {id:'pagamento',categoria:'Fluxo de caixa',movimento:'Saída',descricao:'Pagamento comissões Gustavo',valor:150,vencimento:'2026-10-03',status:'Realizado'}
   ];
   const plan=planMechanicCommissionSettlements(rows,['Gustavo','Tony']);
   assert.deepEqual(plan.fullIds,['sexta','sabado']);
 });
 
-test('sábado inicia novo fechamento quando a sexta já foi paga',()=>{
+test('sábado continua no mesmo fechamento mesmo quando a parte de sexta já foi paga',()=>{
   const rows=[
-    {id:'sexta-paga',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sexta',valor:100,vencimento:'2026-10-02',status:'Realizado',mecanico:'Tony',semana_inicio:'2026-09-26'},
-    {id:'sabado-novo',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sábado',valor:50,vencimento:'2026-10-03',status:'Pendente',mecanico:'Tony',semana_inicio:'2026-10-03'},
+    {id:'sexta-paga',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sexta',valor:100,vencimento:'2026-10-02',status:'Realizado',mecanico:'Tony',semana_inicio:'2026-09-28'},
+    {id:'sabado-novo',categoria:'Comissões',movimento:'Saída',descricao:'Comissão sábado',valor:50,vencimento:'2026-10-03',status:'Pendente',mecanico:'Tony',semana_inicio:'2026-09-28'},
+    {id:'pagamento-sexta',categoria:'Fluxo de caixa',movimento:'Saída',descricao:'Pagamento comissões Tony',valor:100,vencimento:'2026-10-02',status:'Realizado'},
     {id:'pagamento-sabado',categoria:'Fluxo de caixa',movimento:'Saída',descricao:'Pagamento comissões Tony',valor:50,vencimento:'2026-10-03',status:'Realizado'}
   ];
   const plan=planMechanicCommissionSettlements(rows,['Gustavo','Tony']);
@@ -53,10 +53,11 @@ test('agenda e banco aplicam sábado somente a Gustavo e Tony',async()=>{
   assert.match(agenda,/mechanicsForDay/);
   assert.match(agenda,/Gustavo e Tony também aos sábados/);
   assert.match(enhancements,/mechanicWorksOnDate/);
-  assert.match(supabase,/applySaturdayCommissionRollover/);
+  assert.match(supabase,/applyMechanicCommissionWeeks/);
   assert.match(sql,/nome in \('gustavo', 'tony'\)/);
-  assert.match(sql,/sexta ou sábado/);
+  assert.match(sql,/sexta às 17h até sábado às 18h/);
+  assert.match(sql,/periodo_segunda_sabado/);
   assert.match(sql,/Sábado é exclusivo das agendas de Gustavo e Tony/);
-  assert.match(index,/agenda\.js\?v=20261003-1/);
-  assert.match(worker,/cortez-garage-v242-saturday-commissions-agenda/);
+  assert.match(index,/agenda\.js\?v=20261003-2/);
+  assert.match(worker,/cortez-garage-v243-monday-saturday-commissions/);
 });

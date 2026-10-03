@@ -1,6 +1,6 @@
-import{agendaMechanicForCurrentUser,confirmCurrentMechanicCommissions,getCurrentUser,readCurrentMechanicCommissions}from'./supabase.js?v=20261003-1';
+import{agendaMechanicForCurrentUser,confirmCurrentMechanicCommissions,getCurrentUser,readCurrentMechanicCommissions}from'./supabase.js?v=20261003-2';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
-import{hasSaturdaySchedule}from'./mechanic-saturday.js?v=20261003-1';
+import{hasSaturdaySchedule}from'./mechanic-saturday.js?v=20261003-2';
 
 const OWNER='cortezgaragemecanica@gmail.com';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -31,7 +31,7 @@ async function open(){
 function render(data={}){
   const content=document.querySelector('#content'),items=Array.isArray(data.items)?data.items:[];
   if(!content)return;
-  const mechanic=data.mechanic||agendaMechanicForCurrentUser(),windowNote=hasSaturdaySchedule(mechanic)?'O botão <b>Conferido</b> aparece na sexta ou no sábado, das 17h às 21h. Se não houver pagamento na sexta, os serviços de sábado entram neste mesmo fechamento.':'O botão <b>Conferido</b> aparece somente na sexta-feira, das 17h às 21h.';
+  const mechanic=data.mechanic||agendaMechanicForCurrentUser(),windowNote=hasSaturdaySchedule(mechanic)?'As comissões desta semana abrangem <b>segunda a sábado</b>. O botão <b>Conferido</b> fica disponível de sexta-feira às 17h até sábado às 18h.':'O botão <b>Conferido</b> aparece somente na sexta-feira, das 17h às 21h.';
   content.innerHTML=`<div class="mechanic-commission-head"><div><span class="eyebrow">SOMENTE LEITURA</span><h2>Comissões de ${esc(mechanic)}</h2><p>Fechamento vigente · ${date(data.weekStart)} a ${date(data.weekEnd)}</p></div><article><span>Comissão gerada: ${money(data.generated??data.total)}</span><small>Vales descontados: − ${money(data.advances||0)}</small><b>A receber: ${money(data.total)}</b></article></div><div class="table-card mechanic-commission-table"><table><thead><tr><th>Data</th><th>O.S.</th><th>Veículo</th><th>Serviço</th><th>Situação</th><th>Comissão</th></tr></thead><tbody>${items.length?items.map(item=>`<tr><td>${date(item.date)}</td><td><b>${item.kind==='advance'?'—':`#${esc(item.orderNumber||'—')}`}</b></td><td>${esc(item.vehicle||'—')}</td><td>${esc(item.service||'—')}</td><td>${item.kind==='advance'?'Vale descontado':item.status==='Realizado'?'Pago':'Pendente'}</td><td><b>${money(item.amount)}</b></td></tr>`).join(''):'<tr><td colspan="6">Nenhuma comissão neste fechamento.</td></tr>'}</tbody></table></div>${data.confirmedAt?`<div class="commission-confirmed">✓ Conferido em ${new Date(data.confirmedAt).toLocaleString('pt-BR')}</div>`:data.canConfirm?'<button type="button" class="primary wide commission-confirm-button" id="confirmMechanicCommission">Conferido</button>':`<p class="commission-window-note">${windowNote}</p>`}`;
   document.querySelector('#confirmMechanicCommission')?.addEventListener('click',async event=>{const button=event.currentTarget;if(!confirm('Confirmar que você conferiu as comissões desta semana?'))return;button.disabled=true;button.textContent='Confirmando…';try{await confirmCurrentMechanicCommissions();await open()}catch(error){button.disabled=false;button.textContent='Conferido';alert(error.message)}});
 }

@@ -1,11 +1,9 @@
+import{mechanicCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-2';
+
 const number=value=>Number(value)||0;
 const text=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 
-export function commissionSettlementWeek(value){
-  const raw=String(value||'').slice(0,10),date=new Date(`${raw}T12:00:00`),day=date.getDay();
-  date.setDate(date.getDate()-((day+1)%7));
-  return new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,10);
-}
+export const commissionSettlementWeek=(value,mechanic='')=>mechanicCommissionWeekStart(mechanic,value);
 
 function personIn(description,names,requiredWord){
   const normalized=` ${text(description)} `;
@@ -20,7 +18,7 @@ const description=row=>row.descricao||row.description;
 const amount=row=>number(row.valor??row.amount);
 const mechanic=row=>row.mecanico||row.mechanic||'';
 const dueDate=row=>row.vencimento||row.dueDate||row.criado_em||row.createdAt;
-const week=row=>row.semana_inicio||row.weekStart||commissionSettlementWeek(dueDate(row));
+const week=row=>row.semana_inicio||row.weekStart||commissionSettlementWeek(dueDate(row),mechanic(row));
 
 export function planMechanicCommissionSettlements(rows,names){
   const normalizedNames=new Map(names.filter(Boolean).map(name=>[text(name),name])),groups=new Map();
@@ -31,8 +29,7 @@ export function planMechanicCommissionSettlements(rows,names){
   for(const row of rows){
     if(category(row)!=='Fluxo de caixa'||kind(row)!=='Saída'||status(row)!=='Realizado')continue;
     const paymentPerson=personIn(description(row),names,'comissao'),advancePerson=personIn(description(row),names,'vale'),name=paymentPerson||advancePerson;if(!name)continue;
-    let weekStart=commissionSettlementWeek(dueDate(row));
-    if(isSaturday(dueDate(row))&&hasSaturdaySchedule(name)){const previous=previousCommissionWeekStart(dueDate(row)),previousGroup=groups.get(`${text(name)}|${previous}`);if(previousGroup?.pending.length)weekStart=previous}
+    const weekStart=commissionSettlementWeek(dueDate(row),name);
     const entry=group(name,weekStart);if(paymentPerson)entry.payments+=amount(row);else entry.advances+=amount(row)
   }
   const fullIds=[],partial=[];
@@ -43,4 +40,3 @@ export function planMechanicCommissionSettlements(rows,names){
   }
   return{fullIds,partial};
 }
-import{hasSaturdaySchedule,isSaturday,previousCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-1';

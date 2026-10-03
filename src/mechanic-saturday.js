@@ -19,9 +19,14 @@ export function commissionWeekStart(value=new Date()){
   date.setDate(date.getDate()-((day+1)%7));
   return iso(date)
 }
-export function previousCommissionWeekStart(value=new Date()){
-  const date=localDate(commissionWeekStart(value));
-  date.setDate(date.getDate()-7);
+export function mechanicCommissionWeekStart(mechanic,value=new Date()){
+  if(!hasSaturdaySchedule(mechanic))return commissionWeekStart(value);
+  const date=localDate(value),day=date.getDay();
+  date.setDate(date.getDate()-(day===0?6:day-1));
   return iso(date)
 }
-export const shouldRollSaturdayCommission=(mechanic,value,hasPreviousPending)=>isSaturday(value)&&hasSaturdaySchedule(mechanic)&&Boolean(hasPreviousPending);
+export function mechanicCommissionWeekEnd(mechanic,value=new Date()){
+  const date=localDate(mechanicCommissionWeekStart(mechanic,value));
+  date.setDate(date.getDate()+(hasSaturdaySchedule(mechanic)?5:6));
+  return iso(date)
+}

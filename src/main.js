@@ -1,5 +1,5 @@
 import{DEFAULT_SYNC_URL,getSyncConfig,setSyncConfig,clearSyncConfig,syncStockMirror,consumeOrderStock}from'./sync.js';
-import{getSession,getCurrentUser,refreshSession,renderLogin,signOut,startUsageTracking,syncSupabase,saveSupabase,saveOrderProgress,recordMirrorSync,readStock,saveStockItems,consumeStockForOrder,recordOrderReadyReceivable,recordOrderDelivery,updateOrderStatus,deleteVehicle,deleteClient,canManageServices,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics,readUserAccess,hasPermission}from'./supabase.js?v=20261003-1';
+import{getSession,getCurrentUser,refreshSession,renderLogin,signOut,startUsageTracking,syncSupabase,saveSupabase,saveOrderProgress,recordMirrorSync,readStock,saveStockItems,consumeStockForOrder,recordOrderReadyReceivable,recordOrderDelivery,updateOrderStatus,deleteVehicle,deleteClient,canManageServices,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics,readUserAccess,hasPermission}from'./supabase.js?v=20261003-2';
 import{paginate,pagerHtml}from'./pagination.js?v=20260930-1';
 import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261002-1';
 if(!history.state?.cortezRoot)history.replaceState({cortezRoot:true},'');
