@@ -26,10 +26,14 @@ export function planMechanicCommissionSettlements(rows,names){
   const normalizedNames=new Map(names.filter(Boolean).map(name=>[text(name),name])),groups=new Map();
   const group=(name,weekStart)=>{const key=`${text(name)}|${weekStart}`;if(!groups.has(key))groups.set(key,{name,weekStart,pending:[],realized:0,payments:0,advances:0});return groups.get(key)};
   for(const row of rows){
-    if(category(row)==='Comissões'){const name=normalizedNames.get(text(mechanic(row)));if(!name)continue;const entry=group(name,week(row));if(status(row)==='Realizado')entry.realized+=amount(row);else entry.pending.push(row);continue}
+    if(category(row)!=='Comissões')continue;const name=normalizedNames.get(text(mechanic(row)));if(!name)continue;const entry=group(name,week(row));if(status(row)==='Realizado')entry.realized+=amount(row);else entry.pending.push(row)
+  }
+  for(const row of rows){
     if(category(row)!=='Fluxo de caixa'||kind(row)!=='Saída'||status(row)!=='Realizado')continue;
     const paymentPerson=personIn(description(row),names,'comissao'),advancePerson=personIn(description(row),names,'vale'),name=paymentPerson||advancePerson;if(!name)continue;
-    const entry=group(name,commissionSettlementWeek(dueDate(row)));if(paymentPerson)entry.payments+=amount(row);else entry.advances+=amount(row)
+    let weekStart=commissionSettlementWeek(dueDate(row));
+    if(isSaturday(dueDate(row))&&hasSaturdaySchedule(name)){const previous=previousCommissionWeekStart(dueDate(row)),previousGroup=groups.get(`${text(name)}|${previous}`);if(previousGroup?.pending.length)weekStart=previous}
+    const entry=group(name,weekStart);if(paymentPerson)entry.payments+=amount(row);else entry.advances+=amount(row)
   }
   const fullIds=[],partial=[];
   for(const entry of groups.values()){
@@ -39,3 +43,4 @@ export function planMechanicCommissionSettlements(rows,names){
   }
   return{fullIds,partial};
 }
+import{hasSaturdaySchedule,isSaturday,previousCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-1';

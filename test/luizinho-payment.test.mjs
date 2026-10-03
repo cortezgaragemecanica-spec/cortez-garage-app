@@ -115,8 +115,8 @@ test('acerto Luizinho separa notas por semana e mostra os totais de cada períod
   assert.match(style,/\.luizinho-week-heading td/);
   assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
   assert.match(index,/style\.css\?v=20261002-1/);
-  assert.match(index,/admin\.js\?v=20261002-1/);
-  assert.match(worker,/cortez-garage-v241-private-cortez-agenda/);
+  assert.match(index,/admin\.js\?v=20261003-1/);
+  assert.match(worker,/cortez-garage-v242-saturday-commissions-agenda/);
 });
 
 test('nota do Luizinho usa tabela no computador e cartões completos no celular',async()=>{
@@ -129,7 +129,7 @@ test('nota do Luizinho usa tabela no computador e cartões completos no celular'
   assert.match(style,/\.supplier-note-editor-popup \.supplier-note-items thead\{display:none\}/);
   assert.match(style,/\.note-description\{grid-column:1\/-1\}/);
   assert.match(index,/style\.css\?v=20261002-1/);
-  assert.match(index,/admin\.js\?v=20261002-1/);
-  assert.match(worker,/cortez-garage-v241-private-cortez-agenda/);
+  assert.match(index,/admin\.js\?v=20261003-1/);
+  assert.match(worker,/cortez-garage-v242-saturday-commissions-agenda/);
 });
 

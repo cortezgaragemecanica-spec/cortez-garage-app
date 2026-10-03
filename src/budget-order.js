@@ -1,4 +1,4 @@
-import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261002-1';
+import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261003-1';
 import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261002-1';
 
 const DB_KEY='cortez-garage-v1';
