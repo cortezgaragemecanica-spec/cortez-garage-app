@@ -1,9 +1,9 @@
-const CACHE='cortez-garage-v244-partner-settlement-ledger';
+const CACHE='cortez-garage-v245-monthly-commission-archive';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20261002-1&w=8',
+  './src/style.css?v=20261003-4&w=9',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20260930-1',
@@ -20,7 +20,7 @@ const SHELL=[
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20260922-1&w=3',
-  './src/admin.js?v=20261003-3&w=22',
+  './src/admin.js?v=20261003-4&w=23',
   './src/luizinho-returns.js?v=20260924-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
