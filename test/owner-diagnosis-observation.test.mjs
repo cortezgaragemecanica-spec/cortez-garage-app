@@ -14,6 +14,6 @@ test('proprietário recebe botão próprio para salvar diagnóstico e observaç�
   assert.match(module,/Salvar diagnóstico e observações/);
   assert.match(module,/document\.querySelector\('#saveOs'\)\?\.click\(\)/);
   assert.match(html,/owner-diagnosis-observation\.js\?v=20260929-1/);
-  assert.match(worker,/cortez-garage-v243-monday-saturday-commissions/);
+  assert.match(worker,/cortez-garage-v244-partner-settlement-ledger/);
   assert.match(worker,/owner-diagnosis-observation\.js\?v=20260929-1/);
 });

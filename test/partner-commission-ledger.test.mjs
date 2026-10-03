@@ -1,5 +1,6 @@
 import test from'node:test';
 import assert from'node:assert/strict';
+import{readFile}from'node:fs/promises';
 import{allocatePartnerCommission,isFullPartnerCommissionPayment,revalueOpenPartnerCommission}from'../src/partner-commission-ledger.js';
 
 test('carrega comissão antiga não paga para o saldo em aberto',()=>{
@@ -24,7 +25,7 @@ test('pagamento parcial arquiva o pago e mantém o restante acumulado',()=>{
 });
 
 test('mudança de percentual recalcula o aberto sem alterar pagamento arquivado',()=>{
-  const payment={dueDate:'2026-09-18',amount:80,description:'Comissões Marcelino'};
+  const payment={dueDate:'2026-09-18',amount:80,description:'Pagamento parcial comissões Marcelino'};
   const before=allocatePartnerCommission([{date:'2026-09-12',real:800,commission:200}],[payment]);
   const after=revalueOpenPartnerCommission(before,.15);
   assert.equal(before.paidTotal,80);
@@ -85,7 +86,27 @@ test('pagamento parcial não fecha lançamentos além do valor pago',()=>{
 test('identifica somente descrições de quitação integral de comissão',()=>{
   assert.equal(isFullPartnerCommissionPayment({description:'pago comissões fabiano'}),true);
   assert.equal(isFullPartnerCommissionPayment({description:'Comissão Marcelino quitada'}),true);
+  assert.equal(isFullPartnerCommissionPayment({description:'comissões fabiano'}),false);
+  assert.equal(isFullPartnerCommissionPayment({description:'comissões marcelino'}),false);
+  assert.equal(isFullPartnerCommissionPayment({description:'Comissões Fabiano pago'}),false);
   assert.equal(isFullPartnerCommissionPayment({description:'pagamento parcial comissão Fabiano'}),false);
+});
+
+test('marcador permanente identifica quitação mesmo se a descrição for alterada',()=>{
+  assert.equal(isFullPartnerCommissionPayment({description:'Comissão do sócio',reference:'partner-commission-settlement-v1-fabiano-123'}),true);
+});
+
+test('quitação usada hoje fecha tudo que já existia, mesmo acima do valor gravado, e mantém somente geração posterior',()=>{
+  const payment={dueDate:'2026-10-03',createdAt:'2026-10-03T21:47:49.814Z',amount:1433.03,description:'Pagamento integral comissões Fabiano',reference:'partner-commission-settlement-v1-fabiano-20261003'};
+  const result=allocatePartnerCommission([
+    {date:'2026-10-03',commission:1433.03,record:{createdAt:'2026-10-03T20:00:00.000Z'}},
+    {date:'2026-10-03',commission:757.07,record:{createdAt:'2026-10-03T21:00:00.000Z'}},
+    {date:'2026-10-03',commission:10,record:{createdAt:'2026-10-03T22:00:00.000Z'}}
+  ],[payment]);
+  assert.equal(result.outstandingTotal,10);
+  assert.equal(result.events[0].settled,true);
+  assert.equal(result.events[1].settled,true);
+  assert.equal(result.events[2].settled,false);
 });
 
 test('arredonda geração e abatimento por lançamento em centavos',()=>{
@@ -95,6 +116,14 @@ test('arredonda geração e abatimento por lançamento em centavos',()=>{
   ],[{dueDate:'2026-09-26',amount:30,description:'pagamento parcial comissão Fabiano'}]);
   assert.equal(result.generatedTotal,30.01);
   assert.equal(result.outstandingTotal,.01);
+});
+
+test('novos pagamentos integrais dos sócios recebem marcador permanente',async()=>{
+  const source=await readFile(new URL('../src/supabase.js',import.meta.url),'utf8');
+  assert.match(source,/partnerCommissionSettlementReference/);
+  assert.match(source,/partner-commission-settlement-v1-/);
+  assert.match(source,/\['Fabiano','Marcelino'\]\.includes\(partner\)/);
+  assert.match(source,/record\.partnerCommissionSettlement===true/);
 });
 
 

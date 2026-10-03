@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v243-monday-saturday-commissions';
+const CACHE='cortez-garage-v244-partner-settlement-ledger';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -20,7 +20,7 @@ const SHELL=[
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20260922-1&w=3',
-  './src/admin.js?v=20261003-2&w=21',
+  './src/admin.js?v=20261003-3&w=22',
   './src/luizinho-returns.js?v=20260924-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -31,7 +31,7 @@ const SHELL=[
   './src/mechanic-commissions.js?v=20261003-2',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20260922-1',
-  './src/supabase.js?v=20261003-2',
+  './src/supabase.js?v=20261003-3',
   './src/mechanic-saturday.js?v=20261003-2',
   './src/mechanic-privacy.js?v=20261002-1',
   './src/client-history.js?v=20261002-1',

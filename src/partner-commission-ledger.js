@@ -6,7 +6,10 @@ const normalized=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u03
 export function isFullPartnerCommissionPayment(payment={}){
   const description=normalized(payment.description);
   if(!/\bcomiss(?:ao|oes)\b/.test(description)||/\b(parcial|adiantamento|vale)\b/.test(description))return false;
-  return /^(pago|paga)\s+(?:as\s+)?comiss(?:ao|oes)\b/.test(description)||/\b(pagamento integral|quitad[ao]|quitacao)\b/.test(description);
+  const reference=normalized(payment.reference);
+  return reference.startsWith('partner-commission-settlement-v1-')
+    ||/^(pago|paga)\s+(?:as\s+)?comiss(?:ao|oes)\b/.test(description)
+    ||/\b(pagamento integral|quitad[ao]|quitacao)\b/.test(description);
 }
 
 function eventAtOrBeforePayment(event,payment){
