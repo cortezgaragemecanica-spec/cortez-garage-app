@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v246-pc-backup';
+const CACHE='cortez-garage-v247-edit-receivables';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -20,7 +20,7 @@ const SHELL=[
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20260922-1&w=3',
-  './src/admin.js?v=20261003-5&w=24',
+  './src/admin.js?v=20261005-1&w=25',
   './src/luizinho-returns.js?v=20260924-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
