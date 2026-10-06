@@ -1,9 +1,9 @@
-const CACHE='cortez-garage-v249-card-fees';
+const CACHE='cortez-garage-v250-order-layout';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20261006-1&w=10',
+  './src/style.css?v=20261006-2&w=11',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20260930-1',
@@ -17,6 +17,7 @@ const SHELL=[
   './src/entry-receipt.js?v=20260911-2',
   './src/closed-order-receipt.js?v=20261006-1',
   './src/dialog-accessibility.js?v=20260924-1',
+  './src/order-layout.js?v=20261006-1',
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20260922-1&w=3',
@@ -36,7 +37,6 @@ const SHELL=[
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',
   './src/mechanic-privacy.js?v=20261002-1',
-  './src/client-history.js?v=20261002-1',
   './manifest.webmanifest',
   './official-logo.png',
   './icons/icon-192.png',
