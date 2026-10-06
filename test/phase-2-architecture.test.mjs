@@ -28,7 +28,7 @@ test('fase 2 compartilha um único observador de atualização da interface',asy
 
 test('fase 2 reduz e invalida o cache do aplicativo',async()=>{
   const worker=await read('public/sw.js');
-  assert.match(worker,/cortez-garage-v250-order-layout/);
+  assert.match(worker,/cortez-garage-v251-luizinho-check/);
   assert.match(worker,/boot\.js\?v=20260930-1/);
   assert.match(worker,/ui-events\.js\?v=20260930-1/);
   assert.doesNotMatch(worker,/ASSETS\.push/);

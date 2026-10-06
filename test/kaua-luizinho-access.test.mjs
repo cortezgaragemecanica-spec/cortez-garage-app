@@ -18,7 +18,8 @@ test('Kauã pode incluir e alterar somente notas do Acerto Luizinho',async()=>{
 test('Financeiro preserva incluir e editar Luizinho para Kauã sem liberar exclusão',async()=>{
   const admin=await read('src/admin.js');
   assert.match(admin,/kauaLuizinho=canManageLuizinhoNotes\(\)&&activeArea==='Acerto fornecedores'&&activeSupplier==='luizinho'/);
-  assert.match(admin,/kauaLuizinho\?'\.delete-supplier':'\.add-supplier,\.edit-supplier,\.delete-supplier'/);
+  assert.match(admin,/kauaLuizinho\?'\.delete-supplier':'\.add-supplier,\.edit-supplier,\.delete-supplier,\.toggle-luizinho-check'/);
+  assert.match(admin,/você pode incluir, editar e conferir notas do Acerto Luizinho/);
   assert.doesNotMatch(admin,/readonlyFinanceActions=[^;]*\.add-supplier/);
 });
 
