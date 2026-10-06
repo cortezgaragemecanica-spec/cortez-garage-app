@@ -21,7 +21,10 @@ test('devolução fica separada da nota, reduz o acerto e retira estoque',async(
   assert.match(source,/group\.credit\)\.toFixed\(2\)/);
   assert.match(source,/removeLuizinhoReturnFromStock/);
   assert.match(source,/available-item\.quantity/);
-  assert.match(source,/data\.luizinhoReturns\.push\(saved\)/);
+  assert.match(source,/data\.luizinhoReturns\.push\(\.\.\.saved\)/);
+  assert.match(source,/applyLuizinhoReturnStockChange/);
+  assert.match(source,/export async function updateLuizinhoReturn/);
+  assert.match(source,/export async function deleteLuizinhoReturn/);
   assert.doesNotMatch(source,/data\.luizinho\[[^\]]+\].*saveLuizinhoReturn/);
 });
 
@@ -30,11 +33,14 @@ test('janela pesquisa notas, permite escolher semana e mantém histórico',async
     readFile(new URL('../src/luizinho-returns.js',import.meta.url),'utf8'),
     readFile(new URL('../index.html',import.meta.url),'utf8')
   ]);
-  assert.match(index,/luizinho-returns\.js\?v=20260924-1/);
+  assert.match(index,/luizinho-returns\.js\?v=20261006-1/);
   assert.match(source,/Buscar código ou descrição/);
   assert.match(source,/Crédito no acerto da semana/);
-  assert.match(source,/change-return-week/);
+  assert.match(source,/Itens da devolução/);
+  assert.match(source,/edit-luizinho-return/);
+  assert.match(source,/delete-luizinho-return/);
   assert.match(source,/saveLuizinhoReturn/);
-  assert.match(source,/updateLuizinhoReturnWeek/);
+  assert.match(source,/updateLuizinhoReturn/);
+  assert.match(source,/deleteLuizinhoReturn/);
 });
 
