@@ -1,12 +1,14 @@
 import{readSupplierSettlements,saveLuizinhoReturn,updateLuizinhoReturn,deleteLuizinhoReturn}from'./supabase.js?v=20261006-4';
-import{defaultLuizinhoReturnWeek}from'./luizinho-payment.js?v=20260924-2';
+import{defaultLuizinhoReturnWeek,isLuizinhoReturnArchived}from'./luizinho-payment.js?v=20261006-1';
 
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const date=value=>value?new Date(`${String(value).slice(0,10)}T12:00:00`).toLocaleDateString('pt-BR'):'—';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const itemKey=item=>`${normalize(item?.code)}|${normalize(item?.description)}|${normalize(item?.brand)}`;
-let settlements=null,loading=null,renderQueued=false;
+let settlements=null,loading=null,renderQueued=false,showArchivedReturns=false;
+
+const localDateOnly=value=>`${value.getFullYear()}-${String(value.getMonth()+1).padStart(2,'0')}-${String(value.getDate()).padStart(2,'0')}`;
 
 async function loadSettlements(force=false){
   if(settlements&&!force)return settlements;
@@ -30,15 +32,16 @@ function returnGroups(){
 }
 
 function renderHistory(area){
-  const groups=returnGroups(),signature=JSON.stringify(groups.map(group=>[group.id,group.items.map(item=>item.updatedAt),group.creditWeek]));
+  const allGroups=returnGroups(),today=localDateOnly(new Date()),archived=allGroups.filter(group=>isLuizinhoReturnArchived(group.creditWeek,today)),current=allGroups.filter(group=>!isLuizinhoReturnArchived(group.creditWeek,today)),groups=showArchivedReturns?archived:current,signature=JSON.stringify([showArchivedReturns,...allGroups.map(group=>[group.id,group.items.map(item=>item.updatedAt),group.creditWeek])]);
   if(area.dataset.luizinhoReturnSignature===signature&&area.querySelector('.luizinho-returns-panel'))return;
   area.dataset.luizinhoReturnSignature=signature;
   area.querySelector('.luizinho-returns-panel')?.remove();
   const panel=document.createElement('section');
   panel.className='luizinho-returns-panel';
-  panel.innerHTML=`<div class="luizinho-returns-head"><div><h4>Devoluções e créditos</h4><p>Cada devolução pode reunir vários itens. Editar recalcula o estoque; excluir devolve os itens ao estoque.</p></div><b>${money(groups.reduce((sum,group)=>sum+group.amount,0))}</b></div><div class="table-card finance-table"><table><thead><tr><th>Devolução</th><th>Itens e notas</th><th>Qtd.</th><th>Crédito</th><th>Semana do crédito</th><th></th></tr></thead><tbody>${groups.length?groups.map(group=>`<tr><td>${date(group.date)}</td><td><div class="return-history-items">${group.items.map(item=>`<span><b>${esc(item.code||'Sem código')} · ${esc(item.description)}</b><small>Nota de ${date(item.noteDate)}${item.vehicle?` · ${esc(item.vehicle)}`:''}</small></span>`).join('')}</div></td><td>${group.items.reduce((sum,item)=>sum+Number(item.quantity||0),0)}<small>${group.items.length} item(ns)</small></td><td><b>${money(group.amount)}</b></td><td>${date(group.creditWeek)}</td><td><div class="finance-row-actions"><button class="secondary edit-luizinho-return" data-return-id="${esc(group.id)}">Editar</button><button class="danger delete-luizinho-return" data-return-id="${esc(group.id)}">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="6">Nenhuma devolução registrada.</td></tr>'}</tbody></table></div>`;
+  panel.innerHTML=`<div class="luizinho-returns-head"><div><h4>Devoluções e créditos</h4><p>Ao encerrar a semana do crédito, a devolução é arquivada automaticamente.</p></div><b>${money(groups.reduce((sum,group)=>sum+group.amount,0))}</b></div><div class="cash-account-tabs return-period-tabs"><button type="button" data-return-period="current" class="${showArchivedReturns?'':'active'}">Atuais e programadas (${current.length})</button><button type="button" data-return-period="archived" class="${showArchivedReturns?'active':''}">Arquivadas (${archived.length})</button></div><div class="table-card finance-table"><table><thead><tr><th>Devolução</th><th>Itens e notas</th><th>Qtd.</th><th>Crédito</th><th>Semana do crédito</th><th></th></tr></thead><tbody>${groups.length?groups.map(group=>`<tr><td>${date(group.date)}</td><td><div class="return-history-items">${group.items.map(item=>`<span><b>${esc(item.code||'Sem código')} · ${esc(item.description)}</b><small>Nota de ${date(item.noteDate)}${item.vehicle?` · ${esc(item.vehicle)}`:''}</small></span>`).join('')}</div></td><td>${group.items.reduce((sum,item)=>sum+Number(item.quantity||0),0)}<small>${group.items.length} item(ns)</small></td><td><b>${money(group.amount)}</b></td><td>${date(group.creditWeek)}</td><td><div class="finance-row-actions"><button class="secondary edit-luizinho-return" data-return-id="${esc(group.id)}">Editar</button><button class="danger delete-luizinho-return" data-return-id="${esc(group.id)}">Excluir</button></div></td></tr>`).join(''):`<tr><td colspan="6">${showArchivedReturns?'Nenhuma devolução arquivada.':'Nenhuma devolução atual ou programada.'}</td></tr>`}</tbody></table></div>`;
   const paymentsHeading=[...area.querySelectorAll('h4')].find(item=>item.textContent.includes('Pagamentos identificados'));
   if(paymentsHeading)paymentsHeading.before(panel);else area.append(panel);
+  panel.querySelectorAll('[data-return-period]').forEach(button=>button.onclick=()=>{showArchivedReturns=button.dataset.returnPeriod==='archived';renderHistory(area)});
   panel.querySelectorAll('.edit-luizinho-return').forEach(button=>button.onclick=()=>openReturnPopup(groups.find(group=>group.id===button.dataset.returnId)));
   panel.querySelectorAll('.delete-luizinho-return').forEach(button=>button.onclick=()=>removeReturn(groups.find(group=>group.id===button.dataset.returnId),button));
 }

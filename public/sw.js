@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v253-luizinho-return-quantity-fix';
+const CACHE='cortez-garage-v254-luizinho-return-archive';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -22,7 +22,7 @@ const SHELL=[
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20260922-1&w=3',
   './src/admin.js?v=20261006-2&w=27',
-  './src/luizinho-returns.js?v=20261006-2',
+  './src/luizinho-returns.js?v=20261006-3',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
   './src/agenda-enhancements.js?v=20261003-2',
