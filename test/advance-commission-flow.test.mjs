@@ -53,7 +53,7 @@ test('janela de comissões usa tabela ampla no computador e cartões no celular'
   assert.match(style,/\.commission-release-columns,.commission-service-row\{[^}]*grid-template-columns:/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.commission-service-row\{grid-template-columns:1fr 1fr/);
   assert.match(index,/style\.css\?v=20261003-4/);
-  assert.match(index,/order-workflow\.js\?v=20260928-1/);
+  assert.match(index,/order-workflow\.js\?v=20261005-2/);
 });
 
 test('entrega não duplica comissão antecipada nem reabre comissão já paga',async()=>{

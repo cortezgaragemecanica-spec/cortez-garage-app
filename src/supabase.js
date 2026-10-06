@@ -320,12 +320,7 @@ export async function saveStockItems(items,{absolute=false}={}){
   try{await writeStockMetadataConfig(session,metadataRow,plan.metadata)}catch(error){console.error('Estoque salvo, mas os detalhes comerciais não foram atualizados:',error);saved.warning=`As quantidades foram salvas, mas fornecedor, custo ou markup podem não ter sido atualizados: ${error.message}`}
   return saved;
 }
-// O fluxo guiado substitui requireServiceManagement('dar baixa em ordem de serviço') para que todo usuário autorizado a marcar a O.S. como pronta conclua a conferência.
-export async function consumeStockForOrder(order,selections=[]){
-  const session=await refreshSession();
-  if(!session?.access_token)throw new Error('Sessão expirada');
-  const movementId=encodeURIComponent(order.id),done=await request(`/rest/v1/sincronizacao?entidade=eq.estoque_saida&registro_id=eq.${movementId}&select=id&limit=1`,{token:session.access_token});
-  if(done.length)return{alreadyProcessed:true,missing:[]};
+async function prepareOrderStockUsage(session,order,selections=[]){
   const rows=await request('/rest/v1/estoque?select=*',{token:session.access_token}),missing=[],used=[],groups=new Map();
   for(const [index,part]of(order.budget?.parts||[]).entries()){
     if(part.refused)continue;
@@ -339,7 +334,16 @@ export async function consumeStockForOrder(order,selections=[]){
     group.quantity+=needed;group.saleValue=Math.max(group.saleValue,saleValue);group.descriptions.push(part.description);groups.set(found.id,group);
   }
   for(const group of groups.values())if(group.quantity>Number(group.row.quantidade||0))missing.push(...group.descriptions);
-  if(missing.length)return{alreadyProcessed:false,missing:[...new Set(missing)]};
+  return{rows,used,groups,missing:[...new Set(missing)]}
+}
+// O fluxo guiado substitui requireServiceManagement('dar baixa em ordem de serviço') para que todo usuário autorizado a marcar a O.S. como pronta conclua a conferência.
+export async function consumeStockForOrder(order,selections=[]){
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const movementId=encodeURIComponent(order.id),done=await request(`/rest/v1/sincronizacao?entidade=eq.estoque_saida&registro_id=eq.${movementId}&select=id&limit=1`,{token:session.access_token});
+  if(done.length)return{alreadyProcessed:true,missing:[]};
+  const{used,groups,missing}=await prepareOrderStockUsage(session,order,selections);
+  if(missing.length)return{alreadyProcessed:false,missing};
   try{
     const result=await request('/rest/v1/rpc/processar_baixa_estoque',{token:session.access_token,method:'POST',body:{p_order_id:order.id,p_order_number:String(order.number),p_items:used}});
     return result||{alreadyProcessed:false,missing:[]}
@@ -360,6 +364,29 @@ export async function consumeStockForOrder(order,selections=[]){
   }
   await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'app',entidade:'estoque_saida',registro_id:order.id,dados:{ordem:order.number,pecas:used,faltantes:[]}}});
   return{alreadyProcessed:false,missing:[]}
+}
+
+export async function finalizeOrderReady(order,selections=[]){
+  if(!hasPermission('readyOrders'))throw new Error('Seu usuário não tem permissão para colocar a O.S. como pronta para entrega.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const{used,missing}=await prepareOrderStockUsage(session,order,selections);
+  if(missing.length)return{alreadyProcessed:false,missing};
+  try{
+    const result=await request('/rest/v1/rpc/finalizar_os_pronta',{token:session.access_token,method:'POST',body:{p_order_id:order.id,p_order_number:String(order.number),p_items:used}});
+    return result||{alreadyProcessed:false,missing:[]}
+  }catch(error){
+    if(/finalizar_os_pronta|schema cache|PGRST202/i.test(error.message||''))throw new Error('A proteção transacional da O.S. ainda não foi instalada no banco. Execute a migração da Fase 1 antes de tentar novamente.');
+    throw error
+  }
+}
+
+export async function reopenReadyOrder(orderId){
+  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode reabrir uma O.S. pronta.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  try{return await request('/rest/v1/rpc/reabrir_os_pronta',{token:session.access_token,method:'POST',body:{p_order_id:orderId}})}
+  catch(error){if(/reabrir_os_pronta|schema cache|PGRST202/i.test(error.message||''))throw new Error('A reabertura segura da O.S. ainda não foi instalada no banco.');throw error}
 }
 
 const mapFinance=row=>({id:row.id,category:row.categoria,kind:row.movimento,description:row.descricao,amount:Number(row.valor)||0,dueDate:row.vencimento,status:row.status,mechanic:row.mecanico||'',paymentType:row.forma_pagamento||'',orderId:row.os_id||'',reference:row.referencia||'',weekStart:row.semana_inicio||'',createdAt:row.criado_em,updatedAt:row.atualizado_em});

@@ -141,8 +141,8 @@ test('ações do orçamento ficam juntas e o salvamento manual confirma os itens
   assert.match(workflow,/approval\.insertBefore\(ready,approval\.querySelector\('#previousStatus'\)\)/);
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
-  assert.match(index,/budget-order\.js\?v=20261003-2/);
-  assert.match(index,/order-workflow\.js\?v=20260928-1/);
+  assert.match(index,/budget-order\.js\?v=20261005-2/);
+  assert.match(index,/order-workflow\.js\?v=20261005-2/);
 
 });
 
@@ -155,8 +155,8 @@ test('peça de orçamento ignora o estoque e mantém todos os campos comerciais'
   assert.match(budget,/brand:tr\.querySelector/);
   assert.match(budget,/supplier:tr\.querySelector/);
   assert.match(style,/\.part-code-field\[hidden\],#partStockArea\[hidden\]/);
-  assert.match(index,/budget-order\.js\?v=20261003-2/);
-  assert.match(worker,/budget-order\.js\?v=20261003-2/);
+  assert.match(index,/budget-order\.js\?v=20261005-2/);
+  assert.match(worker,/budget-order\.js\?v=20261005-2/);
 });
 
 test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
@@ -348,7 +348,7 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(style,/#requestParts\{background:#f2c500/);
   assert.match(activity,/shareTextToWhatsApp/);
   assert.match(activity,/shareTextToWhatsApp[\s\S]*?setPackage\("com\.whatsapp"\)[\s\S]*?setPackage\("com\.whatsapp\.w4b"\)/);
-  assert.match(index,/order-workflow\.js\?v=20260928-1/);
+  assert.match(index,/order-workflow\.js\?v=20261005-2/);
   assert.match(index,/access-control\.js\?v=20260915-1/);
 
 });
@@ -391,7 +391,7 @@ test('campo Serviços a executar passa a se chamar Observação',async()=>{
   assert.match(workflow,/field&&field\.placeholder!==placeholder/);
   assert.match(pdf,/paragraph\('Observação',order\.services\)/);
   assert.doesNotMatch(pdf,/Serviços a executar/);
-  assert.match(index,/order-workflow\.js\?v=20260928-1/);
+  assert.match(index,/order-workflow\.js\?v=20261005-2/);
   assert.match(index,/pdf-order\.js\?v=20261002-1/);
 });
 
@@ -405,8 +405,8 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
   assert.match(budget,/querySelector\('\[data-field="margin"\]'\)\.value=markup/);
   assert.match(budget,/autoSave\(\)/);
   assert.match(style,/\.budget-part-actions/);
-  assert.match(index,/budget-order\.js\?v=20261003-2/);
-  assert.match(worker,/budget-order\.js\?v=20261003-2/);
+  assert.match(index,/budget-order\.js\?v=20261005-2/);
+  assert.match(worker,/budget-order\.js\?v=20261005-2/);
 });
 
 test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',async()=>{
@@ -461,7 +461,7 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
   assert.match(index,/style\.css\?v=20261003-4/);
-  assert.match(index,/budget-order\.js\?v=20261003-2/);
+  assert.match(index,/budget-order\.js\?v=20261005-2/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
   assert.match(worker,/boot\.js\?v=20260930-1/);
 
@@ -514,8 +514,8 @@ test('painel de solicitações de peças fica junto ao de orçamentos de serviç
   assert.match(workflow,/renderPartRequestNotification\(\);if\(partRequestsLoading\|\|/);
   assert.match(service,/id='serviceQuoteDashboardAlert'/);
   assert.match(style,/\.part-request-dashboard-alert\{/);
-  assert.match(index,/order-workflow\.js\?v=20260928-1/);
-  assert.match(worker,/order-workflow\.js\?v=20260928-1/);
+  assert.match(index,/order-workflow\.js\?v=20261005-2/);
+  assert.match(worker,/order-workflow\.js\?v=20261005-2/);
 
 });
 
@@ -533,7 +533,7 @@ test('solicitações de peças enviadas ficam recolhidas em Já enviadas e abrem
   assert.match(workflow,/archive\.querySelector\('\.part-request-list'\)\.append\(\.\.\.sentCards\)/);
   assert.match(workflow,/Reenviar para o fornecedor/);
   assert.match(style,/\.part-request-archive summary\{/);
-  assert.match(index,/order-workflow\.js\?v=20260928-1/);
+  assert.match(index,/order-workflow\.js\?v=20261005-2/);
 
 });
 
@@ -610,8 +610,8 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/Selecione o caixa em que o valor foi recebido/);
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20261005-1/);
-  assert.match(worker,/supabase\.js\?v=20261003-3/);
-  assert.match(worker,/cortez-garage-v247-edit-receivables/);
+  assert.match(worker,/supabase\.js\?v=20261005-2/);
+  assert.match(worker,/cortez-garage-v248-safe-ready-stock/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -638,7 +638,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261003-4/);
   assert.match(index,/admin\.js\?v=20261005-1/);
-  assert.match(worker,/cortez-garage-v247-edit-receivables/);
+  assert.match(worker,/cortez-garage-v248-safe-ready-stock/);
 });
 
 
