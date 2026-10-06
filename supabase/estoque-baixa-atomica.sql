@@ -185,4 +185,10 @@ revoke all on function public.finalizar_os_pronta(uuid,text,jsonb) from public;
 revoke all on function public.reabrir_os_pronta(uuid) from public;
 grant execute on function public.finalizar_os_pronta(uuid,text,jsonb) to authenticated;
 grant execute on function public.reabrir_os_pronta(uuid) to authenticated;
-revoke execute on function public.processar_baixa_estoque(uuid,text,jsonb) from authenticated;
+do $$
+begin
+  if to_regprocedure('public.processar_baixa_estoque(uuid,text,jsonb)') is not null then
+    execute 'revoke execute on function public.processar_baixa_estoque(uuid,text,jsonb) from authenticated';
+  end if;
+end;
+$$;
