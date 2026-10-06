@@ -26,6 +26,15 @@ test('fechamento mensal consolida operação, lucros, pessoas e fornecedores',()
   assert.deepEqual(result.purchases,[{name:'Luizinho',amount:300,credits:50},{name:'Retífica',amount:200,credits:0}]);
 });
 
+test('taxa do cartão reduz o lucro sem reduzir o faturamento do cliente',()=>{
+  const cardOrder={...current,closingReceipt:{cardInstallments:3,cardFeeRate:3.9,cardFeeAmount:39}};
+  const result=summarizeMonthlyClosing({month:'2026-09',orders:[cardOrder],records:[],suppliers:{},partnerNames:[],profitEvents:[{date:'2026-09-20',order:cardOrder,record:{paymentType:'Cartão de crédito · 3x'},orderValue:961}],orderProfits:[]});
+  assert.equal(result.billed,1000);
+  assert.equal(result.received,961);
+  assert.equal(result.totalProfit,661);
+  assert.equal(result.partsProfit+result.laborProfit,661);
+});
+
 test('painel fica oculto até o clique no botão e permite trocar o mês',async()=>{
   const[admin,index,style]=await Promise.all(['../src/admin.js','../index.html','../src/monthly-closing.css'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
   assert.match(admin,/id="monthlyClosing"/);
@@ -36,7 +45,7 @@ test('painel fica oculto até o clique no botão e permite trocar o mês',async(
   assert.match(admin,/exportReportPdf\(popup\.querySelector\('\.monthly-closing-body'\)/);
   for(const label of['O.S. entregues','Clientes novos','Ticket médio','Valor total faturado','Lucro total','Lucro líquido','Carros executados','Faturamento','Lucro','Compras por fornecedor','Lucro nas peças','Lucro na mão de obra','Comissões dos sócios','Pagamentos recebidos'])assert.ok(admin.includes(label));
   assert.match(index,/monthly-closing\.css\?v=20261001-1/);
-  assert.match(index,/admin\.js\?v=20261005-1/);
+  assert.match(index,/admin\.js\?v=20261006-1/);
   assert.match(style,/monthly-closing-popup/);
 });
 

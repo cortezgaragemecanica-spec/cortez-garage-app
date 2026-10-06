@@ -24,6 +24,15 @@ test('registro antigo a prazo sem detalhamento não inventa valor pago',()=>{
   assert.equal(data.unknownCredit,true);
 });
 
+test('recibo de cartão separa valor pago, taxa e líquido da oficina',()=>{
+  const data=closedOrderReceiptData({total:1000,payment:'Cartão de crédito',closingReceipt:{receivedNow:1000,netReceived:961,creditAmount:0,paymentType:'Cartão de crédito · 3x',cardInstallments:3,cardFeeRate:3.9,cardFeeAmount:39}});
+  assert.equal(data.paidTotal,1000);
+  assert.equal(data.netReceived,961);
+  assert.equal(data.cardInstallments,3);
+  assert.equal(data.cardFeeRate,3.9);
+  assert.equal(data.cardFeeAmount,39);
+});
+
 test('botão de recibo aparece depois do fechamento e persiste os dados',async()=>{
   const [receipt,workflow,supabase,index,worker]=await Promise.all([
     readFile(new URL('../src/closed-order-receipt.js',import.meta.url),'utf8'),
@@ -39,6 +48,6 @@ test('botão de recibo aparece depois do fechamento e persiste os dados',async()
   assert.match(workflow,/cortez:order-delivered/);
   assert.match(supabase,/closingReceipt/);
   assert.match(supabase,/dados_extras:\{\.\.\.\(orderRow\.dados_extras\|\|\{\}\),closingReceipt,warranty,warrantyPayCommissions/);
-  assert.match(index,/closed-order-receipt\.js\?v=20260928-1/);
-  assert.match(worker,/closed-order-receipt\.js\?v=20260928-1/);
+  assert.match(index,/closed-order-receipt\.js\?v=20261006-1/);
+  assert.match(worker,/closed-order-receipt\.js\?v=20261006-1/);
 });
