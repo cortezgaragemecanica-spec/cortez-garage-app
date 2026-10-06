@@ -610,8 +610,8 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/Selecione o caixa em que o valor foi recebido/);
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20261006-2/);
-  assert.match(worker,/supabase\.js\?v=20261006-3/);
-  assert.match(worker,/cortez-garage-v252-luizinho-return-editor/);
+  assert.match(worker,/supabase\.js\?v=20261006-4/);
+  assert.match(worker,/cortez-garage-v253-luizinho-return-quantity-fix/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -638,7 +638,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261006-4/);
   assert.match(index,/admin\.js\?v=20261006-2/);
-  assert.match(worker,/cortez-garage-v252-luizinho-return-editor/);
+  assert.match(worker,/cortez-garage-v253-luizinho-return-quantity-fix/);
 });
 
 
