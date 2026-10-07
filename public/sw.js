@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v255-order-sync-recovery';
+const CACHE='cortez-garage-v256-ready-save-first';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -7,12 +7,12 @@ const SHELL=[
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20260930-1',
-  './src/main.js?v=20261007-1&w=14',
+  './src/main.js?v=20261007-2&w=15',
   './src/access-control.js?v=20260915-1',
-  './src/budget-order.js?v=20261005-2',
+  './src/budget-order.js?v=20261007-1',
   './src/pdf-order.js?v=20261002-1',
   './src/owner-diagnosis-observation.js?v=20260929-1',
-  './src/order-workflow.js?v=20261006-1',
+  './src/order-workflow.js?v=20261007-2',
   './src/delete-order.js?v=20260905-1',
   './src/entry-receipt.js?v=20260911-2',
   './src/closed-order-receipt.js?v=20261006-1',
