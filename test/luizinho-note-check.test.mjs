@@ -27,5 +27,5 @@ test('acerto mostra progresso e permite conferir cada nota',async()=>{
   assert.match(style,/\.luizinho-note-checked/);
   assert.match(index,/admin\.js\?v=20261006-2&amp;w=27/);
   assert.match(index,/style\.css\?v=20261006-4&amp;w=13/);
-  assert.match(worker,/cortez-garage-v258-forced-release-refresh/);
+  assert.match(worker,/cortez-garage-v259-restricted-user-fresh-sync/);
 });

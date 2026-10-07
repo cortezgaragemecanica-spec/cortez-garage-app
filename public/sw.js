@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v258-forced-release-refresh';
+const CACHE='cortez-garage-v259-restricted-user-fresh-sync';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,8 +6,8 @@ const SHELL=[
   './src/style.css?v=20261006-4&w=13',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261007-1',
-  './src/main.js?v=20261007-3&w=16',
+  './src/boot.js?v=20261007-2',
+  './src/main.js?v=20261007-4&w=17',
   './src/access-control.js?v=20260915-1',
   './src/budget-order.js?v=20261007-2',
   './src/pdf-order.js?v=20261002-1',
@@ -32,7 +32,7 @@ const SHELL=[
   './src/mechanic-commissions.js?v=20261003-2',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20260922-1',
-  './src/supabase.js?v=20261007-1',
+  './src/supabase.js?v=20261007-2',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',
