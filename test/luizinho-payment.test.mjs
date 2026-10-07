@@ -116,7 +116,7 @@ test('acerto Luizinho separa notas por semana e mostra os totais de cada períod
   assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
   assert.match(index,/style\.css\?v=20261006-4/);
   assert.match(index,/admin\.js\?v=20261006-2/);
-  assert.match(worker,/cortez-garage-v257-ready-status-guard/);
+  assert.match(worker,/cortez-garage-v258-forced-release-refresh/);
 });
 
 test('nota do Luizinho usa tabela no computador e cartões completos no celular',async()=>{
@@ -130,6 +130,6 @@ test('nota do Luizinho usa tabela no computador e cartões completos no celular'
   assert.match(style,/\.note-description\{grid-column:1\/-1\}/);
   assert.match(index,/style\.css\?v=20261006-4/);
   assert.match(index,/admin\.js\?v=20261006-2/);
-  assert.match(worker,/cortez-garage-v257-ready-status-guard/);
+  assert.match(worker,/cortez-garage-v258-forced-release-refresh/);
 });
 

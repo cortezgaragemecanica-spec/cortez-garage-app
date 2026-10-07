@@ -463,7 +463,7 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(index,/style\.css\?v=20261006-4/);
   assert.match(index,/budget-order\.js\?v=20261007-2/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20260930-1/);
+  assert.match(worker,/boot\.js\?v=20261007-1/);
 
 });
 
@@ -500,7 +500,7 @@ test('somente o proprietário exclui solicitação de orçamento de serviços no
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20260930-1/);
+  assert.match(worker,/boot\.js\?v=20261007-1/);
 
 });
 
@@ -575,7 +575,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
   assert.match(index,/admin\.js\?v=20261006-2/);
   assert.match(index,/reports\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20260930-1/);
+  assert.match(worker,/boot\.js\?v=20261007-1/);
 
 });
 
@@ -611,7 +611,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20261006-2/);
   assert.match(worker,/supabase\.js\?v=20261007-1/);
-  assert.match(worker,/cortez-garage-v257-ready-status-guard/);
+  assert.match(worker,/cortez-garage-v258-forced-release-refresh/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -638,7 +638,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261006-4/);
   assert.match(index,/admin\.js\?v=20261006-2/);
-  assert.match(worker,/cortez-garage-v257-ready-status-guard/);
+  assert.match(worker,/cortez-garage-v258-forced-release-refresh/);
 });
 
 

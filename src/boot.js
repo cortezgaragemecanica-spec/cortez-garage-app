@@ -1,3 +1,17 @@
+const RELEASE='20261007-4';
+const RELEASE_KEY='cortez-web-release';
+const activateRelease=async()=>{
+  if(localStorage.getItem(RELEASE_KEY)===RELEASE)return;
+  localStorage.setItem(RELEASE_KEY,RELEASE);
+  const tasks=[];
+  if(window.caches?.keys)tasks.push(caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))));
+  if(navigator.serviceWorker?.getRegistrations)tasks.push(navigator.serviceWorker.getRegistrations().then(items=>Promise.all(items.map(item=>item.unregister()))));
+  await Promise.allSettled(tasks);
+  const url=new URL(location.href);url.searchParams.set('release',RELEASE);location.replace(url.href);
+  await new Promise(()=>{});
+};
+await activateRelease();
+
 const loadModules=async(names,label)=>{
   const results=await Promise.allSettled(names.map(name=>import(name)));
   const failed=results.filter(result=>result.status==='rejected');
