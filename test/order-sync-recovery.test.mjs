@@ -33,8 +33,8 @@ test('atualização de progresso exige confirmação de linha gravada',async()=>
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261007-2/);
-  assert.match(worker,/main\.js\?v=20261007-2&w=15/);
+  assert.match(index,/main\.js\?v=20261007-3/);
+  assert.match(worker,/main\.js\?v=20261007-3&w=16/);
   assert.match(worker,/supabase\.js\?v=20261007-1/);
-  assert.match(worker,/cortez-garage-v256-ready-save-first/);
+  assert.match(worker,/cortez-garage-v257-ready-status-guard/);
 });

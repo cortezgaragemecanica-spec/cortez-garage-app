@@ -21,9 +21,11 @@ test('pronto para entrega usa uma única operação transacional',async()=>{
 test('alterações são confirmadas antes de colocar a O.S. como pronta',async()=>{
   const[workflow,budget,main]=await Promise.all([read('src/order-workflow.js'),read('src/budget-order.js'),read('src/main.js')]);
   assert.match(budget,/saveBudgetButton\._persistOrder=async\(\)=>/);
-  assert.match(budget,/if\(saved\)await flushPendingDatabase\(\)/);
-  assert.match(main,/cortez:flush-database/);
-  assert.match(main,/clearTimeout\(syncTimer\);pushMovement\(\)/);
+  assert.match(budget,/await pausePendingDatabaseSave\(\)/);
+  assert.match(budget,/if\(displayedStatus&&!\['Pronto para entrega','Entregue'\]\.includes\(displayedStatus\)\)order\.status=displayedStatus/);
+  assert.match(main,/cortez:pause-database-save/);
+  assert.match(main,/cortez:order-ready/);
+  assert.match(main,/localStorage\.removeItem\(PENDING_DB_KEY\)/);
   assert.match(workflow,/await budgetSave\._persistOrder\(\)/);
   assert.match(workflow,/await saveOrderProgress\(order\);await saveOrderValues\(order\)/);
   assert.ok(workflow.indexOf('await saveOrderValues(order)')<workflow.indexOf('await finalizeOrderReady(order,selections)'));
