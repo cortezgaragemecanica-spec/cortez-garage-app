@@ -30,9 +30,9 @@ test('somente contas abertas com vencimento anterior a hoje recebem destaque',()
 
 test('versões publicadas invalidam cache do módulo e do estilo',()=>{
   assert.match(index,/admin\.js\?v=20261006-2/);
-  assert.match(index,/style\.css\?v=20261006-4/);
-  assert.match(worker,/cortez-garage-v259-restricted-user-fresh-sync/);
+  assert.match(index,/style\.css\?v=20261007-1/);
+  assert.match(worker,/cortez-garage-v260-help-manual/);
   assert.match(worker,/admin\.js\?v=20261006-2&w=27/);
-  assert.match(worker,/style\.css\?v=20261006-4&w=13/);
+  assert.match(worker,/style\.css\?v=20261007-1&w=14/);
 });
 

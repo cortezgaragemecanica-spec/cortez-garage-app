@@ -460,10 +460,10 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(service,/cortez:service-quote-imported/);
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
-  assert.match(index,/style\.css\?v=20261006-4/);
+  assert.match(index,/style\.css\?v=20261007-1/);
   assert.match(index,/budget-order\.js\?v=20261007-2/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261007-2/);
+  assert.match(worker,/boot\.js\?v=20261007-3/);
 
 });
 
@@ -483,8 +483,8 @@ test('solicitações de serviços ficam no histórico da O.S. fora do PDF e avis
 test('botão de solicitar orçamento de serviços aparece em azul',async()=>{
   const [style,index,worker]=await Promise.all([read('src/style.css'),read('index.html'),read('public/sw.js')]);
   assert.match(style,/#requestServiceQuote\{[^}]*background:#1764c8;[^}]*color:#fff/);
-  assert.match(index,/style\.css\?v=20261006-4/);
-  assert.match(worker,/style\.css\?v=20261006-4&w=13/);
+  assert.match(index,/style\.css\?v=20261007-1/);
+  assert.match(worker,/style\.css\?v=20261007-1&w=14/);
 
 });
 
@@ -500,7 +500,7 @@ test('somente o proprietário exclui solicitação de orçamento de serviços no
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261007-2/);
+  assert.match(worker,/boot\.js\?v=20261007-3/);
 
 });
 
@@ -544,8 +544,8 @@ test('solicitações de serviços e peças ocupam a tela inteira no computador',
   assert.match(style,/\.os-workflow-modal:has\(\.part-request-list\)/);
   assert.match(style,/\.service-quote-modal>\.check-popup-card\{[^}]*width:100%[^}]*height:calc\(100dvh - 28px\)[^}]*max-height:none/);
   assert.match(style,/\.service-quote-owner-list[^}]*flex:1[^}]*overflow:auto/);
-  assert.match(index,/style\.css\?v=20261006-4/);
-  assert.match(worker,/style\.css\?v=20261006-4&w=13/);
+  assert.match(index,/style\.css\?v=20261007-1/);
+  assert.match(worker,/style\.css\?v=20261007-1&w=14/);
 
 });
 
@@ -575,7 +575,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
   assert.match(index,/admin\.js\?v=20261006-2/);
   assert.match(index,/reports\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261007-2/);
+  assert.match(worker,/boot\.js\?v=20261007-3/);
 
 });
 
@@ -611,7 +611,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20261006-2/);
   assert.match(worker,/supabase\.js\?v=20261007-2/);
-  assert.match(worker,/cortez-garage-v259-restricted-user-fresh-sync/);
+  assert.match(worker,/cortez-garage-v260-help-manual/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -636,9 +636,9 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-popup \.check-popup-card/);
   assert.match(style,/width:min\(1180px/);
   assert.match(style,/\.commission-summary-card b/);
-  assert.match(index,/style\.css\?v=20261006-4/);
+  assert.match(index,/style\.css\?v=20261007-1/);
   assert.match(index,/admin\.js\?v=20261006-2/);
-  assert.match(worker,/cortez-garage-v259-restricted-user-fresh-sync/);
+  assert.match(worker,/cortez-garage-v260-help-manual/);
 });
 
 
