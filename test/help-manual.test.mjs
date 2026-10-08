@@ -6,8 +6,8 @@ const read=file=>readFile(new URL(`../${file}`,import.meta.url),'utf8');
 
 test('botão de ajuda abre um manual completo e pesquisável',async()=>{
   const[help,index,style,worker]=await Promise.all([read('src/help.js'),read('index.html'),read('src/style.css'),read('public/sw.js')]);
-  assert.match(index,/help\.js\?v=20261008-1/);
-  assert.match(worker,/help\.js\?v=20261008-1/);
+  assert.match(index,/help\.js\?v=20261008-2/);
+  assert.match(worker,/help\.js\?v=20261008-2/);
   assert.match(help,/id='openHelp'|button\.id='openHelp'/);
   assert.match(help,/Pesquisar no manual/);
   assert.match(help,/Imprimir \/ salvar PDF/);
