@@ -4,7 +4,7 @@ export function resolveOrderStockLinks(parts,stock){
   const selections=[],unresolved=new Set(),byStockId=new Map();
   for(const [partIndex,part] of (parts||[]).entries()){
     if(part.refused)continue;
-    if(!['stock','include'].includes(part.stockMode)){unresolved.add(partIndex);continue}
+    if(!['stock','include'].includes(part.stockMode))continue;
     let found=part.stockId?stock.find(item=>String(item.id)===String(part.stockId)):null;
     if(!found){
       const code=normalize(part.code),description=normalize(part.description);

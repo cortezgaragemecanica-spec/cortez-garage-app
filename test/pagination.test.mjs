@@ -15,7 +15,7 @@ test('Fase 1 pagina listas grandes e mantém todas as áreas no menu mobile',asy
   const [main,stock,style,reports,admin]=await Promise.all(['main.js','stock.js','style.css','reports.js','admin.js'].map(file=>readFile(new URL(`../src/${file}`,import.meta.url),'utf8')));
   assert.match(main,/paginate\(matching,orderPage,25\)/);
   assert.match(main,/paginate\(filtered,peoplePage,30\)/);
-  assert.match(stock,/paginate\(matching,stockPageNumber,50\)/);
+  assert.match(stock,/paginate\(matching,stockPageNumber,40\)/);
   assert.match(stock,/data-stock-filter/);
   assert.match(reports,/enableProgressiveTables/);
   assert.match(admin,/enableProgressiveTables/);

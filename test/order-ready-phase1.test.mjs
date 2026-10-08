@@ -9,7 +9,7 @@ test('pronto para entrega usa uma única operação transacional',async()=>{
     read('src/supabase.js'),read('src/order-workflow.js'),read('supabase/estoque-baixa-atomica.sql')
   ]);
   assert.match(supabase,/rpc\/finalizar_os_pronta/);
-  assert.match(workflow,/await finalizeOrderReady\(order,selections\)/);
+  assert.match(workflow,/await finalizeOrderReady\(order,links\.selections\)/);
   assert.doesNotMatch(workflow,/await consumeStockForOrder\(order,selections\).*await updateOrderStatus.*await recordOrderReadyReceivable/s);
   assert.match(sql,/create or replace function public\.finalizar_os_pronta/);
   assert.match(sql,/for update/);
@@ -28,10 +28,10 @@ test('alterações são confirmadas antes de colocar a O.S. como pronta',async()
   assert.match(main,/localStorage\.removeItem\(PENDING_DB_KEY\)/);
   assert.match(workflow,/await budgetSave\._persistOrder\(\)/);
   assert.match(workflow,/await saveOrderProgress\(order\);await saveOrderValues\(order\)/);
-  assert.ok(workflow.indexOf('await saveOrderValues(order)')<workflow.indexOf('await finalizeOrderReady(order,selections)'));
+  assert.ok(workflow.indexOf('await saveOrderValues(order)')<workflow.indexOf('await finalizeOrderReady(order,links.selections)'));
   const makeReady=workflow.slice(workflow.indexOf('async function makeReady'),workflow.indexOf('async function reopenReady'));
   assert.doesNotMatch(makeReady,/location\.reload\(\)/);
-  assert.match(workflow,/Peças, alterações, estoque e conta a receber foram confirmados no banco/);
+  assert.match(workflow,/Apenas as peças selecionadas do estoque físico foram baixadas automaticamente/);
 });
 
 test('status final não pode ser escolhido pelo seletor comum',async()=>{

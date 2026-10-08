@@ -21,23 +21,23 @@ test('vínculo antigo por código ou descrição exata é reaproveitado sem popu
   assert.deepEqual(resolveOrderStockLinks(parts,stock),{selections:[{partIndex:0,stockId:'stock-filtro'},{partIndex:1,stockId:'stock-oleo'}],unresolved:[]});
 });
 
-test('peça de orçamento, vínculo ambíguo ou saldo insuficiente exige confirmação',()=>{
+test('compra direta é ignorada e vínculo físico inválido bloqueia a baixa',()=>{
   const parts=[
     {description:'Filtro de óleo',quantity:1,stockMode:'budget'},
     {description:'Filtro de óleo',quantity:3,stockMode:'stock',stockId:'stock-filtro'},
     {description:'Peça inexistente',quantity:1,stockMode:'stock'}
   ];
-  assert.deepEqual(resolveOrderStockLinks(parts,stock),{selections:[],unresolved:[0,1,2]});
+  assert.deepEqual(resolveOrderStockLinks(parts,stock),{selections:[],unresolved:[1,2]});
 });
 
-test('O.S. grava o ID do estoque e popup recebe somente itens sem vínculo',async()=>{
+test('O.S. grava o ID do estoque e não abre popup ao ficar pronta',async()=>{
   const [budget,workflow]=await Promise.all([
     readFile(new URL('../src/budget-order.js',import.meta.url),'utf8'),
     readFile(new URL('../src/order-workflow.js',import.meta.url),'utf8')
   ]);
   assert.match(budget,/data-field="stockId"/);
-  assert.match(budget,/stockId:stockMode==='budget'\?'':selectedStock\?\.id\|\|''/);
-  assert.match(workflow,/if\(!links\.unresolved\.length\)\{resolve\(links\.selections\);return\}/);
-  assert.match(workflow,/part\.refused\|\|!links\.unresolved\.includes\(index\)/);
-  assert.match(workflow,/const selections=\[\.\.\.links\.selections\]/);
+  assert.match(budget,/stockId:stockMode==='purchase'\?'':selectedStock\.id/);
+  assert.match(workflow,/resolveOrderStockLinks\(order\.budget\?\.parts\|\|\[\],stock\)/);
+  assert.match(workflow,/finalizeOrderReady\(order,links\.selections\)/);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf('async function makeReady'),workflow.indexOf('async function reopenReady')),/stockPopup\(/);
 });

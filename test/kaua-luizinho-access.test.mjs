@@ -8,7 +8,8 @@ test('Kauã pode incluir e alterar somente notas do Acerto Luizinho',async()=>{
   const supabase=await read('src/supabase.js');
   assert.match(supabase,/canManageLuizinhoNotes=\(\)=>currentEmail\(\)===OWNER_EMAIL\|\|KAUA_EMAILS\.has\(currentEmail\(\)\)/);
   assert.match(supabase,/saveLuizinhoNote[\s\S]*?canManageLuizinhoNotes\(\)[\s\S]*?stockApplied:false[\s\S]*?writeSupplierSettlements\(data,\{allowLuizinhoEditor:true\}\)/);
-  assert.match(supabase,/A nota foi salva, mas a atualização do estoque ficou pendente/);
+  assert.doesNotMatch(supabase,/A nota foi salva, mas a atualização do estoque ficou pendente/);
+  assert.match(supabase,/saveLuizinhoNote[\s\S]*?stockApplied:false[\s\S]*?writeSupplierSettlements/);
   assert.match(supabase,/updateLuizinhoNote[\s\S]*?canManageLuizinhoNotes\(\)[\s\S]*?writeSupplierSettlements\(data,\{allowLuizinhoEditor:true\}\)/);
   assert.match(supabase,/deleteLuizinhoNote\(id\)\{if\(currentEmail\(\)!==OWNER_EMAIL\)/);
   assert.match(supabase,/writeSupplierSettlements\(data,\{allowLuizinhoEditor=false\}/);

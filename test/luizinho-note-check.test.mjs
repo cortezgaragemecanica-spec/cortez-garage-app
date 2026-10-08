@@ -25,7 +25,7 @@ test('acerto mostra progresso e permite conferir cada nota',async()=>{
   assert.match(admin,/comparada com a nota do fornecedor/);
   assert.match(style,/\.luizinho-check-summary/);
   assert.match(style,/\.luizinho-note-checked/);
-  assert.match(index,/admin\.js\?v=20261006-2&amp;w=27/);
-  assert.match(index,/style\.css\?v=20261007-1&amp;w=14/);
-  assert.match(worker,/cortez-garage-v261-outside-status/);
+  assert.match(index,/admin\.js\?v=20261008-1&amp;w=28/);
+  assert.match(index,/style\.css\?v=20261008-1&amp;w=15/);
+  assert.match(worker,/cortez-garage-v262-physical-stock/);
 });
