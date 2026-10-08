@@ -141,14 +141,14 @@ test('ações do orçamento ficam juntas e o salvamento manual confirma os itens
   assert.match(workflow,/approval\.insertBefore\(ready,approval\.querySelector\('#previousStatus'\)\)/);
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
-  assert.match(index,/budget-order\.js\?v=20261008-2/);
+  assert.match(index,/budget-order\.js\?v=20261008-3/);
   assert.match(index,/order-workflow\.js\?v=20261008-1/);
 
 });
 
 test('compra direta ignora o estoque e peça física exige seleção',async()=>{
   const [budget,style,index,worker]=await Promise.all([read('src/budget-order.js'),read('src/style.css'),read('index.html'),read('public/sw.js')]);
-  for(const label of ['Peça do orçamento','Buscar peça no estoque','Descrição','Marca','Fornecedor','Custo','Markup (%)','Quantidade','Valor de venda','Valor total'])assert.ok(budget.includes(label));
+  for(const label of ['Inserir manualmente','Buscar no estoque','Descrição','Marca','Fornecedor','Custo','Markup (%)','Quantidade','Valor de venda','Valor total'])assert.ok(budget.includes(label));
   assert.match(budget,/data-part-mode="purchase"[\s\S]*data-part-mode="stock"/);
   assert.match(budget,/if\(stockMode!==['"]purchase['"]\)\{await ensureStock\(\)/);
   assert.match(budget,/stockMode:stockMode\|\|['"]stock['"]/);
@@ -158,8 +158,8 @@ test('compra direta ignora o estoque e peça física exige seleção',async()=>{
   assert.match(budget,/brand:tr\.querySelector/);
   assert.match(budget,/supplier:tr\.querySelector/);
   assert.match(style,/\.part-code-field\[hidden\],#partStockArea\[hidden\]/);
-  assert.match(index,/budget-order\.js\?v=20261008-2/);
-  assert.match(worker,/budget-order\.js\?v=20261008-2/);
+  assert.match(index,/budget-order\.js\?v=20261008-3/);
+  assert.match(worker,/budget-order\.js\?v=20261008-3/);
 });
 
 test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
@@ -408,8 +408,8 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
   assert.match(budget,/querySelector\('\[data-field="margin"\]'\)\.value=markup/);
   assert.match(budget,/autoSave\(\)/);
   assert.match(style,/\.budget-part-actions/);
-  assert.match(index,/budget-order\.js\?v=20261008-2/);
-  assert.match(worker,/budget-order\.js\?v=20261008-2/);
+  assert.match(index,/budget-order\.js\?v=20261008-3/);
+  assert.match(worker,/budget-order\.js\?v=20261008-3/);
 });
 
 test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',async()=>{
@@ -464,9 +464,9 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
   assert.match(index,/style\.css\?v=20261008-1/);
-  assert.match(index,/budget-order\.js\?v=20261008-2/);
+  assert.match(index,/budget-order\.js\?v=20261008-3/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261008-3/);
+  assert.match(worker,/boot\.js\?v=20261008-4/);
 
 });
 
@@ -503,7 +503,7 @@ test('somente o proprietário exclui solicitação de orçamento de serviços no
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261008-3/);
+  assert.match(worker,/boot\.js\?v=20261008-4/);
 
 });
 
@@ -578,7 +578,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
   assert.match(index,/admin\.js\?v=20261008-1/);
   assert.match(index,/reports\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261008-3/);
+  assert.match(worker,/boot\.js\?v=20261008-4/);
 
 });
 
@@ -614,7 +614,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20261008-1/);
   assert.match(worker,/supabase\.js\?v=20261008-2/);
-  assert.match(worker,/cortez-garage-v263-budget-parts/);
+  assert.match(worker,/cortez-garage-v264-part-choice/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -641,7 +641,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261008-1/);
   assert.match(index,/admin\.js\?v=20261008-1/);
-  assert.match(worker,/cortez-garage-v263-budget-parts/);
+  assert.match(worker,/cortez-garage-v264-part-choice/);
 });
 
 
