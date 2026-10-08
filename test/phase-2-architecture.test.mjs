@@ -8,7 +8,7 @@ test('fase 2 inicia o núcleo primeiro e carrega os demais módulos em grupos',a
   const [html,boot]=await Promise.all([read('index.html'),read('src/boot.js')]);
   assert.match(html,/<template id="moduleManifest"[^>]+data-main="\.\/main\.js/);
   assert.equal((html.match(/<script type="module"/g)||[]).length,1);
-  assert.match(html,/<script type="module" src="\.\/src\/boot\.js\?v=20261007-3"><\/script>/);
+  assert.match(html,/<script type="module" src="\.\/src\/boot\.js\?v=20261008-1"><\/script>/);
   assert.match(boot,/await import\(manifest\.dataset\.main\)/);
   assert.match(boot,/Promise\.allSettled/);
   assert.match(boot,/requestIdleCallback/);
@@ -28,12 +28,12 @@ test('fase 2 compartilha um único observador de atualização da interface',asy
 
 test('fase 2 reduz e invalida o cache do aplicativo',async()=>{
   const worker=await read('public/sw.js');
-  assert.match(worker,/cortez-garage-v260-help-manual/);
-  assert.match(worker,/boot\.js\?v=20261007-3/);
+  assert.match(worker,/cortez-garage-v261-outside-status/);
+  assert.match(worker,/boot\.js\?v=20261008-1/);
   assert.match(worker,/ui-events\.js\?v=20260930-1/);
   assert.doesNotMatch(worker,/ASSETS\.push/);
   const shell=(worker.match(/^\s*'\.\//gm)||[]).length;
-  assert.ok(shell<=41,`cache inicial deveria ter no máximo 41 itens; recebeu ${shell}`);
+  assert.ok(shell<=42,`cache inicial deveria ter no máximo 42 itens; recebeu ${shell}`);
 });
 
 test('fase 2 mostra carregamento inicial acessível e respeita movimento reduzido',async()=>{
