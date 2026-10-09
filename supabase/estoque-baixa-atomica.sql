@@ -155,7 +155,9 @@ begin
      and coalesce(current_setting('cortez.reabrindo_pronto', true), '') <> 'on' then
     raise exception 'Use a reabertura com estorno para alterar esta O.S.';
   end if;
-  if new.status = 'Entregue' and old.status <> 'Pronto para entrega' then
+  if new.status = 'Entregue'
+     and old.status is distinct from 'Entregue'
+     and old.status <> 'Pronto para entrega' then
     raise exception 'Coloque a O.S. como pronta para entrega antes de entregá-la';
   end if;
   if old.status in ('Pronto para entrega', 'Entregue') and (

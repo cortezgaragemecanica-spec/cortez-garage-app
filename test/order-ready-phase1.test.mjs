@@ -43,6 +43,17 @@ test('status final não pode ser escolhido pelo seletor comum',async()=>{
   assert.match(sql,/Coloque a O\.S\. como pronta para entrega antes de entregá-la/);
 });
 
+test('editar uma O.S. já entregue não é confundido com uma nova entrega',async()=>{
+  const [sql,migration]=await Promise.all([
+    read('supabase/estoque-baixa-atomica.sql'),
+    read('supabase/corrigir-protecao-edicao-os-entregue.sql')
+  ]);
+  for(const source of[sql,migration]){
+    assert.match(source,/new\.status = 'Entregue'[\s\S]*old\.status is distinct from 'Entregue'[\s\S]*old\.status <> 'Pronto para entrega'/);
+    assert.match(source,/Coloque a O\.S\. como pronta para entrega antes de entregá-la/);
+  }
+});
+
 test('reabertura estorna estoque e remove somente a conta pendente',async()=>{
   const[supabase,workflow,budget,sql]=await Promise.all([
     read('src/supabase.js'),read('src/order-workflow.js'),read('src/budget-order.js'),read('supabase/estoque-baixa-atomica.sql')
