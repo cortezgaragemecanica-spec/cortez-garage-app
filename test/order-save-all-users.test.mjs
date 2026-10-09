@@ -14,9 +14,13 @@ test('todo usuário autenticado pode criar editar e concluir O.S.',async()=>{
   assert.match(supabase,/ORDER_SAVE_PERMISSIONS=new Set\(\['createEntries','editOrders','readyOrders'\]\)/);
   assert.match(supabase,/export async function saveSupabase\(localDb\)[\s\S]*await writeDatabase\(session\.access_token,localDb\)/);
   assert.match(supabase,/body=\{reclamacao:[\s\S]*diagnostico:[\s\S]*observacoes:/);
+  assert.match(supabase,/export async function saveOrderValues\(order\)[\s\S]*body=\{reclamacao:[\s\S]*diagnostico:[\s\S]*observacoes:[\s\S]*mecanico:/);
   assert.doesNotMatch(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(access,/function restricted\(\)\{return!canSaveOrders\(\)\}/);
   assert.match(main,/canSaveOrders as canManageServices/);
+  assert.match(main,/async function createOrder\(\)[\s\S]*await saveOrderValues\(o\)/);
+  assert.match(main,/queueOrderSave=snapshot[\s\S]*await saveOrderValues\(target\)/);
+  assert.doesNotMatch(main,/restrictedProgress=!canManageServices\(\)/);
   assert.match(budget,/canSaveOrders as canManageServices/);
   assert.match(sql,/auth\.uid\(\) is null then false/);
   assert.match(sql,/p_permissao in \('createEntries', 'editOrders', 'readyOrders'\) then true/);

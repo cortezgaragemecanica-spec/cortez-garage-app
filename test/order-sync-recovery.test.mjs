@@ -8,10 +8,10 @@ test('nova O.S. só informa sucesso depois da confirmação do banco',async()=>{
   const main=await read('src/main.js');
   assert.match(main,/async function createOrder\(\)/);
   assert.match(main,/button\.textContent='Salvando no banco…'/);
-  assert.match(main,/clearTimeout\(syncTimer\);try\{await pushMovement\(\)/);
+  assert.match(main,/db\.orders\.unshift\(o\);localStorage\.setItem\(DBKEY,JSON\.stringify\(db\)\);try\{await saveOrderValues\(o\)/);
   assert.match(main,/salva e confirmada no banco de dados/);
   assert.match(main,/ficou salva neste aparelho, mas o banco ainda não confirmou/);
-  assert.match(main,/setTimeout\(\(\)=>pushMovement\(\)/);
+  assert.match(main,/setTimeout\(\(\)=>saveOrderValues\(o\)/);
 });
 
 test('O.S. local ausente no banco é localizada pelo número e recuperada',async()=>{
@@ -46,8 +46,8 @@ test('sincronização preserva envio antigo com falha e baixa a O.S. atual',asyn
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261009-5/);
-  assert.match(worker,/main\.js\?v=20261009-5&w=23/);
-  assert.match(worker,/supabase\.js\?v=20261009-4/);
-  assert.match(worker,/cortez-garage-v272-order-save-all/);
+  assert.match(index,/main\.js\?v=20261009-6/);
+  assert.match(worker,/main\.js\?v=20261009-6&w=24/);
+  assert.match(worker,/supabase\.js\?v=20261009-5/);
+  assert.match(worker,/cortez-garage-v273-direct-order-save/);
 });

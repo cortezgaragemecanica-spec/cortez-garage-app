@@ -87,8 +87,8 @@ test('fluxo completo persiste, relê, atualiza e sincroniza a mesma O.S. sem toc
   const reopened=(await api.readSupabase()).orders.find(item=>item.number==='0124');
   assert.equal(reopened.client.name,'Cliente Teste');assert.equal(reopened.vehicle.plate,'ABC1D23');assert.equal(reopened.diagnosis,'Rolamento');assert.equal(reopened.notes,'Cliente avisado');
 
-  signIn('cortezgaragemecanica@gmail.com');reopened.status='Em andamento';reopened.notes='Atualizada';reopened.discount=10;reopened.total=352;reopened.budget={...reopened.budget,total:352};
-  await api.saveOrderValues(reopened);assert.equal(tables.ordens_servico.length,2);assert.equal(tables.ordens_servico.find(row=>row.numero===124).observacoes,'Cliente avisado');
+  signIn('tony@cortezgarage.com');reopened.status='Em andamento';reopened.complaint='Reclamação atualizada';reopened.diagnosis='Diagnóstico atualizado';reopened.notes='Atualizada';reopened.mechanic='Tony';reopened.discount=10;reopened.total=352;reopened.budget={...reopened.budget,total:352};
+  await api.saveOrderValues(reopened);assert.equal(tables.ordens_servico.length,2);const savedUpdate=tables.ordens_servico.find(row=>row.numero===124);assert.equal(savedUpdate.reclamacao,'Reclamação atualizada');assert.equal(savedUpdate.diagnostico,'Diagnóstico atualizado');assert.equal(savedUpdate.observacoes,'Atualizada');assert.equal(savedUpdate.mecanico,'Tony');
   const updated=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(updated.discount,10);assert.equal(updated.total,352);
 
   const deviceA=clone(updated),deviceB=clone(updated);deviceA.complaint='Alteração A';await api.saveOrderProgress(deviceA);deviceB.complaint='Alteração B';await assert.rejects(()=>api.saveOrderProgress(deviceB),/alterada em outro aparelho/);
