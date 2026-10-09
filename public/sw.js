@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v265-order-surcharge';
+const CACHE='cortez-garage-v266-pdf-item-surcharge';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,11 +6,11 @@ const SHELL=[
   './src/style.css?v=20261008-2&w=16',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261008-5',
-  './src/main.js?v=20261008-1&w=18',
+  './src/boot.js?v=20261008-6',
+  './src/main.js?v=20261008-2&w=19',
   './src/access-control.js?v=20260915-1',
-  './src/budget-order.js?v=20261008-4',
-  './src/pdf-order.js?v=20261008-1',
+  './src/budget-order.js?v=20261008-5',
+  './src/pdf-order.js?v=20261008-2',
   './src/owner-diagnosis-observation.js?v=20260929-1',
   './src/order-workflow.js?v=20261008-2',
   './src/order-stock-links.js?v=20261008-1',
@@ -32,7 +32,7 @@ const SHELL=[
   './src/order-review-requests.js?v=20260924-1',
   './src/technical-report.js?v=20260914-1',
   './src/mechanic-commissions.js?v=20261003-2',
-  './src/help.js?v=20261008-4',
+  './src/help.js?v=20261008-5',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
   './src/supabase.js?v=20261008-3',

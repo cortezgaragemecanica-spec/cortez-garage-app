@@ -4,12 +4,12 @@ const EXECUTION_STATUSES=new Set(['Em andamento','Aguardando peça','Aguardando 
 
 export const isExecutionPdf=order=>EXECUTION_STATUSES.has(order.status);
 
-export function servicePdfSection(order,formatMoney){
+export function servicePdfSection(order,formatMoney,priceMultiplier=1){
   const budgetOnly=!isExecutionPdf(order);
   const services=order.budget?.services||[];
   const rows=services.map(item=>{
     const description=`${item.refused?'RECUSADO — ':''}${item.description||'—'}`;
-    const value=item.refused?'R$ 0,00':formatMoney(item.value);
+    const value=item.refused?'R$ 0,00':formatMoney(Number(item.value||0)*priceMultiplier);
     return budgetOnly?[description,value]:[description,mechanicDisplayName(item.mechanic||order.mechanic)||'—',value];
   });
   return budgetOnly

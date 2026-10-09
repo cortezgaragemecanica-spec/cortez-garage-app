@@ -15,14 +15,16 @@ test('ordens sem a marca do acréscimo permanecem com o total antigo',()=>{
   assert.deepEqual(calculateOrderTotals({partsValue:600,labor:400,discount:100}),{base:900,surchargeRate:0,surchargeAmount:0,total:900});
 });
 
-test('novas O.S. recebem a regra e ela acompanha tela, banco e PDF',async()=>{
+test('novas O.S. recebem a regra, mostram os dois totais e ocultam o acréscimo no PDF',async()=>{
   const[main,budget,workflow,supabase,pdf,help]=await Promise.all(['src/main.js','src/budget-order.js','src/order-workflow.js','src/supabase.js','src/pdf-order.js','src/help.js'].map(read));
   assert.match(main,/surchargeRate:NEW_ORDER_SURCHARGE_RATE,surchargePolicy:'new-order-10-v1'/);
-  assert.match(main,/id="orderSurcharge"/);
-  assert.match(budget,/id="budgetSurcharge"/);
+  assert.match(main,/id="orderBaseTotal"/);
+  assert.match(main,/VALOR TOTAL COM ACRÉSCIMO/);
+  assert.match(budget,/id="budgetBaseTotal"/);
   assert.match(workflow,/calculateOrderTotals\(order\)/);
   assert.match(supabase,/surchargeRate:Number\(item\.surchargeRate\)\|\|0/);
   assert.match(supabase,/surchargePolicy:order\.surchargePolicy/);
-  assert.match(pdf,/Acréscimo automático/);
-  assert.match(help,/acrescenta automaticamente 10%/);
+  assert.doesNotMatch(pdf,/Acréscimo automático/);
+  assert.match(pdf,/itemMultiplier/);
+  assert.match(help,/valores de cada peça e serviço já aparecem com os 10% incorporados/);
 });

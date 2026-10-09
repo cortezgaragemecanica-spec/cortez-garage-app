@@ -59,6 +59,25 @@ test('orçamento inclui diagnóstico e observações preenchidos',()=>{
   }
 });
 
+test('PDF incorpora os 10% nos itens sem revelar uma linha de acréscimo',()=>{
+  const originalDocument=globalThis.document;
+  globalThis.document={createElement:()=>{
+    const canvas={texts:[]};
+    canvas.getContext=()=>({font:'',fillStyle:'',strokeStyle:'',lineWidth:0,drawImage(){},fillRect(){},strokeRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},fillText(value){canvas.texts.push(String(value))},measureText(value){return{width:String(value).length*9}}});
+    return canvas;
+  }};
+  try{
+    const report={...order,number:'0099',created:'2026-10-08T10:00:00',surchargeRate:.10,labor:100,partsValue:20,discount:0,total:132,complaint:'Teste',client:{name:'Cliente'},vehicle:{model:'Carro'},checklist:[],budget:{services:[{description:'Serviço teste',value:100}],parts:[{description:'Peça teste',quantity:1,value:20}]}};
+    const texts=drawReport(report,{}).flatMap(page=>page.texts);
+    assert.ok(texts.includes('R$ 110,00')||texts.includes('R$ 110,00'));
+    assert.ok(texts.includes('R$ 22,00')||texts.includes('R$ 22,00'));
+    assert.ok(texts.includes('VALOR TOTAL: R$ 132,00')||texts.includes('VALOR TOTAL: R$ 132,00'));
+    assert.equal(texts.some(text=>text.includes('Acréscimo')),false);
+  }finally{
+    if(originalDocument===undefined)delete globalThis.document;else globalThis.document=originalDocument;
+  }
+});
+
 test('tabela de serviços que cabe na página seguinte não cria segundo campo',()=>{
   const originalDocument=globalThis.document;
   globalThis.document={createElement:()=>{
