@@ -45,8 +45,8 @@ test('sincronização preserva envio antigo com falha e baixa a O.S. atual',asyn
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261009-1/);
-  assert.match(worker,/main\.js\?v=20261009-1&w=20/);
+  assert.match(index,/main\.js\?v=20261009-3/);
+  assert.match(worker,/main\.js\?v=20261009-3&w=21/);
   assert.match(worker,/supabase\.js\?v=20261009-2/);
-  assert.match(worker,/cortez-garage-v268-pc-sync-recovery/);
+  assert.match(worker,/cortez-garage-v269-interface-race-recovery/);
 });

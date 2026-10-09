@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v268-pc-sync-recovery';
+const CACHE='cortez-garage-v269-interface-race-recovery';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,10 +6,10 @@ const SHELL=[
   './src/style.css?v=20261008-2&w=16',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261009-2',
-  './src/main.js?v=20261009-1&w=20',
+  './src/boot.js?v=20261009-3',
+  './src/main.js?v=20261009-3&w=21',
   './src/access-control.js?v=20260915-1',
-  './src/budget-order.js?v=20261008-5',
+  './src/budget-order.js?v=20261009-3',
   './src/pdf-order.js?v=20261008-2',
   './src/owner-diagnosis-observation.js?v=20260929-1',
   './src/order-workflow.js?v=20261008-2',
