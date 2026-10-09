@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v266-pdf-item-surcharge';
+const CACHE='cortez-garage-v267-kaua-luizinho';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,7 +6,7 @@ const SHELL=[
   './src/style.css?v=20261008-2&w=16',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261008-6',
+  './src/boot.js?v=20261009-1',
   './src/main.js?v=20261008-2&w=19',
   './src/access-control.js?v=20260915-1',
   './src/budget-order.js?v=20261008-5',
@@ -23,8 +23,8 @@ const SHELL=[
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261008-1&w=28',
-  './src/luizinho-returns.js?v=20261006-3',
+  './src/admin.js?v=20261009-1&w=29',
+  './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
   './src/agenda-enhancements.js?v=20261003-2',
@@ -35,7 +35,7 @@ const SHELL=[
   './src/help.js?v=20261008-5',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261008-3',
+  './src/supabase.js?v=20261009-1',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',

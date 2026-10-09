@@ -42,6 +42,6 @@ test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
   assert.match(index,/main\.js\?v=20261008-2/);
   assert.match(worker,/main\.js\?v=20261008-2&w=19/);
-  assert.match(worker,/supabase\.js\?v=20261008-3/);
-  assert.match(worker,/cortez-garage-v266-pdf-item-surcharge/);
+  assert.match(worker,/supabase\.js\?v=20261009-1/);
+  assert.match(worker,/cortez-garage-v267-kaua-luizinho/);
 });

@@ -38,10 +38,10 @@ test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
 });
 
 test('publicação invalida os caches do módulo e do estilo',()=>{
-  assert.match(index,/admin\.js\?v=20261008-1/);
+  assert.match(index,/admin\.js\?v=20261009-1/);
   assert.match(index,/style\.css\?v=20261008-2/);
-  assert.match(worker,/cortez-garage-v266-pdf-item-surcharge/);
-  assert.match(worker,/admin\.js\?v=20261008-1&w=28/);
+  assert.match(worker,/cortez-garage-v267-kaua-luizinho/);
+  assert.match(worker,/admin\.js\?v=20261009-1&w=29/);
   assert.match(worker,/style\.css\?v=20261008-2&w=16/);
 });
 

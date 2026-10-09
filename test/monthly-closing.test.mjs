@@ -45,7 +45,7 @@ test('painel fica oculto até o clique no botão e permite trocar o mês',async(
   assert.match(admin,/exportReportPdf\(popup\.querySelector\('\.monthly-closing-body'\)/);
   for(const label of['O.S. entregues','Clientes novos','Ticket médio','Valor total faturado','Lucro total','Lucro líquido','Carros executados','Faturamento','Lucro','Compras por fornecedor','Lucro nas peças','Lucro na mão de obra','Comissões dos sócios','Pagamentos recebidos'])assert.ok(admin.includes(label));
   assert.match(index,/monthly-closing\.css\?v=20261001-1/);
-  assert.match(index,/admin\.js\?v=20261008-1/);
+  assert.match(index,/admin\.js\?v=20261009-1/);
   assert.match(style,/monthly-closing-popup/);
 });
 

@@ -1,4 +1,4 @@
-import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261008-3';
+import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261009-1';
 import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261002-1';
 import{calculateOrderTotals}from'./order-surcharge.js?v=20261008-1';
 
