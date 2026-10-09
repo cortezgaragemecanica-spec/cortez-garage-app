@@ -1,5 +1,5 @@
 import{DEFAULT_SYNC_URL,getSyncConfig,setSyncConfig,clearSyncConfig,syncStockMirror,consumeOrderStock}from'./sync.js';
-import{getSession,getCurrentUser,refreshSession,renderLogin,signOut,startUsageTracking,syncSupabase,readSupabase,saveSupabase,saveOrderProgress,recordMirrorSync,readStock,saveStockItems,consumeStockForOrder,recordOrderReadyReceivable,recordOrderDelivery,updateOrderStatus,deleteVehicle,deleteClient,canManageServices,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics,readUserAccess,hasPermission}from'./supabase.js?v=20261009-3';
+import{getSession,getCurrentUser,refreshSession,renderLogin,signOut,startUsageTracking,syncSupabase,readSupabase,saveSupabase,saveOrderProgress,recordMirrorSync,readStock,saveStockItems,consumeStockForOrder,recordOrderReadyReceivable,recordOrderDelivery,updateOrderStatus,deleteVehicle,deleteClient,canSaveOrders as canManageServices,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics,readUserAccess,hasPermission}from'./supabase.js?v=20261009-4';
 import{paginate,pagerHtml}from'./pagination.js?v=20260930-1';
 import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261002-1';
 import{NEW_ORDER_SURCHARGE_RATE,calculateOrderTotals}from'./order-surcharge.js?v=20261008-1';

@@ -1,5 +1,5 @@
 const DB_KEY='cortez-garage-v1';
-import{deleteOrder,hasPermission}from'./supabase.js?v=20261009-3';
+import{deleteOrder,hasPermission}from'./supabase.js?v=20261009-4';
 
 const readJson=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')||fallback}catch{return fallback}};
 
