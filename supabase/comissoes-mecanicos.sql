@@ -212,6 +212,8 @@ declare
   servicos jsonb;
   mecanico_anterior text;
   data_comissao date;
+  semana_mecanico_anterior date;
+  semana_novo_mecanico date;
   numero_os text;
 begin
   if lower(coalesce(auth.jwt() ->> 'email', '')) <> 'cortezgaragemecanica@gmail.com' then
@@ -224,11 +226,10 @@ begin
   if not found then raise exception 'Ordem de serviço não encontrada.'; end if;
   if ordem.status <> 'Entregue' then raise exception 'Esta função é exclusiva para O.S. entregues.'; end if;
 
-  select min(f.vencimento) into data_comissao
-  from public.lancamentos_financeiros f
-  where f.os_id = p_os_id and f.categoria = 'Comissões'
-    and coalesce(f.semana_inicio, f.vencimento - ((extract(dow from f.vencimento)::integer + 1) % 7)) = inicio_semana;
-  if data_comissao is null then raise exception 'A O.S. não foi entregue na semana vigente.'; end if;
+  data_comissao := ordem.entregue_em;
+  if data_comissao is null
+    or data_comissao - ((extract(dow from data_comissao)::integer + 1) % 7) <> inicio_semana
+  then raise exception 'A O.S. não foi entregue na semana vigente.'; end if;
   if exists (select 1 from public.lancamentos_financeiros f where f.os_id = p_os_id and f.categoria = 'Comissões' and f.status = 'Realizado') then
     raise exception 'A comissão desta O.S. já foi paga e não pode ser transferida.';
   end if;
@@ -236,10 +237,20 @@ begin
   servicos := coalesce(ordem.dados_extras -> 'budget' -> 'services', '[]'::jsonb);
   if p_service_index < 0 or p_service_index >= jsonb_array_length(servicos) then raise exception 'Serviço não encontrado na O.S.'; end if;
   mecanico_anterior := coalesce(servicos -> p_service_index ->> 'mechanic', ordem.mecanico, '');
+  semana_mecanico_anterior := case
+    when lower(trim(mecanico_anterior)) in ('gustavo', 'tony')
+      then data_comissao - (case when extract(dow from data_comissao)::integer = 0 then 6 else extract(dow from data_comissao)::integer - 1 end)
+    else data_comissao - ((extract(dow from data_comissao)::integer + 1) % 7)
+  end;
+  semana_novo_mecanico := case
+    when lower(trim(p_new_mechanic)) in ('gustavo', 'tony')
+      then data_comissao - (case when extract(dow from data_comissao)::integer = 0 then 6 else extract(dow from data_comissao)::integer - 1 end)
+    else data_comissao - ((extract(dow from data_comissao)::integer + 1) % 7)
+  end;
   if exists (
     select 1 from public.conferencia_comissoes_mecanicos c
-    where c.semana_inicio = inicio_semana
-      and lower(trim(c.mecanico)) in (lower(trim(mecanico_anterior)), lower(trim(p_new_mechanic)))
+    where (lower(trim(c.mecanico)) = lower(trim(mecanico_anterior)) and c.semana_inicio = semana_mecanico_anterior)
+       or (lower(trim(c.mecanico)) = lower(trim(p_new_mechanic)) and c.semana_inicio = semana_novo_mecanico)
   ) then raise exception 'As comissões desta semana já foram conferidas e não podem ser transferidas.'; end if;
   servicos := jsonb_set(servicos, array[p_service_index::text, 'mechanic'], to_jsonb(trim(p_new_mechanic)), true);
 
@@ -261,10 +272,24 @@ begin
     ), 2),
     data_comissao, 'Pendente', trim(servico ->> 'mechanic'), p_os_id,
     'comissao-os-' || p_os_id::text || '-' || trim(both '-' from regexp_replace(lower(trim(servico ->> 'mechanic')), '[^a-z0-9]+', '-', 'g')),
-    inicio_semana
+    case
+      when lower(trim(servico ->> 'mechanic')) in ('gustavo', 'tony')
+        then data_comissao - (case when extract(dow from data_comissao)::integer = 0 then 6 else extract(dow from data_comissao)::integer - 1 end)
+      else data_comissao - ((extract(dow from data_comissao)::integer + 1) % 7)
+    end
   from jsonb_array_elements(servicos) servico
-  where coalesce(servico ->> 'refused', 'false') <> 'true' and nullif(trim(servico ->> 'mechanic'), '') is not null
-  group by trim(servico ->> 'mechanic');
+  where coalesce(servico ->> 'refused', 'false') <> 'true'
+    and nullif(trim(servico ->> 'mechanic'), '') is not null
+    and not (
+      coalesce((ordem.dados_extras ->> 'warranty')::boolean, false)
+      and not coalesce((ordem.dados_extras ->> 'warrantyPayCommissions')::boolean, false)
+    )
+  group by trim(servico ->> 'mechanic'),
+    case
+      when lower(trim(servico ->> 'mechanic')) in ('gustavo', 'tony')
+        then data_comissao - (case when extract(dow from data_comissao)::integer = 0 then 6 else extract(dow from data_comissao)::integer - 1 end)
+      else data_comissao - ((extract(dow from data_comissao)::integer + 1) % 7)
+    end;
 
   return jsonb_build_object('orderId', p_os_id, 'serviceIndex', p_service_index,
     'previousMechanic', mecanico_anterior, 'newMechanic', trim(p_new_mechanic), 'weekStart', inicio_semana);

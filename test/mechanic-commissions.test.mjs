@@ -71,7 +71,7 @@ test('confirmação aparece no histórico administrativo do fechamento',async()=
 });
 
 test('proprietário transfere comissão de serviço entregue somente na semana vigente',async()=>{
-  const [sql,supabase,budget]=await Promise.all([read('supabase/comissoes-mecanicos.sql'),read('src/supabase.js'),read('src/budget-order.js')]);
+  const [sql,migration,supabase,budget]=await Promise.all([read('supabase/comissoes-mecanicos.sql'),read('supabase/corrigir-troca-mecanico-os-entregue.sql'),read('src/supabase.js'),read('src/budget-order.js')]);
   assert.match(sql,/alterar_mecanico_servico_entregue/);
   assert.match(sql,/ordem\.status <> 'Entregue'/);
   assert.match(sql,/A O\.S\. não foi entregue na semana vigente/);
@@ -80,6 +80,10 @@ test('proprietário transfere comissão de serviço entregue somente na semana v
   assert.match(sql,/coalesce\(nullif\(servico ->> 'commissionRate', ''\)::numeric, 0\.5\)/);
   assert.match(sql,/já foi paga e não pode ser transferida/);
   assert.match(sql,/já foram conferidas e não podem ser transferidas/);
+  assert.match(migration,/data_comissao := ordem\.entregue_em/);
+  assert.match(migration,/lower\(trim\(mecanico_anterior\)\) in \('gustavo', 'tony'\)/);
+  assert.match(migration,/lower\(trim\(servico ->> 'mechanic'\)\) in \('gustavo', 'tony'\)/);
+  assert.doesNotMatch(migration,/select min\(f\.vencimento\) into data_comissao/);
   assert.match(supabase,/reassignDeliveredServiceMechanic/);
   assert.match(budget,/Transferir a comissão deste serviço/);
   assert.match(budget,/order\.status==='Entregue'/);
