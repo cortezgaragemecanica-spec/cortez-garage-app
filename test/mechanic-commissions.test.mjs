@@ -70,22 +70,26 @@ test('confirmação aparece no histórico administrativo do fechamento',async()=
   assert.match(admin,/Conferido em/);
 });
 
-test('proprietário transfere comissão de serviço entregue somente na semana vigente',async()=>{
+test('proprietário corrige o mecânico de uma O.S. entregue a qualquer momento',async()=>{
   const [sql,migration,supabase,budget]=await Promise.all([read('supabase/comissoes-mecanicos.sql'),read('supabase/corrigir-troca-mecanico-os-entregue.sql'),read('src/supabase.js'),read('src/budget-order.js')]);
   assert.match(sql,/alterar_mecanico_servico_entregue/);
   assert.match(sql,/ordem\.status <> 'Entregue'/);
-  assert.match(sql,/A O\.S\. não foi entregue na semana vigente/);
+  assert.match(sql,/data_comissao := coalesce\(ordem\.entregue_em, ordem\.data_entrada::date, agora_local::date\)/);
   assert.match(sql,/delete from public\.lancamentos_financeiros/);
   assert.match(sql,/servico ->> 'commissionRate'/);
   assert.match(sql,/coalesce\(nullif\(servico ->> 'commissionRate', ''\)::numeric, 0\.5\)/);
-  assert.match(sql,/já foi paga e não pode ser transferida/);
-  assert.match(sql,/já foram conferidas e não podem ser transferidas/);
-  assert.match(migration,/data_comissao := ordem\.entregue_em/);
+  assert.match(sql,/commissionHistoryPreserved/);
+  assert.match(sql,/if not comissao_paga then/);
+  assert.match(sql,/set_config\('cortez\.trocando_mecanico', 'on', true\)/);
+  assert.doesNotMatch(sql,/não foi entregue na semana vigente/);
+  assert.doesNotMatch(sql,/já foi paga e não pode ser transferida/);
+  assert.match(migration,/data_comissao := coalesce\(ordem\.entregue_em, ordem\.data_entrada::date, agora_local::date\)/);
   assert.match(migration,/lower\(trim\(mecanico_anterior\)\) in \('gustavo', 'tony'\)/);
   assert.match(migration,/lower\(trim\(servico ->> 'mechanic'\)\) in \('gustavo', 'tony'\)/);
   assert.doesNotMatch(migration,/select min\(f\.vencimento\) into data_comissao/);
   assert.match(supabase,/reassignDeliveredServiceMechanic/);
-  assert.match(budget,/Transferir a comissão deste serviço/);
+  assert.match(budget,/Alterar o mecânico deste serviço/);
+  assert.match(budget,/commissionHistoryPreserved/);
   assert.match(budget,/order\.status==='Entregue'/);
 });
 
@@ -145,7 +149,7 @@ test('ações do orçamento ficam juntas e o salvamento manual confirma os itens
   assert.match(workflow,/approval\.insertBefore\(ready,approval\.querySelector\('#previousStatus'\)\)/);
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.match(access,/if\(save&&!owner\)save\.remove\(\)/);
-  assert.match(index,/budget-order\.js\?v=20261009-3/);
+  assert.match(index,/budget-order\.js\?v=20261009-4/);
   assert.match(index,/order-workflow\.js\?v=20261008-2/);
 
 });
@@ -162,8 +166,8 @@ test('compra direta ignora o estoque e peça física exige seleção',async()=>{
   assert.match(budget,/brand:tr\.querySelector/);
   assert.match(budget,/supplier:tr\.querySelector/);
   assert.match(style,/\.part-code-field\[hidden\],#partStockArea\[hidden\]/);
-  assert.match(index,/budget-order\.js\?v=20261009-3/);
-  assert.match(worker,/budget-order\.js\?v=20261009-3/);
+  assert.match(index,/budget-order\.js\?v=20261009-4/);
+  assert.match(worker,/budget-order\.js\?v=20261009-4/);
 });
 
 test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
@@ -412,8 +416,8 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
   assert.match(budget,/querySelector\('\[data-field="margin"\]'\)\.value=markup/);
   assert.match(budget,/autoSave\(\)/);
   assert.match(style,/\.budget-part-actions/);
-  assert.match(index,/budget-order\.js\?v=20261009-3/);
-  assert.match(worker,/budget-order\.js\?v=20261009-3/);
+  assert.match(index,/budget-order\.js\?v=20261009-4/);
+  assert.match(worker,/budget-order\.js\?v=20261009-4/);
 });
 
 test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',async()=>{
@@ -468,9 +472,9 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
   assert.match(index,/style\.css\?v=20261008-2/);
-  assert.match(index,/budget-order\.js\?v=20261009-3/);
+  assert.match(index,/budget-order\.js\?v=20261009-4/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261009-3/);
+  assert.match(worker,/boot\.js\?v=20261009-4/);
 
 });
 
@@ -507,7 +511,7 @@ test('somente o proprietário exclui solicitação de orçamento de serviços no
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
   assert.match(index,/service-quote-requests\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261009-3/);
+  assert.match(worker,/boot\.js\?v=20261009-4/);
 
 });
 
@@ -582,7 +586,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
   assert.match(index,/admin\.js\?v=20261009-1/);
   assert.match(index,/reports\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261009-3/);
+  assert.match(worker,/boot\.js\?v=20261009-4/);
 
 });
 
@@ -618,7 +622,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20261009-1/);
   assert.match(worker,/supabase\.js\?v=20261009-2/);
-  assert.match(worker,/cortez-garage-v269-interface-race-recovery/);
+  assert.match(worker,/cortez-garage-v270-delivered-mechanic-edit/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -645,7 +649,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261008-2/);
   assert.match(index,/admin\.js\?v=20261009-1/);
-  assert.match(worker,/cortez-garage-v269-interface-race-recovery/);
+  assert.match(worker,/cortez-garage-v270-delivered-mechanic-edit/);
 });
 
 

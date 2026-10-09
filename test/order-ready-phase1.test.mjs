@@ -51,6 +51,7 @@ test('editar uma O.S. já entregue não é confundido com uma nova entrega',asyn
   for(const source of[sql,migration]){
     assert.match(source,/new\.status = 'Entregue'[\s\S]*old\.status is distinct from 'Entregue'[\s\S]*old\.status <> 'Pronto para entrega'/);
     assert.match(source,/Coloque a O\.S\. como pronta para entrega antes de entregá-la/);
+    assert.match(source,/current_setting\('cortez\.trocando_mecanico', true\)/);
   }
 });
 
