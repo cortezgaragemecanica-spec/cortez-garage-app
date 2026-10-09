@@ -38,6 +38,7 @@ test('migração não reutiliza o ID de uma O.S. existente em outro número',asy
   globalThis.fetch=async(url,options={})=>{
     const parsed=new URL(url),path=parsed.pathname,query=parsed.search;
     if(options.method==='POST'&&path==='/rest/v1/ordens_servico'){writtenOrders=JSON.parse(options.body);return Response.json(writtenOrders)}
+    if(options.method==='PATCH'&&path==='/rest/v1/ordens_servico')return Response.json([{...JSON.parse(options.body),id:duplicatedId,numero:1}]);
     if(options.method==='POST'&&path.startsWith('/rest/v1/'))return Response.json(JSON.parse(options.body));
     if(path==='/rest/v1/ordens_servico'&&(query.includes('select=id%2Cnumero')||query.includes('select=id,numero')))return Response.json([{id:duplicatedId,numero:1}]);
     if(path==='/rest/v1/ordens_servico'&&query.includes('select=*'))return Response.json(fullOrderReads++===0?[{id:duplicatedId,numero:1,status:'Em andamento',dados_extras:{},checklist:[],fotos:[]}]:[]);
@@ -45,10 +46,9 @@ test('migração não reutiliza o ID de uma O.S. existente em outro número',asy
   };
   const {syncSupabase}=await import(`../src/supabase.js?collision=${Date.now()}`);
   await syncSupabase({clients:[],vehicles:[],orders:[{id:duplicatedId,number:'0002',client:{},vehicle:{}}],counter:3});
-  const first=writtenOrders.find(order=>order.numero===1),second=writtenOrders.find(order=>order.numero===2);
-  assert.equal(first.id,duplicatedId);
+  const second=writtenOrders.find(order=>order.numero===2);
+  assert.equal(writtenOrders.some(order=>order.numero===1),false);
   assert.notEqual(second.id,duplicatedId);
-  assert.notEqual(first.id,second.id);
 });
 
 test('migração descarta vínculo antigo quando o veículo não existe',async()=>{

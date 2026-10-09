@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v270-delivered-mechanic-edit';
+const CACHE='cortez-garage-v271-order-persistence';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,15 +6,15 @@ const SHELL=[
   './src/style.css?v=20261008-2&w=16',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261009-4',
-  './src/main.js?v=20261009-3&w=21',
+  './src/boot.js?v=20261009-5',
+  './src/main.js?v=20261009-4&w=22',
   './src/access-control.js?v=20260915-1',
-  './src/budget-order.js?v=20261009-4',
+  './src/budget-order.js?v=20261009-5',
   './src/pdf-order.js?v=20261008-2',
   './src/owner-diagnosis-observation.js?v=20260929-1',
-  './src/order-workflow.js?v=20261008-2',
+  './src/order-workflow.js?v=20261009-3',
   './src/order-stock-links.js?v=20261008-1',
-  './src/order-status.js?v=20261008-1',
+  './src/order-status.js?v=20261009-3',
   './src/delete-order.js?v=20260905-1',
   './src/entry-receipt.js?v=20260911-2',
   './src/closed-order-receipt.js?v=20261006-1',
@@ -35,7 +35,7 @@ const SHELL=[
   './src/help.js?v=20261008-5',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261009-2',
+  './src/supabase.js?v=20261009-3',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',

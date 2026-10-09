@@ -20,7 +20,7 @@ test('O.S. local ausente no banco é localizada pelo número e recuperada',async
   assert.match(supabase,/ordens_servico\?numero=eq\.\$\{number\}/);
   assert.match(supabase,/async function ensureOrderRow\(token,order\)/);
   assert.match(supabase,/const recovery=\{clients:\[order\.client\],vehicles:\[order\.vehicle\],orders:\[order\],counter:number\+1\}/);
-  assert.match(supabase,/await writeDatabase\(token,recovery\)/);
+  assert.match(supabase,/await writeDatabase\(token,recovery,\{insertOnly:true\}\)/);
   assert.match(supabase,/await ensureOrderRow\(session\.access_token,order\)/);
 });
 
@@ -37,16 +37,17 @@ test('sincronização preserva envio antigo com falha e baixa a O.S. atual',asyn
   assert.match(main,/RECOVERY_DB_KEY='cortez-garage-recovery-db-v1'/);
   assert.match(main,/localStorage\.setItem\(RECOVERY_DB_KEY,pending\)/);
   assert.match(main,/localStorage\.setItem\(PENDING_BLOCKED_KEY,new Date\(\)\.toISOString\(\)\)/);
-  assert.match(main,/await pullLatestDatabase\(\)/);
+  assert.match(main,/else await pullLatestDatabase\(Boolean\(blocked\)\)/);
   assert.match(supabase,/export async function readSupabase\(\)/);
-  assert.match(supabase,/if\(!canManageServices\(\)\)return readDatabase\(session\.access_token\)/);
-  assert.doesNotMatch(supabase,/if\(!canManageServices\(\)\)\{const remote=.*?await writeDatabase\(session\.access_token,localDb\)/s);
+  assert.match(supabase,/if\(!canManageServices\(\)\)\{if\(!hasPermission\('createEntries'\)\)return readDatabase\(session\.access_token\);await writeDatabase\(session\.access_token,localDb,\{insertOnly:true\}\)/);
+  assert.match(supabase,/const editableRows=insertOnly\?\[\]/);
+  assert.match(supabase,/!\['Pronto para entrega','Entregue'\]\.includes\(remote\.status\)/);
 });
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261009-3/);
-  assert.match(worker,/main\.js\?v=20261009-3&w=21/);
-  assert.match(worker,/supabase\.js\?v=20261009-2/);
-  assert.match(worker,/cortez-garage-v270-delivered-mechanic-edit/);
+  assert.match(index,/main\.js\?v=20261009-4/);
+  assert.match(worker,/main\.js\?v=20261009-4&w=22/);
+  assert.match(worker,/supabase\.js\?v=20261009-3/);
+  assert.match(worker,/cortez-garage-v271-order-persistence/);
 });

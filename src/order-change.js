@@ -1,5 +1,5 @@
-const ROW_FIELDS=['numero','cliente_id','veiculo_id','reclamacao','diagnostico','observacoes','avarias','mecanico','status','mao_obra','valor_pecas','desconto','total','pagamento','checklist','data_entrada'];
-const EXTRA_FIELDS=['signature','services','parts','budget','technicalReport','advances','advance','advancePayment','advanceAt','warranty','warrantyPayCommissions','client','vehicle'];
+const ROW_FIELDS=['numero','cliente_id','veiculo_id','reclamacao','diagnostico','observacoes','avarias','mecanico','status','mao_obra','valor_pecas','desconto','total','pagamento','checklist','fotos','data_entrada'];
+const EXTRA_FIELDS=['signature','services','parts','budget','surchargeRate','surchargePolicy','technicalReport','closingReceipt','advances','advance','advancePayment','advanceAt','warranty','warrantyPayCommissions','client','vehicle'];
 const AUDIT_FIELDS=new Set(['updatedAt','atualizado_em','updatedBy','createdBy']);
 
 function normalized(value){

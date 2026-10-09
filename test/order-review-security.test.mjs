@@ -16,7 +16,7 @@ test('mecânico envia diagnóstico e observação para revisão sem alterar a O.
   assert.match(supabase,/entidade:'solicitacao_revisao_os'/);
   assert.match(supabase,/Somente o proprietário pode aplicar textos revisados/);
   assert.match(supabase,/if\(canManageServices\(\)\)\{body\.diagnostico=/);
-  assert.match(supabase,/if\(!canManageServices\(\)\)return readDatabase\(session\.access_token\)/);
+  assert.match(supabase,/if\(!canManageServices\(\)\)\{if\(!hasPermission\('createEntries'\)\)return readDatabase\(session\.access_token\);await writeDatabase\(session\.access_token,localDb,\{insertOnly:true\}\)/);
   assert.match(databaseGuard,/new\.diagnostico := old\.diagnostico/);
   assert.match(databaseGuard,/old\.dados_extras -> 'services'/);
   assert.match(index,/order-review-requests\.js\?v=20260924-1/);
@@ -32,7 +32,7 @@ test('salvamento pendente sobrevive a reinício sem bloquear a leitura atual',as
   const main=await read('src/main.js');
   assert.match(main,/cortez-garage-pending-db-v1/);
   assert.match(main,/pending&&!blocked\?pending:localStorage\.getItem\(DBKEY\)/);
-  assert.match(main,/pending&&canManageServices\(\)&&!blocked/);
+  assert.match(main,/if\(pending&&!blocked\)\{try\{await pushMovement\(\)/);
   assert.match(main,/localStorage\.setItem\(RECOVERY_DB_KEY,pending\)/);
   assert.match(main,/await pullLatestDatabase\(true\)/);
   assert.match(main,/setInterval\(refreshVisibleDashboard,30000\)/);

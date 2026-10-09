@@ -1,4 +1,4 @@
-import{agendaMechanicForCurrentUser,confirmCurrentMechanicCommissions,getCurrentUser,readCurrentMechanicCommissions}from'./supabase.js?v=20261003-2';
+import{agendaMechanicForCurrentUser,confirmCurrentMechanicCommissions,getCurrentUser,readCurrentMechanicCommissions}from'./supabase.js?v=20261009-3';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 import{hasSaturdaySchedule}from'./mechanic-saturday.js?v=20261003-2';
 
