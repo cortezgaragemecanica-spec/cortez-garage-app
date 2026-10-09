@@ -1,4 +1,4 @@
-import{updateOrderStatus}from'./supabase.js?v=20261008-1';
+import{updateOrderStatus}from'./supabase.js?v=20261009-3';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 
 const DB_KEY='cortez-garage-v1';

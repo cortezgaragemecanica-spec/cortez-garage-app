@@ -1,4 +1,4 @@
-import{canManageServices,canAddOrderItems,getCurrentUser,hasPermission}from'./supabase.js?v=20260915-6';
+import{canManageServices,canAddOrderItems,getCurrentUser,hasPermission}from'./supabase.js?v=20261009-3';
 
 const blockedActions='.add-line,.edit-part,.remove-line,.refuse-line,#includePart,#approveBudget,#previousStatus';
 const protectedFields='#parts,#labor,#partsValue,#discount,#payment,#budgetSection input:not([data-check]),#budgetSection textarea,#budgetSection select';
