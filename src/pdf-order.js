@@ -1,4 +1,5 @@
 import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js';
+import {calculateOrderTotals} from './order-surcharge.js?v=20261008-1';
 
 const DB_KEY='cortez-garage-v1';
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
@@ -27,7 +28,7 @@ export function drawReport(order,logo){
   const parts=(budget.parts||[]).map(item=>({description:item.description,brand:item.brand,quantity:item.quantity,value:item.value,refused:item.refused}));
   table(budgetOnly?'Peças do orçamento':'Peças utilizadas',['Descrição','Qtd.','Valor unit.','Subtotal'],parts.map(item=>[`${item.refused?'RECUSADA — ':''}${[item.description,item.brand].filter(Boolean).join(' · ')}`,String(Number(item.quantity||0)),money(item.value),item.refused?'R$ 0,00':money(Number(item.quantity||0)*Number(item.value||0))]),[560,100,210,230]);
   const serviceSection=servicePdfSection(order,money);table(serviceSection.title,serviceSection.headers,serviceSection.rows,serviceSection.widths);
-  ensure(160);ctx.font='bold 22px Arial';ctx.fillText(`Total de peças: ${money(order.partsValue??budget.partsTotal)}`,MARGIN,y);y+=34;ctx.fillText(`Total de serviços: ${money(order.labor??budget.servicesTotal)}`,MARGIN,y);y+=42;ctx.fillStyle='#d6b718';ctx.fillRect(MARGIN,y,contentWidth,54);ctx.fillStyle='#111';ctx.font='bold 27px Arial';ctx.fillText(`VALOR TOTAL: ${money(order.total??budget.total)}`,MARGIN+18,y+36);y+=75;
+  const calculated=calculateOrderTotals({partsValue:order.partsValue??budget.partsTotal,labor:order.labor??budget.servicesTotal,discount:order.discount,surchargeRate:order.surchargeRate??budget.surchargeRate});ensure(Number(calculated.surchargeRate)>0?200:160);ctx.font='bold 22px Arial';ctx.fillText(`Total de peças: ${money(order.partsValue??budget.partsTotal)}`,MARGIN,y);y+=34;ctx.fillText(`Total de serviços: ${money(order.labor??budget.servicesTotal)}`,MARGIN,y);y+=34;if(calculated.surchargeRate>0){ctx.fillText(`Acréscimo automático (${calculated.surchargeRate*100}%): ${money(calculated.surchargeAmount)}`,MARGIN,y);y+=42}else y+=8;ctx.fillStyle='#d6b718';ctx.fillRect(MARGIN,y,contentWidth,54);ctx.fillStyle='#111';ctx.font='bold 27px Arial';ctx.fillText(`VALOR TOTAL: ${money(calculated.total)}`,MARGIN+18,y+36);y+=75;
   if(budgetOnly){title('Condições de pagamento');paragraph('Forma/condições de pagamento',budget.paymentTerms||order.payment);return pages}
   title('Condições de pagamento');paragraph('Forma/condições de pagamento',budget.paymentTerms||order.payment);title('Garantia');paragraph('Termo de garantia',budget.warrantyTerms);
   ensure(170);y+=25;ctx.beginPath();ctx.moveTo(MARGIN,y+70);ctx.lineTo(MARGIN+430,y+70);ctx.moveTo(WIDTH-MARGIN-430,y+70);ctx.lineTo(WIDTH-MARGIN,y+70);ctx.stroke();ctx.font='17px Arial';ctx.fillText('Assinatura do cliente',MARGIN+120,y+96);ctx.fillText('Responsável técnico / mecânico',WIDTH-MARGIN-360,y+96);return pages;

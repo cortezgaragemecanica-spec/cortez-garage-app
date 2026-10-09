@@ -1,3 +1,5 @@
+import{calculateOrderTotals}from'./order-surcharge.js';
+
 const money=value=>Math.round((Number(value)||0)*100)/100;
 const activePartsTotal=parts=>money(parts.filter(item=>!item?.refused).reduce((sum,item)=>sum+Math.max(1,Number(item?.quantity)||1)*(Number(item?.value)||0),0));
 const activeServicesTotal=services=>money(services.filter(item=>!item?.refused).reduce((sum,item)=>sum+(Number(item?.value)||0),0));
@@ -16,8 +18,8 @@ export function repairBudgetAgainstOrderTotals(source={},row={}){
     services.push({description:'Mão de obra — diferença recuperada',mechanic:String(row.mecanico||''),value:missingLabor,commissionRate:.5,refused:false,recovered:true});
     servicesTotal=activeServicesTotal(services);
   }
-  const discount=money(row.desconto);
-  return{...source,parts,services,partsTotal,servicesTotal,total:money(Math.max(0,partsTotal+servicesTotal-discount))};
+  const discount=money(row.desconto),calculated=calculateOrderTotals({partsValue:partsTotal,labor:servicesTotal,discount,surchargeRate:source.surchargeRate});
+  return{...source,parts,services,partsTotal,servicesTotal,subtotal:calculated.base,surchargeRate:calculated.surchargeRate,surchargeAmount:calculated.surchargeAmount,total:calculated.total};
 }
 
 const stable=value=>{

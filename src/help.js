@@ -19,7 +19,7 @@ const sections=[
     <p>O proprietário pode gravar diretamente o diagnóstico e as observações. Mecânicos enviam os textos para revisão, evitando alterações indevidas na O.S.</p>
     <ol><li>Abra a O.S.</li><li>Preencha diagnóstico e observação.</li><li>Salve ou envie para revisão, conforme o seu perfil.</li><li>Confira o PDF antes de encaminhar ao cliente.</li></ol>`},
   {id:'orcamento',title:'6. Orçamento, peças e serviços',summary:'Valores, mecânico e aprovação',content:`
-    <ul><li>Adicione cada peça com descrição, marca, quantidade, custo, margem e fornecedor.</li><li>Adicione cada serviço com descrição, valor, mecânico e percentual de comissão.</li><li>Marque itens recusados sem apagá-los do histórico.</li><li>Informe condições de pagamento e garantia.</li></ul>
+    <ul><li>Adicione cada peça com descrição, marca, quantidade, custo, margem e fornecedor.</li><li>Adicione cada serviço com descrição, valor, mecânico e percentual de comissão.</li><li>Marque itens recusados sem apagá-los do histórico.</li><li>Informe condições de pagamento e garantia.</li><li>Nas novas O.S., o sistema acrescenta automaticamente 10% sobre peças + serviços − desconto e mostra o acréscimo separado no orçamento, fechamento e PDF.</li></ul>
     <p>Mecânicos podem solicitar peças ou um orçamento de serviços. O proprietário recebe o aviso na página inicial.</p>`},
   {id:'pronto-entrega',title:'7. Pronto para entrega',summary:'Salvamento, estoque e conta a receber',content:`
     <ol><li>Confira todas as peças, serviços e valores.</li><li>Toque em <b>Veículo pronto para entrega</b>.</li><li>Aguarde a confirmação do banco.</li></ol>
