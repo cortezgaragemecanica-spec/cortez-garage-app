@@ -28,12 +28,13 @@ test('entrega só muda o status depois da confirmação do caixa',async()=>{
   assert.match(main,/await recordOrderDelivery\(order,paymentType\);await updateOrderStatus\(order\.id,'Entregue'\)/);
 });
 
-test('salvamento pendente sobrevive a reinício e sincroniza antes da leitura',async()=>{
+test('salvamento pendente sobrevive a reinício sem bloquear a leitura atual',async()=>{
   const main=await read('src/main.js');
   assert.match(main,/cortez-garage-pending-db-v1/);
-  assert.match(main,/localStorage\.getItem\(PENDING_DB_KEY\)\|\|localStorage\.getItem\(DBKEY\)/);
-  assert.match(main,/if\(pending&&canManageServices\(\)\)await pushMovement\(\)/);
-  assert.match(main,/if\(pending\)localStorage\.removeItem\(PENDING_DB_KEY\)/);
+  assert.match(main,/pending&&!blocked\?pending:localStorage\.getItem\(DBKEY\)/);
+  assert.match(main,/pending&&canManageServices\(\)&&!blocked/);
+  assert.match(main,/localStorage\.setItem\(RECOVERY_DB_KEY,pending\)/);
+  assert.match(main,/await pullLatestDatabase\(true\)/);
   assert.match(main,/setInterval\(refreshVisibleDashboard,30000\)/);
 });
 

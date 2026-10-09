@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v267-kaua-luizinho';
+const CACHE='cortez-garage-v268-pc-sync-recovery';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,8 +6,8 @@ const SHELL=[
   './src/style.css?v=20261008-2&w=16',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261009-1',
-  './src/main.js?v=20261008-2&w=19',
+  './src/boot.js?v=20261009-2',
+  './src/main.js?v=20261009-1&w=20',
   './src/access-control.js?v=20260915-1',
   './src/budget-order.js?v=20261008-5',
   './src/pdf-order.js?v=20261008-2',
@@ -35,7 +35,7 @@ const SHELL=[
   './src/help.js?v=20261008-5',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261009-1',
+  './src/supabase.js?v=20261009-2',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',

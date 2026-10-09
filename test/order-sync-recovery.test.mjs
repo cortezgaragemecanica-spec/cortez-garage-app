@@ -31,17 +31,22 @@ test('atualização de progresso exige confirmação de linha gravada',async()=>
   assert.match(supabase,/if\(!saved\.length\)throw new Error\(`O banco não confirmou a atualização da O\.S\./);
 });
 
-test('mecânico descarta banco local pendente e sempre baixa a O.S. atual',async()=>{
+test('sincronização preserva envio antigo com falha e baixa a O.S. atual',async()=>{
   const[main,supabase]=await Promise.all([read('src/main.js'),read('src/supabase.js')]);
-  assert.match(main,/if\(pending&&canManageServices\(\)\)await pushMovement\(\);else\{if\(pending\)localStorage\.removeItem\(PENDING_DB_KEY\);db=normalizeDatabase\(await syncSupabase\(db\)\)/);
+  assert.match(main,/PENDING_BLOCKED_KEY='cortez-garage-pending-blocked-v1'/);
+  assert.match(main,/RECOVERY_DB_KEY='cortez-garage-recovery-db-v1'/);
+  assert.match(main,/localStorage\.setItem\(RECOVERY_DB_KEY,pending\)/);
+  assert.match(main,/localStorage\.setItem\(PENDING_BLOCKED_KEY,new Date\(\)\.toISOString\(\)\)/);
+  assert.match(main,/await pullLatestDatabase\(\)/);
+  assert.match(supabase,/export async function readSupabase\(\)/);
   assert.match(supabase,/if\(!canManageServices\(\)\)return readDatabase\(session\.access_token\)/);
   assert.doesNotMatch(supabase,/if\(!canManageServices\(\)\)\{const remote=.*?await writeDatabase\(session\.access_token,localDb\)/s);
 });
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261008-2/);
-  assert.match(worker,/main\.js\?v=20261008-2&w=19/);
-  assert.match(worker,/supabase\.js\?v=20261009-1/);
-  assert.match(worker,/cortez-garage-v267-kaua-luizinho/);
+  assert.match(index,/main\.js\?v=20261009-1/);
+  assert.match(worker,/main\.js\?v=20261009-1&w=20/);
+  assert.match(worker,/supabase\.js\?v=20261009-2/);
+  assert.match(worker,/cortez-garage-v268-pc-sync-recovery/);
 });
