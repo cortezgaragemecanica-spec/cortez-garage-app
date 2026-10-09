@@ -4,9 +4,9 @@ import{readFile}from'node:fs/promises';
 
 const read=file=>readFile(new URL(`../${file}`,import.meta.url),'utf8');
 
-test('mecânico envia diagnóstico e observação para revisão sem alterar a O.S. diretamente',async()=>{
-  const[review,access,supabase,index,databaseGuard]=await Promise.all([
-    read('src/order-review-requests.js'),read('src/access-control.js'),read('src/supabase.js'),read('index.html'),read('supabase/bloqueio-revisao-mecanicos.sql')
+test('mecânico salva diagnóstico e observação diretamente na O.S.',async()=>{
+  const[review,access,supabase,index,databasePermission]=await Promise.all([
+    read('src/order-review-requests.js'),read('src/access-control.js'),read('src/supabase.js'),read('index.html'),read('supabase/liberar-salvamento-os-todos-usuarios.sql')
   ]);
   assert.match(review,/\['#diagnosis','diagnosis'\],\['#services','observation'\]/);
   assert.match(review,/input\.readOnly=true/);
@@ -15,11 +15,12 @@ test('mecânico envia diagnóstico e observação para revisão sem alterar a O.
   assert.doesNotMatch(access,/addOnlyProtectedFields=\['#diagnosis','#services'/);
   assert.match(supabase,/entidade:'solicitacao_revisao_os'/);
   assert.match(supabase,/Somente o proprietário pode aplicar textos revisados/);
-  assert.match(supabase,/if\(canManageServices\(\)\)\{body\.diagnostico=/);
-  assert.match(supabase,/if\(!canManageServices\(\)\)\{if\(!hasPermission\('createEntries'\)\)return readDatabase\(session\.access_token\);await writeDatabase\(session\.access_token,localDb,\{insertOnly:true\}\)/);
-  assert.match(databaseGuard,/new\.diagnostico := old\.diagnostico/);
-  assert.match(databaseGuard,/old\.dados_extras -> 'services'/);
-  assert.match(index,/order-review-requests\.js\?v=20260924-1/);
+  assert.match(review,/canSaveOrders as canManageServices/);
+  assert.match(access,/canSaveOrders/);
+  assert.match(supabase,/body=\{reclamacao:[\s\S]*diagnostico:[\s\S]*observacoes:/);
+  assert.match(supabase,/export async function saveSupabase\(localDb\)[\s\S]*await writeDatabase\(session\.access_token,localDb\)/);
+  assert.match(databasePermission,/usuario_tem_permissao\('editOrders'\)/);
+  assert.match(index,/order-review-requests\.js\?v=20261009-2/);
 });
 
 test('entrega só muda o status depois da confirmação do caixa',async()=>{

@@ -1,4 +1,4 @@
-import{canManageServices,canAddOrderItems,getCurrentUser,hasPermission}from'./supabase.js?v=20261009-3';
+import{canSaveOrders,hasPermission}from'./supabase.js?v=20261009-4';
 
 const blockedActions='.add-line,.edit-part,.remove-line,.refuse-line,#includePart,#approveBudget,#previousStatus';
 const protectedFields='#parts,#labor,#partsValue,#discount,#payment,#budgetSection input:not([data-check]),#budgetSection textarea,#budgetSection select';
@@ -10,12 +10,9 @@ const orderReadOnlyActions='.os-grid button:not(#print):not(#toggleOrderChecklis
 const orderReadOnlyFields='.os-grid input,.os-grid textarea,.os-grid select,.os-grid canvas,.os-head select';
 const orderReadOnlyMessage='Modo espectador: esta ordem de serviço está disponível apenas para consulta.';
 
-function restricted(){return!canManageServices()}
+function restricted(){return!canSaveOrders()}
 function lockServiceScreen(){
   if(!hasPermission('createEntries'))document.querySelectorAll('[data-route="entry"]').forEach(element=>element.remove());
-  const save=document.querySelector('#saveOs'),actions=document.querySelector('.os-head>div:last-child');
-  const owner=getCurrentUser().email.toLowerCase()==='cortezgaragemecanica@gmail.com';
-  if(save&&!owner)save.remove();
   if(!hasPermission('editOrders')){
     const order=document.querySelector('.os-grid');
     if(order&&!document.querySelector('.order-readonly-note'))order.insertAdjacentHTML('beforebegin',`<div class="access-restricted-note order-readonly-note" role="note">🔒 ${orderReadOnlyMessage}</div>`);
@@ -26,13 +23,6 @@ function lockServiceScreen(){
   if(!restricted())return;
   const order=document.querySelector('.os-grid');
   if(!order)return;
-  if(canAddOrderItems()){
-    if(!document.querySelector('.access-restricted-note'))order.insertAdjacentHTML('beforebegin',`<div class="access-restricted-note" role="note">🔒 ${addOnlyMessage}</div>`);
-    document.querySelectorAll(addOnlyBlockedActions).forEach(element=>{element.hidden=true;element.disabled=true});
-    if(document.querySelector('#status')?.value==='Entregue')document.querySelectorAll('.add-line').forEach(element=>{element.hidden=true;element.disabled=true});
-    document.querySelectorAll(`${addOnlyProtectedFields},#budgetSection tr:not([data-new]) input,#budgetSection tr:not([data-new]) textarea,#budgetSection tr:not([data-new]) select`).forEach(element=>{element.disabled=true;element.readOnly=true;element.setAttribute('aria-disabled','true')});
-    return;
-  }
   if(!document.querySelector('.access-restricted-note'))order.insertAdjacentHTML('beforebegin',`<div class="access-restricted-note" role="note">🔒 ${message}</div>`);
   document.querySelectorAll(blockedActions).forEach(element=>{element.hidden=true;element.disabled=true});
   document.querySelectorAll(protectedFields).forEach(element=>{element.disabled=true;element.readOnly=true;element.setAttribute('aria-disabled','true')});
@@ -40,8 +30,8 @@ function lockServiceScreen(){
 
 document.addEventListener('click',event=>{
   if(!hasPermission('editOrders')&&event.target.closest(orderReadOnlyActions)){event.preventDefault();event.stopImmediatePropagation();alert(orderReadOnlyMessage);return}
-  if(!restricted()||!event.target.closest(canAddOrderItems()?addOnlyBlockedActions:blockedActions))return;
-  event.preventDefault();event.stopImmediatePropagation();alert(canAddOrderItems()?addOnlyMessage:message);
+  if(!restricted()||!event.target.closest(blockedActions))return;
+  event.preventDefault();event.stopImmediatePropagation();alert(message);
 },true);
 new MutationObserver(lockServiceScreen).observe(document.querySelector('#app'),{childList:true,subtree:true});
 lockServiceScreen();

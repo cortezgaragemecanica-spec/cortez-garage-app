@@ -13,7 +13,7 @@ test('painel permite controlar entrada, edição de O.S. e visualização financ
   assert.match(supabase,/isMarcelino[\s\S]*createEntries:false,editOrders:false,viewFinance:true/);
 });
 
-test('espectador não altera O.S. nem Financeiro',async()=>{
+test('todo usuário autenticado altera O.S. e o Financeiro continua protegido',async()=>{
   const [main,access,admin,supabase]=await Promise.all([read('src/main.js'),read('src/access-control.js'),read('src/admin.js'),read('src/supabase.js')]);
   assert.match(main,/r==='entry'&&!hasPermission\('createEntries'\)/);
   assert.match(access,/!hasPermission\('editOrders'\)/);
@@ -25,7 +25,8 @@ test('espectador não altera O.S. nem Financeiro',async()=>{
   assert.match(main,/refreshUserAccess[\s\S]*readUserAccess\(\)/);
   assert.match(admin,/cortez:user-access-updated/);
   for(const reader of ['readFinance','readPartnerCommissionRates','readCostPlans','readSupplierSettlements'])assert.match(supabase,new RegExp(`export async function ${reader}\\(\\)\\{requireFinanceViewing\\(\\)`));
-  assert.match(supabase,/path\.startsWith\('\/rest\/v1\/ordens_servico'\).*hasPermission\('editOrders'\)/);
+  assert.doesNotMatch(supabase,/path\.startsWith\('\/rest\/v1\/ordens_servico'\).*hasPermission\('editOrders'\)/);
+  assert.match(supabase,/ORDER_SAVE_PERMISSIONS=new Set\(\['createEntries','editOrders','readyOrders'\]\)/);
   assert.match(supabase,/path\.startsWith\('\/rest\/v1\/lancamentos_financeiros'\).*currentEmail\(\)!==OWNER_EMAIL/);
 });
 

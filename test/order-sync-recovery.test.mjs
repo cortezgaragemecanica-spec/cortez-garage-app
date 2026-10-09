@@ -39,15 +39,15 @@ test('sincronização preserva envio antigo com falha e baixa a O.S. atual',asyn
   assert.match(main,/localStorage\.setItem\(PENDING_BLOCKED_KEY,new Date\(\)\.toISOString\(\)\)/);
   assert.match(main,/else await pullLatestDatabase\(Boolean\(blocked\)\)/);
   assert.match(supabase,/export async function readSupabase\(\)/);
-  assert.match(supabase,/if\(!canManageServices\(\)\)\{if\(!hasPermission\('createEntries'\)\)return readDatabase\(session\.access_token\);await writeDatabase\(session\.access_token,localDb,\{insertOnly:true\}\)/);
+  assert.match(supabase,/export async function saveSupabase\(localDb\)[\s\S]*await writeDatabase\(session\.access_token,localDb\)/);
   assert.match(supabase,/const editableRows=insertOnly\?\[\]/);
   assert.match(supabase,/!\['Pronto para entrega','Entregue'\]\.includes\(remote\.status\)/);
 });
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261009-4/);
-  assert.match(worker,/main\.js\?v=20261009-4&w=22/);
-  assert.match(worker,/supabase\.js\?v=20261009-3/);
-  assert.match(worker,/cortez-garage-v271-order-persistence/);
+  assert.match(index,/main\.js\?v=20261009-5/);
+  assert.match(worker,/main\.js\?v=20261009-5&w=23/);
+  assert.match(worker,/supabase\.js\?v=20261009-4/);
+  assert.match(worker,/cortez-garage-v272-order-save-all/);
 });

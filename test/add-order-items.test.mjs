@@ -31,7 +31,7 @@ test('peça antiga sem campos de custo e quantidade continua intacta',()=>{
   assert.deepEqual(result.budget.parts[0],old.parts[0]);
 });
 
-test('cadastros Kauã possuem só a permissão de inclusão e a gravação protege status e desconto',async()=>{
+test('Kauã mantém as permissões específicas e usa o salvamento completo de O.S.',async()=>{
   const[supabase,admin,access,budget]=await Promise.all(['src/supabase.js','src/admin.js','src/access-control.js','src/budget-order.js'].map(file=>readFile(file,'utf8')));
   for(const email of['kaugg490@gmail.com','kauavinicius.cortez@gmail.com','kauavinicius.cortezz@gmail.com'])assert.match(supabase,new RegExp(`${email.replace(/\./g,'\\.')}.*manageValues:false,addOrderItems:true`));
   assert.match(supabase,/saveAddedOrderItems/);
@@ -43,7 +43,9 @@ test('cadastros Kauã possuem só a permissão de inclusão e a gravação prote
   assert.match(admin,/addOrderItems:'Adicionar peças e serviços com valores'/);
   assert.match(admin,/Sem agenda individual/);
   assert.doesNotMatch(admin,/if\(email!==FINANCE_EMAIL&&!agenda\)/);
-  assert.match(access,/tr:not\(\[data-new\]\)/);
+  assert.match(access,/function restricted\(\)\{return!canSaveOrders\(\)\}/);
+  assert.doesNotMatch(access,/if\(save&&!owner\)save\.remove\(\)/);
+  assert.match(budget,/canSaveOrders as canManageServices/);
   assert.match(budget,/row\('part',item,0,true\)/);
   assert.match(budget,/row\('service',\{\},0,true\)/);
 });
