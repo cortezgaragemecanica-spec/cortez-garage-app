@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v272-order-save-all';
+const CACHE='cortez-garage-v273-direct-order-save';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,8 +6,8 @@ const SHELL=[
   './src/style.css?v=20261008-2&w=16',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261009-6',
-  './src/main.js?v=20261009-5&w=23',
+  './src/boot.js?v=20261009-7',
+  './src/main.js?v=20261009-6&w=24',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261009-6',
   './src/pdf-order.js?v=20261008-2',
@@ -35,7 +35,7 @@ const SHELL=[
   './src/help.js?v=20261008-5',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261009-4',
+  './src/supabase.js?v=20261009-5',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',
@@ -50,9 +50,18 @@ self.addEventListener('install',event=>event.waitUntil(
   caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>new URL(path,self.location).href))).then(()=>self.skipWaiting())
 ));
 
-self.addEventListener('activate',event=>event.waitUntil(
-  caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())
-));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+  const keys=await caches.keys();
+  await Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)));
+  await self.clients.claim();
+  const windows=await self.clients.matchAll({type:'window'});
+  await Promise.all(windows.map(client=>{
+    const url=new URL(client.url);
+    if(url.searchParams.get('release')==='20261009-7')return null;
+    url.searchParams.set('release','20261009-7');
+    return client.navigate(url.href);
+  }));
+})()));
 
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET'||!new URL(event.request.url).pathname.startsWith(ROOT))return;
