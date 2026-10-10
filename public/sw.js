@@ -1,16 +1,16 @@
-const CACHE='cortez-garage-v273-direct-order-save';
+const CACHE='cortez-garage-v274-optional-surcharge-luizinho';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20261008-2&w=16',
+  './src/style.css?v=20261010-1&w=17',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261009-7',
-  './src/main.js?v=20261009-6&w=24',
+  './src/boot.js?v=20261010-1',
+  './src/main.js?v=20261010-1&w=25',
   './src/access-control.js?v=20261009-2',
-  './src/budget-order.js?v=20261009-6',
-  './src/pdf-order.js?v=20261008-2',
+  './src/budget-order.js?v=20261010-1',
+  './src/pdf-order.js?v=20261010-1',
   './src/owner-diagnosis-observation.js?v=20260929-1',
   './src/order-workflow.js?v=20261009-3',
   './src/order-stock-links.js?v=20261008-1',
@@ -23,7 +23,7 @@ const SHELL=[
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261009-1&w=29',
+  './src/admin.js?v=20261010-1&w=30',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -32,10 +32,10 @@ const SHELL=[
   './src/order-review-requests.js?v=20261009-2',
   './src/technical-report.js?v=20260914-1',
   './src/mechanic-commissions.js?v=20261003-2',
-  './src/help.js?v=20261008-5',
+  './src/help.js?v=20261010-1',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261009-5',
+  './src/supabase.js?v=20261010-1',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',
@@ -57,8 +57,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261009-7')return null;
-    url.searchParams.set('release','20261009-7');
+    if(url.searchParams.get('release')==='20261010-1')return null;
+    url.searchParams.set('release','20261010-1');
     return client.navigate(url.href);
   }));
 })()));

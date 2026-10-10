@@ -46,8 +46,8 @@ test('sincronização preserva envio antigo com falha e baixa a O.S. atual',asyn
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261009-6/);
-  assert.match(worker,/main\.js\?v=20261009-6&w=24/);
-  assert.match(worker,/supabase\.js\?v=20261009-5/);
-  assert.match(worker,/cortez-garage-v273-direct-order-save/);
+  assert.match(index,/main\.js\?v=20261010-1/);
+  assert.match(worker,/main\.js\?v=20261010-1&w=25/);
+  assert.match(worker,/supabase\.js\?v=20261010-1/);
+  assert.match(worker,/cortez-garage-v274-optional-surcharge-luizinho/);
 });

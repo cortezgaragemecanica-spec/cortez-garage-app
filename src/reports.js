@@ -1,4 +1,4 @@
-import{getCurrentUser,readFinance,readStock,readPartnerCommissionRates}from'./supabase.js?v=20261009-5';
+import{getCurrentUser,readFinance,readStock,readPartnerCommissionRates}from'./supabase.js?v=20261010-1';
 import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
 import{commissionWeekRange,mechanicAdvanceRows,normalizeCommissionText}from'./mechanic-advances.js?v=20260918-1';
 import{enableProgressiveTables}from'./pagination.js?v=20260930-1';
