@@ -1,4 +1,4 @@
-import{refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261010-1';
+import{refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261010-2';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 import{agendaDisplayName,isPrivateMechanic}from'./mechanic-privacy.js?v=20261002-1';
 import{hasSaturdaySchedule,mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';

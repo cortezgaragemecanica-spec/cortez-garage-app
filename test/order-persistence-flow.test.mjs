@@ -68,8 +68,8 @@ function signIn(email){const deviceId='device-test';localStorage.setItem('cortez
 function makeOrder(number,status='Aguardando diagnóstico'){
   const client={id:randomUUID(),name:'Cliente Teste',phone:'45999990000',cpf:'123',address:'Rua Teste'};
   const vehicle={id:randomUUID(),clientId:client.id,plate:'ABC1D23',model:'Teste',brand:'Marca',year:'2024',color:'Preto',km:100,fuel:'Flex'};
-  const budget={parts:[{description:'Filtro',quantity:1,value:110,cost:100,margin:10,stockMode:'stock',stockId:'stock-1'}],services:[{description:'Troca',mechanic:'Gustavo',value:220,commissionRate:.5}],partsTotal:110,servicesTotal:220,subtotal:330,surchargeRate:.1,surchargeAmount:11,total:341,paymentTerms:'Pix',warrantyTerms:'90 dias',approved:true};
-  return{id:randomUUID(),number:String(number).padStart(4,'0'),created:'2026-10-09T12:00:00.000Z',updatedAt:'2026-10-09T12:00:00.000Z',client,vehicle,complaint:'Barulho',diagnosis:'Rolamento',notes:'Cliente avisado',damage:'Sem avarias',mechanic:'Gustavo',status,labor:220,partsValue:110,discount:0,surchargeRate:.1,surchargePolicy:'optional-parts-10-v2',total:341,payment:'Pix',checklist:[{label:'Luzes',ok:true}],photos:[],services:'Troca',parts:'Filtro',budget,advances:[],advance:0,advancePayment:'',advanceAt:null,warranty:false,warrantyPayCommissions:false}
+  const budget={parts:[{description:'Filtro',quantity:1,value:110,cost:100,margin:10,stockMode:'stock',stockId:'stock-1'}],services:[{description:'Troca',mechanic:'Gustavo',value:220,commissionRate:.5}],partsTotal:110,servicesTotal:220,subtotal:330,surchargeRate:.1,surchargeAmount:33,total:363,paymentTerms:'Pix',warrantyTerms:'90 dias',approved:true};
+  return{id:randomUUID(),number:String(number).padStart(4,'0'),created:'2026-10-09T12:00:00.000Z',updatedAt:'2026-10-09T12:00:00.000Z',client,vehicle,complaint:'Barulho',diagnosis:'Rolamento',notes:'Cliente avisado',damage:'Sem avarias',mechanic:'Gustavo',status,labor:220,partsValue:110,discount:0,surchargeRate:.1,surchargePolicy:'optional-total-10-v3',total:363,payment:'Pix',checklist:[{label:'Luzes',ok:true}],photos:[],services:'Troca',parts:'Filtro',budget,advances:[],advance:0,advancePayment:'',advanceAt:null,warranty:false,warrantyPayCommissions:false}
 }
 
 test('fluxo completo persiste, relê, atualiza e sincroniza a mesma O.S. sem tocar nas entregues',async()=>{
@@ -87,9 +87,9 @@ test('fluxo completo persiste, relê, atualiza e sincroniza a mesma O.S. sem toc
   const reopened=(await api.readSupabase()).orders.find(item=>item.number==='0124');
   assert.equal(reopened.client.name,'Cliente Teste');assert.equal(reopened.vehicle.plate,'ABC1D23');assert.equal(reopened.diagnosis,'Rolamento');assert.equal(reopened.notes,'Cliente avisado');
 
-  signIn('tony@cortezgarage.com');reopened.status='Em andamento';reopened.complaint='Reclamação atualizada';reopened.diagnosis='Diagnóstico atualizado';reopened.notes='Atualizada';reopened.mechanic='Tony';reopened.discount=10;reopened.total=331;reopened.budget={...reopened.budget,total:331};
+  signIn('tony@cortezgarage.com');reopened.status='Em andamento';reopened.complaint='Reclamação atualizada';reopened.diagnosis='Diagnóstico atualizado';reopened.notes='Atualizada';reopened.mechanic='Tony';reopened.discount=10;reopened.total=352;reopened.budget={...reopened.budget,total:352};
   await api.saveOrderValues(reopened);assert.equal(tables.ordens_servico.length,2);const savedUpdate=tables.ordens_servico.find(row=>row.numero===124);assert.equal(savedUpdate.reclamacao,'Reclamação atualizada');assert.equal(savedUpdate.diagnostico,'Diagnóstico atualizado');assert.equal(savedUpdate.observacoes,'Atualizada');assert.equal(savedUpdate.mecanico,'Tony');
-  const updated=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(updated.discount,10);assert.equal(updated.total,331);
+  const updated=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(updated.discount,10);assert.equal(updated.total,352);
 
   const deviceA=clone(updated),deviceB=clone(updated);deviceA.complaint='Alteração A';await api.saveOrderProgress(deviceA);deviceB.complaint='Alteração B';await assert.rejects(()=>api.saveOrderProgress(deviceB),/alterada em outro aparelho/);
 

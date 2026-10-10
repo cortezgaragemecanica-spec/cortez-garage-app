@@ -10,7 +10,7 @@ export function calculateOrderTotals({labor=0,partsValue=0,discount=0,surchargeR
   const discountValue=roundMoney(Math.max(0,Number(discount)||0));
   const base=roundMoney(Math.max(0,laborValue+parts-discountValue));
   const rate=normalizeSurchargeRate(surchargeRate);
-  const surchargeAmount=roundMoney(parts*rate);
+  const surchargeAmount=roundMoney(base*rate);
   return{base,surchargeRate:rate,surchargeAmount,total:roundMoney(base+surchargeAmount)};
 }
 

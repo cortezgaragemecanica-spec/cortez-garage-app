@@ -67,11 +67,11 @@ test('PDF incorpora os 10% somente nas peças sem alterar a mão de obra',()=>{
     return canvas;
   }};
   try{
-    const report={...order,number:'0099',created:'2026-10-08T10:00:00',surchargeRate:.10,labor:100,partsValue:20,discount:0,total:122,complaint:'Teste',client:{name:'Cliente'},vehicle:{model:'Carro'},checklist:[],budget:{services:[{description:'Serviço teste',value:100}],parts:[{description:'Peça teste',quantity:1,value:20}]}};
+    const report={...order,number:'0099',created:'2026-10-08T10:00:00',surchargeRate:.10,labor:100,partsValue:20,discount:0,total:132,complaint:'Teste',client:{name:'Cliente'},vehicle:{model:'Carro'},checklist:[],budget:{services:[{description:'Serviço teste',value:100}],parts:[{description:'Peça teste',quantity:1,value:20}]}};
     const texts=drawReport(report,{}).flatMap(page=>page.texts);
     assert.ok(texts.includes('R$ 100,00')||texts.includes('R$ 100,00'));
-    assert.ok(texts.includes('R$ 22,00')||texts.includes('R$ 22,00'));
-    assert.ok(texts.includes('VALOR TOTAL: R$ 122,00')||texts.includes('VALOR TOTAL: R$ 122,00'));
+    assert.ok(texts.includes('R$ 32,00')||texts.includes('R$ 32,00'));
+    assert.ok(texts.includes('VALOR TOTAL: R$ 132,00')||texts.includes('VALOR TOTAL: R$ 132,00'));
     assert.equal(texts.some(text=>text.includes('Acréscimo')),false);
   }finally{
     if(originalDocument===undefined)delete globalThis.document;else globalThis.document=originalDocument;
