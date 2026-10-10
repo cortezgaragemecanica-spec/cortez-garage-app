@@ -1,4 +1,4 @@
-import{refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261009-5';
+import{refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261010-1';
 import{agendaDisplayName}from'./mechanic-privacy.js?v=20261002-1';
 import{mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';
 const API='https://pqldixrfvmkwkwbbysyl.supabase.co',KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe',OWNER='cortezgaragemecanica@gmail.com';

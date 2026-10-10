@@ -1,6 +1,6 @@
-import{readPartnerConference,savePartnerConference,cancelPartnerConference,setPartnerCommissionExcluded}from'./supabase.js?v=20261009-5&w=10';
+import{readPartnerConference,savePartnerConference,cancelPartnerConference,setPartnerCommissionExcluded}from'./supabase.js?v=20261010-1&w=10';
 import{reconciledPartnerLedger,partnerEventKey,PARTNER_OPENING,activePartnerConferences,excludedPartnerCommissions,deliveredPartnerOrder,deliveredPartnerEvents,partnerCommissionReceiptDate}from'./partner-reconciliation.js?v=20261003-3';
-import{getCurrentUser,hasPermission,canManageLuizinhoNotes,readFinance,saveFinanceRecord,updateFinanceRecord,markFinanceDone,settlePayable,payCommission,deleteFinanceRecord,readMechanics,saveMechanic,setMechanicActive,readUserAccess,createManagedUser,updateManagedUser,readUserUsage,readPartnerCommissionRates,savePartnerCommissionRates,readCostPlans,saveCostPlan,readStock,readSupplierSettlements,saveSupplierSettlement,updateSupplierSettlement,deleteSupplierSettlement,saveLuizinhoNote,updateLuizinhoNote,setLuizinhoNoteChecked,deleteLuizinhoNote,createOperationalBackup,restoreOperationalBackup,readMechanicCommissionConfirmations,reconcileLuizinhoPayables}from'./supabase.js?v=20261009-5';
+import{getCurrentUser,hasPermission,canManageLuizinhoNotes,readFinance,saveFinanceRecord,updateFinanceRecord,markFinanceDone,settlePayable,payCommission,deleteFinanceRecord,readMechanics,saveMechanic,setMechanicActive,readUserAccess,createManagedUser,updateManagedUser,readUserUsage,readPartnerCommissionRates,savePartnerCommissionRates,readCostPlans,saveCostPlan,readStock,readSupplierSettlements,saveSupplierSettlement,updateSupplierSettlement,deleteSupplierSettlement,saveLuizinhoNote,updateLuizinhoNote,setLuizinhoNoteChecked,deleteLuizinhoNote,createOperationalBackup,restoreOperationalBackup,readMechanicCommissionConfirmations,reconcileLuizinhoPayables}from'./supabase.js?v=20261010-1';
 import{getSyncConfig}from'./sync.js';
 import{allocateLuizinhoPayments,isLuizinhoPaymentDescription,luizinhoPaymentWeek}from'./luizinho-payment.js?v=20260923-1';
 import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
@@ -56,7 +56,7 @@ function mechanicCommissionState(mechanic=''){
 }
 const partnerRateStartForDate=value=>{const start=commissionWeek(value||localDateOnly(new Date())).start;return Object.keys(partnerRateWeeks).filter(item=>item<=start).sort().at(-1)||''};
 const partnerRatesForDate=value=>{const key=partnerRateStartForDate(value);return key?partnerRateWeeks[key]:PARTNER_DISPLAY_RATES};
-function currentLuizinhoTotal(){const week=workWeek(localDateOnly(new Date()));return supplierSettlements.luizinho.filter(item=>item.date>=week.start&&item.date<=week.end).reduce((sum,item)=>sum+Number(item.amount||0),0)}
+function currentLuizinhoTotal(){const week=workWeek(localDateOnly(new Date()));return supplierSettlements.luizinho.filter(item=>workWeek(item.date).start===week.start).reduce((sum,item)=>sum+Number(item.amount||0),0)}
 function retificaBalance(){return supplierSettlements.retifica.reduce((sum,item)=>sum+Number(item.debit||0)-Number(item.paid||0),0)}
 function partnerOrderDeliveryDate(order){return String(order?.closingReceipt?.closedAt||order?.deliveredAt||order?.updatedAt||order?.created||'').slice(0,10)}
 const includedPartnerOrder=(order,week)=>week.start!==PARTNER_EXCLUDED_WEEK.start||week.end!==PARTNER_EXCLUDED_WEEK.end||!PARTNER_EXCLUDED_ORDERS.has(String(order.number||'').padStart(4,'0'));

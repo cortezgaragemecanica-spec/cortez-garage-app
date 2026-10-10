@@ -5,9 +5,12 @@ const roundMoney=value=>Math.round((Number(value)||0)*100)/100;
 export const normalizeSurchargeRate=value=>Math.min(1,Math.max(0,Number(value)||0));
 
 export function calculateOrderTotals({labor=0,partsValue=0,discount=0,surchargeRate=0}={}){
-  const base=roundMoney(Math.max(0,(Number(labor)||0)+(Number(partsValue)||0)-(Number(discount)||0)));
+  const parts=roundMoney(Math.max(0,Number(partsValue)||0));
+  const laborValue=roundMoney(Math.max(0,Number(labor)||0));
+  const discountValue=roundMoney(Math.max(0,Number(discount)||0));
+  const base=roundMoney(Math.max(0,laborValue+parts-discountValue));
   const rate=normalizeSurchargeRate(surchargeRate);
-  const surchargeAmount=roundMoney(base*rate);
+  const surchargeAmount=roundMoney(parts*rate);
   return{base,surchargeRate:rate,surchargeAmount,total:roundMoney(base+surchargeAmount)};
 }
 

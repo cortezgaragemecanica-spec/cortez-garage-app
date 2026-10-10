@@ -1,4 +1,4 @@
-import {getCurrentUser} from './supabase.js?v=20261009-5';
+import {getCurrentUser} from './supabase.js?v=20261010-1';
 
 const OWNER_EMAIL='cortezgaragemecanica@gmail.com';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
