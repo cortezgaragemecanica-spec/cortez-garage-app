@@ -6,7 +6,7 @@ import{planMechanicCommissionSettlements}from'./commission-settlement.js?v=20261
 import{repairBudgetAgainstOrderTotals,sameSavedBudget}from'./order-budget-consistency.js?v=20260928-1';
 import{normalizeCreditInstallments}from'./order-installments.js?v=20260928-1';
 import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261002-1';
-import{calculateOrderTotals}from'./order-surcharge.js?v=20261010-1';
+import{calculateOrderTotals}from'./order-surcharge.js?v=20261010-2';
 import{calculateCardSettlement,cardInstallmentLabel}from'./card-fees.js?v=20261006-1';
 import{commissionWeekStart,mechanicCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-2';
 

@@ -1,4 +1,4 @@
-import{applyOrderReviewRequest,canSaveOrders as canManageServices,deleteOrderReviewRequest,getCurrentUser,hasPermission,readOrderReviewRequests,saveOrderReviewRequest}from'./supabase.js?v=20261010-1';
+import{applyOrderReviewRequest,canSaveOrders as canManageServices,deleteOrderReviewRequest,getCurrentUser,hasPermission,readOrderReviewRequests,saveOrderReviewRequest}from'./supabase.js?v=20261010-2';
 
 const DB_KEY='cortez-garage-v1',OWNER='cortezgaragemecanica@gmail.com',esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
