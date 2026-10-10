@@ -27,7 +27,7 @@ test('todo usuário autenticado altera O.S. e o Financeiro continua protegido',a
   for(const reader of ['readFinance','readPartnerCommissionRates','readCostPlans','readSupplierSettlements'])assert.match(supabase,new RegExp(`export async function ${reader}\\(\\)\\{requireFinanceViewing\\(\\)`));
   assert.doesNotMatch(supabase,/path\.startsWith\('\/rest\/v1\/ordens_servico'\).*hasPermission\('editOrders'\)/);
   assert.match(supabase,/ORDER_SAVE_PERMISSIONS=new Set\(\['createEntries','editOrders','readyOrders'\]\)/);
-  assert.match(supabase,/path\.startsWith\('\/rest\/v1\/lancamentos_financeiros'\).*currentEmail\(\)!==OWNER_EMAIL/);
+  assert.match(supabase,/path\.startsWith\('\/rest\/v1\/lancamentos_financeiros'\).*isOwnerEmailValue\(currentEmail\(\)\)/);
 });
 
 test('Supabase libera somente leitura financeira conforme painel',async()=>{

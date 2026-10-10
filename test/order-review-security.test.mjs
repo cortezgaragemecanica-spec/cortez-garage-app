@@ -20,7 +20,7 @@ test('mecânico salva diagnóstico e observação diretamente na O.S.',async()=>
   assert.match(supabase,/body=\{reclamacao:[\s\S]*diagnostico:[\s\S]*observacoes:/);
   assert.match(supabase,/export async function saveSupabase\(localDb\)[\s\S]*await writeDatabase\(session\.access_token,localDb\)/);
   assert.match(databasePermission,/usuario_tem_permissao\('editOrders'\)/);
-  assert.match(index,/order-review-requests\.js\?v=20261009-2/);
+  assert.match(index,/order-review-requests\.js\?v=20261010-3/);
 });
 
 test('entrega só muda o status depois da confirmação do caixa',async()=>{

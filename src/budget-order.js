@@ -1,6 +1,6 @@
-import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261010-2';
-import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261002-1';
-import{calculateOrderTotals}from'./order-surcharge.js?v=20261010-2';
+import{isOwnerAccess,saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261010-3';
+import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261010-3';
+import{calculateOrderTotals}from'./order-surcharge.js?v=20261010-3';
 
 const DB_KEY='cortez-garage-v1';
 let mechanics=getCachedMechanics();addEventListener('cortez:mechanics-updated',event=>{if(event.detail?.length)mechanics=event.detail});
@@ -11,7 +11,7 @@ const parseMoney=value=>{const text=String(value??'').trim().replace(/[^\d,.-]/g
 const moneyInput=value=>Number(value||0).toFixed(2).replace('.',',');
 const escapeHtml=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const blankBudget=()=>({parts:[],services:[],paymentTerms:'',warrantyTerms:'',approved:false,approvedAt:null});
-const owner=()=>getCurrentUser().email.trim().toLowerCase()==='cortezgaragemecanica@gmail.com';
+const owner=()=>isOwnerAccess();
 
 function currentOrder(){
   const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();

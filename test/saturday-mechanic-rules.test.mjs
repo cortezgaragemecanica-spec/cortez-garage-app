@@ -58,6 +58,6 @@ test('agenda e banco aplicam sábado somente a Gustavo e Tony',async()=>{
   assert.match(sql,/sexta às 17h até sábado às 18h/);
   assert.match(sql,/periodo_segunda_sabado/);
   assert.match(sql,/Sábado é exclusivo das agendas de Gustavo e Tony/);
-  assert.match(index,/agenda\.js\?v=20261003-2/);
-  assert.match(worker,/cortez-garage-v275-total-surcharge-parts-pdf/);
+  assert.match(index,/agenda\.js\?v=20261010-3/);
+  assert.match(worker,/cortez-garage-v276-kaua-owner-access/);
 });

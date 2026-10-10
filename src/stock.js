@@ -1,4 +1,4 @@
-import{canManageLuizinhoNotes,getCurrentUser,readStock,readSupplierSettlements,saveStockItems}from'./supabase.js?v=20261010-2';
+import{isOwnerAccess,canManageLuizinhoNotes,getCurrentUser,readStock,readSupplierSettlements,saveStockItems}from'./supabase.js?v=20261010-3';
 import{paginate,pagerHtml}from'./pagination.js?v=20260930-1';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 
@@ -6,7 +6,7 @@ const LOCAL_KEY='cortez-garage-stock-v1',OWNER='cortezgaragemecanica@gmail.com';
 let stock=[],purchases=[],draftItems=[],stockView='physical',stockSearch='',stockFilter='all',stockPageNumber=1,editingStockId='',stockLoadId=0,stockState='idle',stockMessage='';
 const $=selector=>document.querySelector(selector),money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-const isOwner=()=>getCurrentUser().email.toLowerCase()===OWNER;
+const isOwner=()=>isOwnerAccess();
 const local=()=>{try{const saved=JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]');return Array.isArray(saved)?saved:[]}catch{return[]}};
 const condition=item=>item.condition==='Usada'?'Usada':'Nova';
 

@@ -6,7 +6,7 @@ const read=path=>readFile(new URL(`../${path}`,import.meta.url),'utf8');
 
 test('Kauã pode administrar notas e devoluções do Acerto Luizinho',async()=>{
   const[supabase,sql]=await Promise.all([read('src/supabase.js'),read('supabase/kaua-luizinho-contas-pagar.sql')]);
-  assert.match(supabase,/canManageLuizinhoNotes=\(\)=>currentEmail\(\)===OWNER_EMAIL\|\|KAUA_EMAILS\.has\(currentEmail\(\)\)/);
+  assert.match(supabase,/canManageLuizinhoNotes=\(\)=>isOwnerAccess\(\)/);
   assert.match(supabase,/saveLuizinhoNote[\s\S]*?canManageLuizinhoNotes\(\)[\s\S]*?stockApplied:false[\s\S]*?writeSupplierSettlements\(data,\{allowLuizinhoEditor:true\}\)/);
   assert.doesNotMatch(supabase,/A nota foi salva, mas a atualização do estoque ficou pendente/);
   assert.match(supabase,/saveLuizinhoNote[\s\S]*?stockApplied:false[\s\S]*?writeSupplierSettlements/);

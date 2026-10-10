@@ -1,4 +1,4 @@
-import{agendaMechanicForCurrentUser,confirmCurrentMechanicCommissions,getCurrentUser,readCurrentMechanicCommissions}from'./supabase.js?v=20261010-2';
+import{isOwnerAccess,agendaMechanicForCurrentUser,confirmCurrentMechanicCommissions,getCurrentUser,readCurrentMechanicCommissions}from'./supabase.js?v=20261010-3';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 import{hasSaturdaySchedule}from'./mechanic-saturday.js?v=20261003-2';
 
@@ -6,7 +6,7 @@ const OWNER='cortezgaragemecanica@gmail.com';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const date=value=>value?new Date(`${String(value).slice(0,10)}T12:00:00`).toLocaleDateString('pt-BR'):'—';
-const eligible=()=>getCurrentUser().email.trim().toLowerCase()!==OWNER&&Boolean(agendaMechanicForCurrentUser());
+const eligible=()=>!isOwnerAccess()&&Boolean(agendaMechanicForCurrentUser());
 
 function installButtons(){
   if(!eligible())return document.querySelectorAll('.mechanic-commission-route').forEach(button=>button.remove());

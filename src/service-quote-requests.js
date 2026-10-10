@@ -1,8 +1,8 @@
-import{acknowledgeServiceQuoteRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,hasPermission,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261010-2';
+import{isOwnerAccess,acknowledgeServiceQuoteRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,hasPermission,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261010-3';
 import{isServiceQuotePendingForViewer}from'./request-notification-state.js';
 
 const DB_KEY='cortez-garage-v1',OWNER='cortezgaragemecanica@gmail.com';
-const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
+const owner=()=>isOwnerAccess();
 const pendingForViewer=request=>isServiceQuotePendingForViewer(request,getCurrentUser().email);
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
