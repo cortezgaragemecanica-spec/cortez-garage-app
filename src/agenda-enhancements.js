@@ -1,9 +1,9 @@
-import{refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261010-2';
-import{agendaDisplayName}from'./mechanic-privacy.js?v=20261002-1';
+import{isOwnerAccess,refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261010-3';
+import{agendaDisplayName}from'./mechanic-privacy.js?v=20261010-3';
 import{mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';
 const API='https://pqldixrfvmkwkwbbysyl.supabase.co',KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe',OWNER='cortezgaragemecanica@gmail.com';
 const starts=['08:30','09:30','10:30','11:30','14:00','15:00','16:00','17:00'],ends=['09:30','10:30','11:30','12:00','15:00','16:00','17:00','18:00'];
-const owner=()=>getCurrentUser().email.toLowerCase()===OWNER,esc=v=>String(v||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const owner=()=>isOwnerAccess(),esc=v=>String(v||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const localToday=()=>{const now=new Date();return`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`},scheduleDate=(date,time)=>{const[y,m,d]=String(date).split('-').map(Number),[hour,minute]=String(time).split(':').map(Number);return new Date(y,m-1,d,hour,minute,0,0)},pastSchedule=(date,time)=>scheduleDate(date,time)<=new Date(),availableStarts=date=>starts.filter(time=>!pastSchedule(date,time));
 async function api(path,options={}){const s=await refreshSession(),r=await fetch(API+path,{method:options.method||'GET',headers:{apikey:KEY,Authorization:'Bearer '+s.access_token,'Content-Type':'application/json',Prefer:options.prefer||''},body:options.body?JSON.stringify(options.body):undefined}),text=await r.text(),data=text?JSON.parse(text):null;if(!r.ok)throw new Error(data?.message||data?.details||'Falha na agenda');return data}
 function endOptions(start,selected){const morning=start<'12:00';return ends.filter(v=>v>start&&(morning?v<='12:00'||v>='15:00':v>='15:00')).map(v=>'<option value="'+v+'" '+(v===selected?'selected':'')+'>'+v+(morning&&v>='15:00'?' · almoço 12:00–14:00':'')+'</option>').join('')}

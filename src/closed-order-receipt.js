@@ -1,9 +1,9 @@
-import{getCurrentUser}from'./supabase.js?v=20261010-2&w=5';
+import{isOwnerAccess,getCurrentUser}from'./supabase.js?v=20261010-3&w=5';
 import{closedOrderReceiptData}from'./closed-order-receipt-data.js?v=20261006-1';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1',LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
 const COMPANY={name:'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Brasil, 5452 - Bamerindus - Itapoá/SC',phone:'(47) 99124-7442',cnpj:'57.757.919/0001-41'};
-const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
+const owner=()=>isOwnerAccess();
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const safeName=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'-');

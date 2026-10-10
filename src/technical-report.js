@@ -1,8 +1,8 @@
-import{getCurrentUser,saveTechnicalReport}from'./supabase.js';
+import{isOwnerAccess,getCurrentUser,saveTechnicalReport}from'./supabase.js';
 
 const DB_KEY='cortez-garage-v1';
 const OWNER='cortezgaragemecanica@gmail.com';
-const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
+const owner=()=>isOwnerAccess();
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
 const COMPANY={name:'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Brasil, 5452 — Bamerindus — Itapoá/SC',phone:'(47) 99124-7442',cnpj:'57.757.919/0001-41'};
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));

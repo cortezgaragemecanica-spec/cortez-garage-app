@@ -1,8 +1,8 @@
-import {getCurrentUser} from './supabase.js?v=20261010-2';
+import {getCurrentUser} from './supabase.js?v=20261010-3';
 
 const OWNER_EMAIL='cortezgaragemecanica@gmail.com';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const owner=()=>getCurrentUser().email.toLowerCase()===OWNER_EMAIL;
+const owner=()=>isOwnerAccess();
 
 function closeEditor(modal){
   modal.remove();

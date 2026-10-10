@@ -41,7 +41,7 @@ test('janela pesquisa notas, permite escolher semana e mantém histórico',async
     readFile(new URL('../src/luizinho-returns.js',import.meta.url),'utf8'),
     readFile(new URL('../index.html',import.meta.url),'utf8')
   ]);
-  assert.match(index,/luizinho-returns\.js\?v=20261009-1/);
+  assert.match(index,/luizinho-returns\.js\?v=20261010-3/);
   assert.match(source,/Buscar código ou descrição/);
   assert.match(source,/Crédito no acerto da semana/);
   assert.match(source,/Itens da devolução/);

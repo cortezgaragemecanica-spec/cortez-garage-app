@@ -27,11 +27,11 @@ test('tela informa cache, falha do banco e oferece atualização manual',async()
   assert.match(supabase,/estoque\?on_conflict=id/);
   assert.match(supabase,/body:plan\.rows/);
   assert.match(supabase,/saved\.warning=/);
-  assert.match(html,/stock\.js\?v=20261008-1/);
-  assert.match(html,/style\.css\?v=20261010-2/);
-  assert.match(worker,/supabase\.js\?v=20261010-2/);
+  assert.match(html,/stock\.js\?v=20261010-3/);
+  assert.match(html,/style\.css\?v=20261010-3/);
+  assert.match(worker,/supabase\.js\?v=20261010-3/);
   assert.match(worker,/stock-save-plan\.js/);
-  assert.match(worker,/cortez-garage-v275-total-surcharge-parts-pdf/);
+  assert.match(worker,/cortez-garage-v276-kaua-owner-access/);
   assert.match(style,/\.stock-summary/);
 });
 

@@ -1,7 +1,7 @@
-import{applyOrderReviewRequest,canSaveOrders as canManageServices,deleteOrderReviewRequest,getCurrentUser,hasPermission,readOrderReviewRequests,saveOrderReviewRequest}from'./supabase.js?v=20261010-2';
+import{isOwnerAccess,applyOrderReviewRequest,canSaveOrders as canManageServices,deleteOrderReviewRequest,getCurrentUser,hasPermission,readOrderReviewRequests,saveOrderReviewRequest}from'./supabase.js?v=20261010-3';
 
 const DB_KEY='cortez-garage-v1',OWNER='cortezgaragemecanica@gmail.com',esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
+const owner=()=>isOwnerAccess();
 let requests=[],loadedAt=0,loading=false,historyOrderId='';
 
 function currentOrder(){const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(order=>String(order.number)===number)}catch{return null}}

@@ -1,10 +1,10 @@
-import{refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261010-2';
+import{isOwnerAccess,refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261010-3';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
-import{agendaDisplayName,isPrivateMechanic}from'./mechanic-privacy.js?v=20261002-1';
+import{agendaDisplayName,isPrivateMechanic}from'./mechanic-privacy.js?v=20261010-3';
 import{hasSaturdaySchedule,mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';
 const URL='https://pqldixrfvmkwkwbbysyl.supabase.co',KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe',OWNER='cortezgaragemecanica@gmail.com';
 let mechanics=getCachedMechanics();addEventListener('cortez:mechanics-updated',event=>{if(event.detail?.length)mechanics=event.detail});const slots=['08:30','09:30','10:30','14:00','15:00','16:00','17:00'];
-const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;'}[c])),isOwner=()=>getCurrentUser().email.toLowerCase()===OWNER;
+const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;'}[c])),isOwner=()=>isOwnerAccess();
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,local=v=>{const[y,m,d]=String(v).slice(0,10).split('-').map(Number);return new Date(y,m-1,d)},monday=v=>{const d=new Date(v),day=d.getDay()||7;d.setHours(12,0,0,0);d.setDate(d.getDate()-day+1);return d};
 let week=monday(new Date()),events=[],archived=false;
 const agendaMechanics=()=>mechanics;
