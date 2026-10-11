@@ -1,6 +1,6 @@
-import{isOwnerAccess,refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261010-3';
+import{isOwnerAccess,refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261011-1';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
-import{agendaDisplayName,isPrivateMechanic}from'./mechanic-privacy.js?v=20261010-3';
+import{agendaDisplayName,isPrivateMechanic}from'./mechanic-privacy.js?v=20261011-1';
 import{hasSaturdaySchedule,mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';
 const URL='https://pqldixrfvmkwkwbbysyl.supabase.co',KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe',OWNER='cortezgaragemecanica@gmail.com';
 let mechanics=getCachedMechanics();addEventListener('cortez:mechanics-updated',event=>{if(event.detail?.length)mechanics=event.detail});const slots=['08:30','09:30','10:30','14:00','15:00','16:00','17:00'];

@@ -186,7 +186,7 @@ revoke all on function public.reabrir_os_pronta(uuid) from public, anon;
 grant execute on function public.historico_conferencia_comissoes_mecanicos() to authenticated;
 grant execute on function public.reabrir_os_pronta(uuid) to authenticated;
 
-+create or replace function public.alterar_mecanico_servico_entregue(
+create or replace function public.alterar_mecanico_servico_entregue(
   p_os_id uuid,
   p_service_index integer,
   p_new_mechanic text
@@ -290,3 +290,5 @@ $$;
 
 revoke all on function public.alterar_mecanico_servico_entregue(uuid, integer, text) from public, anon;
 grant execute on function public.alterar_mecanico_servico_entregue(uuid, integer, text) to authenticated;
+
+notify pgrst, 'reload schema';

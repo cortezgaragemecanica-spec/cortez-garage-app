@@ -1,11 +1,11 @@
-import{isOwnerAccess,isOwnerEmail,readPartnerConference,savePartnerConference,cancelPartnerConference,setPartnerCommissionExcluded}from'./supabase.js?v=20261010-3&w=10';
+import{isOwnerAccess,isOwnerEmail,readPartnerConference,savePartnerConference,cancelPartnerConference,setPartnerCommissionExcluded}from'./supabase.js?v=20261011-1&w=10';
 import{reconciledPartnerLedger,partnerEventKey,PARTNER_OPENING,activePartnerConferences,excludedPartnerCommissions,deliveredPartnerOrder,deliveredPartnerEvents,partnerCommissionReceiptDate}from'./partner-reconciliation.js?v=20261003-3';
-import{getCurrentUser,hasPermission,canManageLuizinhoNotes,readFinance,saveFinanceRecord,updateFinanceRecord,markFinanceDone,settlePayable,payCommission,deleteFinanceRecord,readMechanics,saveMechanic,setMechanicActive,readUserAccess,createManagedUser,updateManagedUser,readUserUsage,readPartnerCommissionRates,savePartnerCommissionRates,readCostPlans,saveCostPlan,readStock,readSupplierSettlements,saveSupplierSettlement,updateSupplierSettlement,deleteSupplierSettlement,saveLuizinhoNote,updateLuizinhoNote,setLuizinhoNoteChecked,deleteLuizinhoNote,createOperationalBackup,restoreOperationalBackup,readMechanicCommissionConfirmations,reconcileLuizinhoPayables}from'./supabase.js?v=20261010-3';
+import{getCurrentUser,hasPermission,canManageLuizinhoNotes,readFinance,saveFinanceRecord,updateFinanceRecord,markFinanceDone,settlePayable,payCommission,deleteFinanceRecord,readMechanics,saveMechanic,setMechanicActive,readUserAccess,createManagedUser,updateManagedUser,readUserUsage,readPartnerCommissionRates,savePartnerCommissionRates,readCostPlans,saveCostPlan,readStock,readSupplierSettlements,saveSupplierSettlement,updateSupplierSettlement,deleteSupplierSettlement,saveLuizinhoNote,updateLuizinhoNote,setLuizinhoNoteChecked,deleteLuizinhoNote,createOperationalBackup,restoreOperationalBackup,readMechanicCommissionConfirmations,reconcileLuizinhoPayables}from'./supabase.js?v=20261011-1';
 import{getSyncConfig}from'./sync.js';
 import{allocateLuizinhoPayments,isLuizinhoPaymentDescription,luizinhoPaymentWeek}from'./luizinho-payment.js?v=20260923-1';
 import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
 import{appliedMechanicAdvanceRows,mechanicAdvanceRows,normalizeCommissionText}from'./mechanic-advances.js?v=20260925-2';
-import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261010-3';
+import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261011-1';
 import{hasSaturdaySchedule,mechanicCommissionWeekEnd,mechanicCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-2';
 import{summarizeMonthlyClosing}from'./monthly-closing.js?v=20261006-1&w=5';
 import{enableProgressiveTables}from'./pagination.js?v=20260930-1';

@@ -1,5 +1,5 @@
-import{isOwnerAccess,refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261010-3';
-import{agendaDisplayName}from'./mechanic-privacy.js?v=20261010-3';
+import{isOwnerAccess,refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261011-1';
+import{agendaDisplayName}from'./mechanic-privacy.js?v=20261011-1';
 import{mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';
 const API='https://pqldixrfvmkwkwbbysyl.supabase.co',KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe',OWNER='cortezgaragemecanica@gmail.com';
 const starts=['08:30','09:30','10:30','11:30','14:00','15:00','16:00','17:00'],ends=['09:30','10:30','11:30','12:00','15:00','16:00','17:00','18:00'];

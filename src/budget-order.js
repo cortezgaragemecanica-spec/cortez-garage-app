@@ -1,6 +1,6 @@
-import{isOwnerAccess,saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261010-3';
-import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261010-3';
-import{calculateOrderTotals}from'./order-surcharge.js?v=20261010-3';
+import{isOwnerAccess,saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261011-1';
+import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261011-1';
+import{calculateOrderTotals}from'./order-surcharge.js?v=20261011-1';
 
 const DB_KEY='cortez-garage-v1';
 let mechanics=getCachedMechanics();addEventListener('cortez:mechanics-updated',event=>{if(event.detail?.length)mechanics=event.detail});

@@ -5,8 +5,8 @@ import{planStockUpsert}from'./stock-save-plan.js?v=20261008-1';
 import{planMechanicCommissionSettlements}from'./commission-settlement.js?v=20261003-2';
 import{repairBudgetAgainstOrderTotals,sameSavedBudget}from'./order-budget-consistency.js?v=20260928-1';
 import{normalizeCreditInstallments}from'./order-installments.js?v=20260928-1';
-import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261010-3';
-import{calculateOrderTotals}from'./order-surcharge.js?v=20261010-3';
+import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261011-1';
+import{calculateOrderTotals}from'./order-surcharge.js?v=20261011-1';
 import{calculateCardSettlement,cardInstallmentLabel}from'./card-fees.js?v=20261006-1';
 import{commissionWeekStart,mechanicCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-2';
 
@@ -604,7 +604,31 @@ async function supplierConfig(session){const rows=await request('/rest/v1/sincro
 export async function readSupplierSettlements(){requireFinanceViewing();const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const row=await supplierConfig(session);return{luizinho:normalizeSupplierRows(row?.dados?.luizinho,'luizinho'),retifica:normalizeSupplierRows(row?.dados?.retifica,'retifica'),luizinhoReturns:normalizeLuizinhoReturns(row?.dados?.luizinhoReturns)}}
 async function syncLuizinhoPayables(session,rows,returns){if(!rows){const config=await supplierConfig(session);rows=normalizeSupplierRows(config?.dados?.luizinho,'luizinho');returns=normalizeLuizinhoReturns(config?.dados?.luizinhoReturns)}returns=normalizeLuizinhoReturns(returns);const groups=new Map();for(const item of rows){const week=supplierWeek(item.date),current=groups.get(week.start)||{...week,gross:0,credit:0,total:0};current.gross+=Number(item.amount||0);groups.set(week.start,current)}for(const item of returns){const week=supplierWeek(item.creditWeek),current=groups.get(week.start)||{...week,gross:0,credit:0,total:0};current.credit+=Number(item.amount||0);groups.set(week.start,current)}for(const group of groups.values())group.total=Math.max(0,Number((group.gross-group.credit).toFixed(2)));const cashRows=await request('/rest/v1/lancamentos_financeiros?select=descricao,valor,vencimento,referencia,categoria,movimento,status&categoria=eq.Fluxo%20de%20caixa&movimento=eq.Sa%C3%ADda&status=eq.Realizado',{token:session.access_token}),allocated=allocateLuizinhoPayments(groups.values(),cashRows).weeks;const existing=await request('/rest/v1/lancamentos_financeiros?select=id,referencia,status&referencia=like.acerto-luizinho-*',{token:session.access_token}),byReference=new Map(existing.map(item=>[item.referencia,item]));for(const week of allocated){const reference=`acerto-luizinho-${week.start}`,found=byReference.get(reference),balance=week.balance,settled=week.settled,body={categoria:'Conta a pagar',movimento:'Saída',descricao:`Acerto Luizinho · ${week.start} a ${week.end}`,valor:Number((settled?week.total:balance).toFixed(2)),vencimento:week.due,status:settled?'Realizado':'Pendente',mecanico:null,forma_pagamento:'Fornecedor',os_id:null,referencia:reference,semana_inicio:week.start};if(found&&week.total<=.009&&found.status!=='Realizado')await request(`/rest/v1/lancamentos_financeiros?id=eq.${encodeURIComponent(found.id)}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'});else if(found)await request(`/rest/v1/lancamentos_financeiros?id=eq.${encodeURIComponent(found.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});else if(week.total>0)await request('/rest/v1/lancamentos_financeiros',{token:session.access_token,method:'POST',prefer:'return=minimal',body});byReference.delete(reference)}for(const orphan of byReference.values())if(orphan.status!=='Realizado')await request(`/rest/v1/lancamentos_financeiros?id=eq.${encodeURIComponent(orphan.id)}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'})}
 export async function reconcileLuizinhoPayables(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');await syncLuizinhoPayables(session)}
-async function writeSupplierSettlements(data,{allowLuizinhoEditor=false}={}){if(!isOwnerAccess()&&!(allowLuizinhoEditor&&canManageLuizinhoNotes()))throw new Error('Somente o proprietário ou Kauã podem alterar o Acerto Luizinho.');const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const current=await supplierConfig(session),normalized={luizinho:normalizeSupplierRows(data?.luizinho,'luizinho'),retifica:normalizeSupplierRows(data?.retifica,'retifica'),luizinhoReturns:normalizeLuizinhoReturns(data?.luizinhoReturns)},body={origem:'app',entidade:'configuracao',registro_id:'acerto-fornecedores',dados:{...normalized,updatedAt:new Date().toISOString()}};if(!isOwnerAccess())await request('/rest/v1/rpc/kaua_salvar_acerto_luizinho',{token:session.access_token,method:'POST',body:{p_luizinho:normalized.luizinho,p_devolucoes:normalized.luizinhoReturns}});else{if(current)await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(current.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});else await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body});await syncLuizinhoPayables(session,normalized.luizinho,normalized.luizinhoReturns)}return normalized}
+const missingLuizinhoRpc=error=>/kaua_salvar_acerto_luizinho|PGRST202|schema cache/i.test(String(error?.message||''));
+async function writeSupplierConfig(session,current,body){
+  if(current)return request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(current.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});
+  return request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body});
+}
+async function writeSupplierSettlements(data,{allowLuizinhoEditor=false}={}){
+  if(!isOwnerAccess()&&!(allowLuizinhoEditor&&canManageLuizinhoNotes()))throw new Error('Somente o proprietário ou Kauã podem alterar o Acerto Luizinho.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const current=await supplierConfig(session),normalized={luizinho:normalizeSupplierRows(data?.luizinho,'luizinho'),retifica:normalizeSupplierRows(data?.retifica,'retifica'),luizinhoReturns:normalizeLuizinhoReturns(data?.luizinhoReturns)},body={origem:'app',entidade:'configuracao',registro_id:'acerto-fornecedores',dados:{...normalized,updatedAt:new Date().toISOString()}};
+  if(!isOwnerAccess()){
+    try{
+      await request('/rest/v1/rpc/kaua_salvar_acerto_luizinho',{token:session.access_token,method:'POST',body:{p_luizinho:normalized.luizinho,p_devolucoes:normalized.luizinhoReturns}});
+    }catch(error){
+      if(!missingLuizinhoRpc(error))throw error;
+      try{await writeSupplierConfig(session,current,body)}catch(fallbackError){
+        throw new Error('O acesso do Kauã ao Acerto Luizinho precisa ser atualizado no banco. A nota não foi perdida; tente novamente após a atualização.');
+      }
+    }
+  }else{
+    await writeSupplierConfig(session,current,body);
+    await syncLuizinhoPayables(session,normalized.luizinho,normalized.luizinhoReturns);
+  }
+  return normalized;
+}
 export async function saveSupplierSettlement(type,record){type=supplierType(type);const data=await readSupplierSettlements(),date=supplierDate(record?.date);if(!date||!clean(record?.description))throw new Error('Informe data e descrição.');data[type].push({...record,id:record?.id||crypto.randomUUID(),date,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});return writeSupplierSettlements(data)}
 export async function updateSupplierSettlement(type,id,changes){type=supplierType(type);const data=await readSupplierSettlements(),index=data[type].findIndex(item=>item.id===id);if(index<0)throw new Error('Lançamento do fornecedor não encontrado.');const date=supplierDate(changes?.date||data[type][index].date);data[type][index]={...data[type][index],...changes,id,date,updatedAt:new Date().toISOString()};return writeSupplierSettlements(data)}
 export async function deleteSupplierSettlement(type,id){type=supplierType(type);const data=await readSupplierSettlements();data[type]=data[type].filter(item=>item.id!==id);return writeSupplierSettlements(data)}

@@ -1,4 +1,4 @@
-import{isOwnerAccess,canManageLuizinhoNotes,getCurrentUser,readStock,readSupplierSettlements,saveStockItems}from'./supabase.js?v=20261010-3';
+import{isOwnerAccess,canManageLuizinhoNotes,getCurrentUser,readStock,readSupplierSettlements,saveStockItems}from'./supabase.js?v=20261011-1';
 import{paginate,pagerHtml}from'./pagination.js?v=20260930-1';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 

@@ -1,5 +1,5 @@
-import{isOwnerAccess,cancelOrderCommission,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,hasPermission,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261010-3';
-import{calculateOrderTotals}from'./order-surcharge.js?v=20261010-3';
+import{isOwnerAccess,cancelOrderCommission,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,hasPermission,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261011-1';
+import{calculateOrderTotals}from'./order-surcharge.js?v=20261011-1';
 import{resolveOrderStockLinks}from'./order-stock-links.js?v=20261008-1';
 import{createInstallmentPlan,suggestedInstallmentDates}from'./order-installments.js?v=20260928-1';
 import{CARD_FEE_RATES,calculateCardSettlement,cardInstallmentLabel}from'./card-fees.js?v=20261006-1';
