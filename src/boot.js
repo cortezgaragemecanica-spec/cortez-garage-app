@@ -1,4 +1,4 @@
-const RELEASE='20261010-2';
+const RELEASE='20261011-1';
 const RELEASE_KEY='cortez-web-release';
 const activateRelease=async()=>{
   if(localStorage.getItem(RELEASE_KEY)===RELEASE)return;

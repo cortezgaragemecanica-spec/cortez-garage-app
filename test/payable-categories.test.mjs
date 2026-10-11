@@ -7,7 +7,7 @@ const helpers=source.slice(source.indexOf('const PAYABLE_CATEGORIES='),source.in
 const wrappers=source.slice(source.lastIndexOf('export async function saveFinanceRecord(')).replaceAll('export async','async');
 function setup(){
  const calls=[];
- const ctx=vm.createContext({crypto:{randomUUID:()=> 'new-id'},OWNER_EMAIL:'owner',currentEmail:()=> 'owner',refreshSession:async()=>({access_token:'test'}),request:async(url,options)=>{calls.push({url,...options});return []},saveFinanceRecordBase:async r=>{calls.push({insert:r});return r},updateFinanceRecordBase:async(id,r)=>{calls.push({update:r});return {id,...r}}});
+ const ctx=vm.createContext({crypto:{randomUUID:()=> 'new-id'},OWNER_EMAIL:'owner',currentEmail:()=> 'owner',isOwnerAccess:()=>true,refreshSession:async()=>({access_token:'test'}),request:async(url,options)=>{calls.push({url,...options});return []},saveFinanceRecordBase:async r=>{calls.push({insert:r});return r},updateFinanceRecordBase:async(id,r)=>{calls.push({update:r});return {id,...r}}});
  vm.runInContext(helpers+wrappers,ctx);
  return {ctx,calls};
 }

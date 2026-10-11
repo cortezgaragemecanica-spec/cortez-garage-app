@@ -18,7 +18,7 @@ test('aplicativo registra sessões e tempo ativo dos usuários',async()=>{
 
 test('gerenciamento mostra acessos somente ao lado dos usuários que não são proprietários',async()=>{
   const [admin,style]=await Promise.all(['../src/admin.js','../src/style.css'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
-  assert.match(admin,/user\.email!==FINANCE_EMAIL\?'<button class="secondary view-user-access">Ver acessos<\/button>'/);
+  assert.match(admin,/!isOwnerEmail\(user\.email\)\?'<button class="secondary view-user-access">Ver acessos<\/button>'/);
   assert.match(admin,/readUserUsage\(user\.email\)/);
   for(const label of['Quantidade de acessos','Tempo ativo acumulado','Último acesso','Última atividade','Ativo agora'])assert.ok(admin.includes(label));
   assert.match(style,/\.user-access-popup \.check-popup-card/);
