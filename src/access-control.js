@@ -1,4 +1,4 @@
-import{canSaveOrders,hasPermission}from'./supabase.js?v=20261013-3';
+import{canSaveOrders,hasPermission}from'./supabase.js?v=20261013-4';
 
 const blockedActions='.add-line,.edit-part,.remove-line,.refuse-line,#includePart,#approveBudget,#previousStatus';
 const protectedFields='#parts,#labor,#partsValue,#discount,#payment,#budgetSection input:not([data-check]),#budgetSection textarea,#budgetSection select';

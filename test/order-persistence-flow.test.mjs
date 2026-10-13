@@ -97,7 +97,7 @@ test('fluxo completo persiste, relê, atualiza e sincroniza a mesma O.S. sem toc
 
   const ready=await api.finalizeOrderReady(deviceA,[{partIndex:0,stockId:'stock-1'}]);assert.equal(ready.alreadyProcessed,false);assert.equal(tables.estoque[0].quantidade,1);assert.equal(tables.ordens_servico.find(row=>row.numero===124).status,'Pronto para entrega');
   const readyAgain=await api.finalizeOrderReady(deviceA,[{partIndex:0,stockId:'stock-1'}]);assert.equal(readyAgain.alreadyProcessed,true);assert.equal(tables.estoque[0].quantidade,1);
-  await api.updateOrderStatus(order.id,'Entregue');const deviceC=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(deviceC.status,'Entregue');assert.equal(deviceC.complaint,'Alteração A');assert.equal(tables.ordens_servico.length,2);
+  await api.updateOrderStatus(order.id,'Entregue');const deviceC=(await api.readSupabase()).orders.find(item=>item.number==='0124'),deliveredBudget=clone(tables.ordens_servico.find(row=>row.numero===124).dados_extras.budget);assert.equal(deviceC.status,'Entregue');assert.equal(deviceC.complaint,'Alteração A');deviceC.diagnosis='Diagnóstico corrigido depois da entrega';deviceC.services='Observação textual depois da entrega';await api.saveOrderTextFields(deviceC);const deliveredSaved=tables.ordens_servico.find(row=>row.numero===124);assert.equal(deliveredSaved.diagnostico,'Diagnóstico corrigido depois da entrega');assert.equal(deliveredSaved.dados_extras.services,'Observação textual depois da entrega');assert.deepEqual(deliveredSaved.dados_extras.budget,deliveredBudget);assert.equal(tables.ordens_servico.length,2);
 });
 
 test('descrições auxiliares financeiras são limitadas sem cortar a descrição salva na O.S.',async()=>{
