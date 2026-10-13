@@ -23,6 +23,9 @@ test('acréscimo é opcional, aparece nos totais e não altera a mão de obra no
   assert.match(main,/id="orderBaseTotal"/);
   assert.match(main,/VALOR TOTAL COM ACRÉSCIMO/);
   assert.match(budget,/id="budgetBaseTotal"/);
+  assert.match(budget,/id="budgetSurchargeEnabled"/);
+  assert.match(budget,/Aplicar 10% para pagamento parcelado no cartão/);
+  assert.match(budget,/valor à vista \(Pix, dinheiro ou débito\)/i);
   assert.match(workflow,/calculateOrderTotals\(order\)/);
   assert.match(supabase,/surchargeRate:Number\(item\.surchargeRate\)\|\|0/);
   assert.match(supabase,/surchargePolicy:order\.surchargePolicy/);
@@ -31,6 +34,8 @@ test('acréscimo é opcional, aparece nos totais e não altera a mão de obra no
   assert.match(pdf,/itemMultiplier=partsValue>0\?1\+calculated\.surchargeAmount\/partsValue:1/);
   assert.match(pdf,/partsValue\+calculated\.surchargeAmount/);
   assert.match(pdf,/Number\(item\.value\|\|0\)\*itemMultiplier/);
+  assert.match(pdf,/Em até 10x no cartão/);
+  assert.match(pdf,/Valor à vista \(Pix, dinheiro ou débito\)/);
   assert.match(help,/acréscimo de 10% é opcional/);
   assert.match(help,/calculado sobre o total da O\.S\./);
   assert.match(help,/mão de obra permanece sem acréscimo/);

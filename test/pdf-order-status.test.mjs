@@ -71,7 +71,11 @@ test('PDF incorpora os 10% somente nas peças sem alterar a mão de obra',()=>{
     const texts=drawReport(report,{}).flatMap(page=>page.texts);
     assert.ok(texts.includes('R$ 100,00')||texts.includes('R$ 100,00'));
     assert.ok(texts.includes('R$ 32,00')||texts.includes('R$ 32,00'));
-    assert.ok(texts.includes('VALOR TOTAL: R$ 132,00')||texts.includes('VALOR TOTAL: R$ 132,00'));
+    assert.ok(texts.includes('VALOR TOTAL DA O.S.: R$ 132,00')||texts.includes('VALOR TOTAL DA O.S.: R$ 132,00'));
+    assert.ok(texts.includes('Pagamento parcelado:'));
+    assert.ok(texts.includes('Em até 10x no cartão'));
+    assert.ok(texts.includes('Valor à vista (Pix, dinheiro ou débito):'));
+    assert.ok(texts.includes('R$ 120,00')||texts.includes('R$ 120,00'));
     assert.equal(texts.some(text=>text.includes('Acréscimo')),false);
   }finally{
     if(originalDocument===undefined)delete globalThis.document;else globalThis.document=originalDocument;
