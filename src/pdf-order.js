@@ -1,5 +1,5 @@
 import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js?v=20261008-1';
-import {calculateOrderTotals} from './order-surcharge.js?v=20261010-2';
+import {calculateOrderTotals} from './order-surcharge.js?v=20261013-3';
 
 const DB_KEY='cortez-garage-v1';
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
@@ -29,9 +29,10 @@ export function drawReport(order,logo){
   const parts=(budget.parts||[]).map(item=>({description:item.description,brand:item.brand,quantity:item.quantity,value:item.value,refused:item.refused}));
   table(budgetOnly?'Peças do orçamento':'Peças utilizadas',['Descrição','Qtd.','Valor unit.','Subtotal'],parts.map(item=>[`${item.refused?'RECUSADA — ':''}${[item.description,item.brand].filter(Boolean).join(' · ')}`,String(Number(item.quantity||0)),money(Number(item.value||0)*itemMultiplier),item.refused?'R$ 0,00':money(Number(item.quantity||0)*Number(item.value||0)*itemMultiplier)]),[560,100,210,230]);
   const serviceSection=servicePdfSection(order,money,1);table(serviceSection.title,serviceSection.headers,serviceSection.rows,serviceSection.widths);
-  ensure(discount>0?200:160);ctx.font='bold 22px Arial';ctx.fillText(`Total de peças: ${money(partsValue+calculated.surchargeAmount)}`,MARGIN,y);y+=34;ctx.fillText(`Total de serviços: ${money(labor)}`,MARGIN,y);y+=34;if(discount>0){ctx.fillText(`Desconto: -${money(discount)}`,MARGIN,y);y+=42}else y+=8;ctx.fillStyle='#d6b718';ctx.fillRect(MARGIN,y,contentWidth,54);ctx.fillStyle='#111';ctx.font='bold 27px Arial';ctx.fillText(`VALOR TOTAL: ${money(calculated.total)}`,MARGIN+18,y+36);y+=75;
-  if(budgetOnly){title('Condições de pagamento');paragraph('Forma/condições de pagamento',budget.paymentTerms||order.payment);return pages}
-  title('Condições de pagamento');paragraph('Forma/condições de pagamento',budget.paymentTerms||order.payment);title('Garantia');paragraph('Termo de garantia',budget.warrantyTerms);
+  ensure(discount>0?200:160);ctx.font='bold 22px Arial';ctx.fillText(`Total de peças: ${money(partsValue+calculated.surchargeAmount)}`,MARGIN,y);y+=34;ctx.fillText(`Total de serviços: ${money(labor)}`,MARGIN,y);y+=34;if(discount>0){ctx.fillText(`Desconto: -${money(discount)}`,MARGIN,y);y+=42}else y+=8;ctx.fillStyle='#d6b718';ctx.fillRect(MARGIN,y,contentWidth,54);ctx.fillStyle='#111';ctx.font='bold 27px Arial';ctx.fillText(`VALOR TOTAL DA O.S.: ${money(calculated.total)}`,MARGIN+18,y+36);y+=75;
+  const paymentTerms=String(budget.paymentTerms||order.payment||'').trim(),paymentSection=()=>{title('Condições de pagamento');if(calculated.surchargeRate){paragraph('Pagamento parcelado','Em até 10x no cartão');paragraph('Valor à vista (Pix, dinheiro ou débito)',money(calculated.base))}if(paymentTerms)paragraph(calculated.surchargeRate?'Observações de pagamento':'Forma/condições de pagamento',paymentTerms)};
+  paymentSection();if(budgetOnly)return pages;
+  title('Garantia');paragraph('Termo de garantia',budget.warrantyTerms);
   ensure(170);y+=25;ctx.beginPath();ctx.moveTo(MARGIN,y+70);ctx.lineTo(MARGIN+430,y+70);ctx.moveTo(WIDTH-MARGIN-430,y+70);ctx.lineTo(WIDTH-MARGIN,y+70);ctx.stroke();ctx.font='17px Arial';ctx.fillText('Assinatura do cliente',MARGIN+120,y+96);ctx.fillText('Responsável técnico / mecânico',WIDTH-MARGIN-360,y+96);return pages;
 }
 

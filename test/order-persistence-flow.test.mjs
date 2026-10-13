@@ -78,22 +78,32 @@ test('fluxo completo persiste, relê, atualiza e sincroniza a mesma O.S. sem toc
   tables.veiculos.push({id:delivered.vehicle.id,cliente_id:delivered.client.id,placa:delivered.vehicle.plate,modelo:delivered.vehicle.model,atualizado_em:now()});
   tables.ordens_servico.push(deliveredRow);tables.estoque.push({id:'stock-1',codigo:'P1',descricao:'Filtro',quantidade:2,valor_unitario:110,atualizado_em:now()});
   signIn('gust.cribas@gmail.com');
-  const api=await import(`../src/supabase.js?flow=${Date.now()}`),order=makeOrder(124),database={clients:[delivered.client,order.client],vehicles:[delivered.vehicle,order.vehicle],orders:[{...delivered,budget:{...delivered.budget,services:[{description:'Não reenviar',value:999}]}},order],counter:125};
+  const api=await import(`../src/supabase.js?flow=${Date.now()}`),order=makeOrder(124),longServiceDescription='Diagnóstico e execução detalhada do serviço. '.repeat(300);order.budget.services[0].description=longServiceDescription;const database={clients:[delivered.client,order.client],vehicles:[delivered.vehicle,order.vehicle],orders:[{...delivered,budget:{...delivered.budget,services:[{description:'Não reenviar',value:999}]}},order],counter:125};
   const created=await api.saveSupabase(database),saved=created.orders.find(item=>item.number==='0124');
   assert.ok(saved);assert.equal(tables.ordens_servico.length,2);assert.equal(tables.ordens_servico.find(row=>row.numero===90).diagnostico,'Preservar');
   for(const field of['complaint','diagnosis','notes','mechanic','labor','partsValue','discount','total','payment','status'])assert.deepEqual(saved[field],order[field]);
-  assert.deepEqual(saved.budget.parts,order.budget.parts);assert.deepEqual(saved.budget.services,order.budget.services);
+  assert.deepEqual(saved.budget.parts,order.budget.parts);assert.deepEqual(saved.budget.services,order.budget.services);assert.equal(saved.budget.services[0].description,longServiceDescription);
 
   const reopened=(await api.readSupabase()).orders.find(item=>item.number==='0124');
-  assert.equal(reopened.client.name,'Cliente Teste');assert.equal(reopened.vehicle.plate,'ABC1D23');assert.equal(reopened.diagnosis,'Rolamento');assert.equal(reopened.notes,'Cliente avisado');
+  assert.equal(reopened.client.name,'Cliente Teste');assert.equal(reopened.vehicle.plate,'ABC1D23');assert.equal(reopened.diagnosis,'Rolamento');assert.equal(reopened.notes,'Cliente avisado');assert.equal(reopened.budget.services[0].description,longServiceDescription);
 
   signIn('tony@cortezgarage.com');reopened.status='Em andamento';reopened.complaint='Reclamação atualizada';reopened.diagnosis='Diagnóstico atualizado';reopened.notes='Atualizada';reopened.mechanic='Tony';reopened.discount=10;reopened.total=352;reopened.budget={...reopened.budget,total:352};
   await api.saveOrderValues(reopened);assert.equal(tables.ordens_servico.length,2);const savedUpdate=tables.ordens_servico.find(row=>row.numero===124);assert.equal(savedUpdate.reclamacao,'Reclamação atualizada');assert.equal(savedUpdate.diagnostico,'Diagnóstico atualizado');assert.equal(savedUpdate.observacoes,'Atualizada');assert.equal(savedUpdate.mecanico,'Tony');
   const updated=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(updated.discount,10);assert.equal(updated.total,352);
 
-  const deviceA=clone(updated),deviceB=clone(updated);deviceA.complaint='Alteração A';await api.saveOrderProgress(deviceA);deviceB.complaint='Alteração B';await assert.rejects(()=>api.saveOrderProgress(deviceB),/alterada em outro aparelho/);
+  const sameTabA=clone(updated),sameTabB=clone(updated);sameTabA.notes='Salvamento geral';sameTabB.notes='Peças e serviços salvos em seguida';await Promise.all([api.saveOrderProgress(sameTabA),api.saveOrderValues(sameTabB)]);const afterSameTab=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(afterSameTab.notes,'Peças e serviços salvos em seguida');
+
+  const deviceA=clone(afterSameTab),deviceB=clone(afterSameTab);deviceA.complaint='Alteração A';await api.saveOrderProgress(deviceA);deviceB.complaint='Alteração B';await assert.rejects(()=>api.saveOrderProgress(deviceB),/alterada em outro aparelho/);
 
   const ready=await api.finalizeOrderReady(deviceA,[{partIndex:0,stockId:'stock-1'}]);assert.equal(ready.alreadyProcessed,false);assert.equal(tables.estoque[0].quantidade,1);assert.equal(tables.ordens_servico.find(row=>row.numero===124).status,'Pronto para entrega');
   const readyAgain=await api.finalizeOrderReady(deviceA,[{partIndex:0,stockId:'stock-1'}]);assert.equal(readyAgain.alreadyProcessed,true);assert.equal(tables.estoque[0].quantidade,1);
   await api.updateOrderStatus(order.id,'Entregue');const deviceC=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(deviceC.status,'Entregue');assert.equal(deviceC.complaint,'Alteração A');assert.equal(tables.ordens_servico.length,2);
+});
+
+test('descrições auxiliares financeiras são limitadas sem cortar a descrição salva na O.S.',async()=>{
+  signIn('cortezgaragemecanica@gmail.com');
+  const api=await import(`../src/supabase.js?description=${Date.now()}`),description=`Comissão O.S. #0124 · ${'Serviço muito detalhado '.repeat(40)}`,compacted=api.compactFinanceDescription(description);
+  assert.equal(compacted.length,240);
+  assert.ok(compacted.endsWith('…'));
+  assert.equal(api.compactFinanceDescription('Descrição curta'),'Descrição curta');
 });
