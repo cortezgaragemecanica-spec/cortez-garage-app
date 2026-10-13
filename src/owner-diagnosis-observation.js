@@ -1,4 +1,4 @@
-import {getCurrentUser} from './supabase.js?v=20261013-3';
+import {getCurrentUser} from './supabase.js?v=20261013-4';
 
 const OWNER_EMAIL='cortezgaragemecanica@gmail.com';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -18,14 +18,19 @@ function openEditor(){
   modal.innerHTML=`<form class="check-popup-card"><span class="eyebrow">DIAGNÓSTICO E OBSERVAÇÕES</span><h3>Informações que entrarão no PDF</h3><p>Preencha os textos e salve. Eles ficarão registrados na O.S. e serão incluídos no orçamento ou ordem de serviço.</p><label><span>Diagnóstico técnico</span><textarea name="diagnosis" rows="7" placeholder="Informe o diagnóstico técnico">${esc(diagnosis.value)}</textarea></label><label><span>Observações</span><textarea name="observation" rows="5" placeholder="Digite as observações do serviço">${esc(observation.value)}</textarea></label><div class="check-popup-actions"><button type="button" class="secondary cancel-owner-diagnosis">Cancelar</button><button class="primary">Salvar diagnóstico e observações</button></div></form>`;
   const form=modal.querySelector('form');
   modal.querySelector('.cancel-owner-diagnosis').onclick=()=>closeEditor(modal);
-  form.onsubmit=event=>{
+  form.onsubmit=async event=>{
     event.preventDefault();
+    const button=event.submitter;
+    button.disabled=true;
+    button.textContent='Salvando…';
     diagnosis.value=form.elements.diagnosis.value.trim();
     observation.value=form.elements.observation.value.trim();
     diagnosis.dispatchEvent(new Event('input',{bubbles:true}));
     observation.dispatchEvent(new Event('input',{bubbles:true}));
+    const save=document.querySelector('#saveOs');
+    if(save?._persistTextFields){const saved=await save._persistTextFields();if(!saved){button.disabled=false;button.textContent='Salvar diagnóstico e observações';return}}
+    else save?.click();
     closeEditor(modal);
-    document.querySelector('#saveOs')?.click();
   };
   document.body.append(modal);
   form.elements.diagnosis.focus();

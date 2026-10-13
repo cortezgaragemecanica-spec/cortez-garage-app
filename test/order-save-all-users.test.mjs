@@ -19,7 +19,7 @@ test('todo usuário autenticado pode criar editar e concluir O.S.',async()=>{
   assert.match(access,/function restricted\(\)\{return!canSaveOrders\(\)\}/);
   assert.match(main,/canSaveOrders as canManageServices/);
   assert.match(main,/async function createOrder\(\)[\s\S]*await saveOrderValues\(o\)/);
-  assert.match(main,/queueOrderSave=snapshot[\s\S]*await saveOrderValues\(target\)/);
+  assert.match(main,/queueOrderSave=\(snapshot,\{textOnly=false\}[\s\S]*saveOrderTextFields\(target\):saveOrderValues\(target\)/);
   assert.doesNotMatch(main,/restrictedProgress=!canManageServices\(\)/);
   assert.match(budget,/canSaveOrders as canManageServices/);
   assert.match(sql,/auth\.uid\(\) is null then false/);
