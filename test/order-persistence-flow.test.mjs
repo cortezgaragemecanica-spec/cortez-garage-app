@@ -91,7 +91,9 @@ test('fluxo completo persiste, relê, atualiza e sincroniza a mesma O.S. sem toc
   await api.saveOrderValues(reopened);assert.equal(tables.ordens_servico.length,2);const savedUpdate=tables.ordens_servico.find(row=>row.numero===124);assert.equal(savedUpdate.reclamacao,'Reclamação atualizada');assert.equal(savedUpdate.diagnostico,'Diagnóstico atualizado');assert.equal(savedUpdate.observacoes,'Atualizada');assert.equal(savedUpdate.mecanico,'Tony');
   const updated=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(updated.discount,10);assert.equal(updated.total,352);
 
-  const deviceA=clone(updated),deviceB=clone(updated);deviceA.complaint='Alteração A';await api.saveOrderProgress(deviceA);deviceB.complaint='Alteração B';await assert.rejects(()=>api.saveOrderProgress(deviceB),/alterada em outro aparelho/);
+  const sameTabA=clone(updated),sameTabB=clone(updated);sameTabA.notes='Salvamento geral';sameTabB.notes='Peças e serviços salvos em seguida';await Promise.all([api.saveOrderProgress(sameTabA),api.saveOrderValues(sameTabB)]);const afterSameTab=(await api.readSupabase()).orders.find(item=>item.number==='0124');assert.equal(afterSameTab.notes,'Peças e serviços salvos em seguida');
+
+  const deviceA=clone(afterSameTab),deviceB=clone(afterSameTab);deviceA.complaint='Alteração A';await api.saveOrderProgress(deviceA);deviceB.complaint='Alteração B';await assert.rejects(()=>api.saveOrderProgress(deviceB),/alterada em outro aparelho/);
 
   const ready=await api.finalizeOrderReady(deviceA,[{partIndex:0,stockId:'stock-1'}]);assert.equal(ready.alreadyProcessed,false);assert.equal(tables.estoque[0].quantidade,1);assert.equal(tables.ordens_servico.find(row=>row.numero===124).status,'Pronto para entrega');
   const readyAgain=await api.finalizeOrderReady(deviceA,[{partIndex:0,stockId:'stock-1'}]);assert.equal(readyAgain.alreadyProcessed,true);assert.equal(tables.estoque[0].quantidade,1);
