@@ -1,8 +1,4 @@
-import {getCurrentUser} from './supabase.js?v=20261013-4';
-
-const OWNER_EMAIL='cortezgaragemecanica@gmail.com';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const owner=()=>getCurrentUser().email.toLowerCase()===OWNER_EMAIL;
 
 function closeEditor(modal){
   modal.remove();
@@ -38,7 +34,7 @@ function openEditor(){
 
 function install(){
   const diagnosis=document.querySelector('#diagnosis');
-  if(!owner()||!diagnosis||document.querySelector('#ownerDiagnosisObservation'))return;
+  if(!diagnosis||document.querySelector('#ownerDiagnosisObservation'))return;
   const section=diagnosis.closest('section');
   if(!section)return;
   const button=document.createElement('button');

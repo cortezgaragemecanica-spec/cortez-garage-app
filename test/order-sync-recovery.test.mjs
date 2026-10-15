@@ -28,7 +28,7 @@ test('atualização de progresso exige confirmação de linha gravada',async()=>
   const supabase=await read('src/supabase.js');
   assert.match(supabase,/export async function saveOrderProgress/);
   assert.match(supabase,/prefer:'return=representation'/);
-  assert.match(supabase,/if\(!saved\.length\)throw new Error\(`O banco não confirmou a atualização da O\.S\./);
+  assert.match(supabase,/patchOrderRow\(session\.access_token,order,current,body,`O banco não confirmou a atualização da O\.S\./);
 });
 
 test('sincronização preserva envio antigo com falha e baixa a O.S. atual',async()=>{
@@ -46,8 +46,8 @@ test('sincronização preserva envio antigo com falha e baixa a O.S. atual',asyn
 
 test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
-  assert.match(index,/main\.js\?v=20261013-4/);
-  assert.match(worker,/main\.js\?v=20261013-4&w=25/);
-  assert.match(worker,/supabase\.js\?v=20261013-4/);
-  assert.match(worker,/cortez-garage-v281-text-only-order-saves/);
+  assert.match(index,/main\.js\?v=20261015-1/);
+  assert.match(worker,/main\.js\?v=20261015-1&w=25/);
+  assert.match(worker,/supabase\.js\?v=20261015-1/);
+  assert.match(worker,/cortez-garage-v282-order-save-reliability/);
 });

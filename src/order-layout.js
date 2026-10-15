@@ -5,11 +5,15 @@ const SECONDARY_ACTIONS=[
   'advanceOs',
   'releaseOrderCommissions',
   'toggleOrderChecklist',
-  'requestParts',
   'savedEntryReceipt',
-  'requestServiceQuote',
   'openTechnicalReport',
   'deleteOs'
+];
+
+const PINNED_ACTIONS=[
+  'requestParts',
+  'requestServiceQuote',
+  'ownerDiagnosisObservation'
 ];
 
 const ACTION_LABELS={
@@ -64,6 +68,10 @@ function decorateOrder(){
   grid.querySelector('.billing')?.classList.add('order-closing-card');
 
   const details=actionMenu(actions),menu=details.querySelector('.order-more-actions-menu');
+  for(const id of PINNED_ACTIONS){
+    const button=document.querySelector(`#${id}`);
+    if(button&&button.parentElement!==actions)actions.insertBefore(button,details);
+  }
   for(const id of SECONDARY_ACTIONS){
     const button=document.querySelector(`#${id}`);
     if(button&&button.parentElement!==menu)menu.append(button);

@@ -9,10 +9,12 @@ test('fase 3 organiza a barra da O.S. sem remover as acoes principais',async()=>
   assert.match(layout,/onUiUpdated\(decorateOrder\)/);
   assert.match(layout,/orderMoreActions/);
   for(const id of ['editOsIdentity','advanceOs','releaseOrderCommissions','toggleOrderChecklist','requestParts','savedEntryReceipt','requestServiceQuote','openTechnicalReport','deleteOs'])assert.match(layout,new RegExp(id));
+  assert.match(layout,/const PINNED_ACTIONS=\[[\s\S]*'requestParts'[\s\S]*'requestServiceQuote'[\s\S]*'ownerDiagnosisObservation'/);
+  assert.match(layout,/actions\.insertBefore\(button,details\)/);
   assert.match(layout,/print:'Gerar PDF da ordem de serviço'/);
   assert.match(layout,/openClosing:'Abrir fechamento/);
-  assert.match(index,/order-layout\.js\?v=20261006-1/);
-  assert.match(worker,/order-layout\.js\?v=20261006-1/);
+  assert.match(index,/order-layout\.js\?v=20261015-1/);
+  assert.match(worker,/order-layout\.js\?v=20261015-1/);
 });
 
 test('fase 3 melhora toque, foco e leitura no celular',async()=>{
@@ -23,6 +25,6 @@ test('fase 3 melhora toque, foco e leitura no celular',async()=>{
   assert.match(style,/\.order-more-actions-menu/);
   assert.match(style,/min-height:44px/);
   assert.match(style,/summary:focus-visible/);
-  assert.match(index,/style\.css\?v=20261013-4&amp;w=17/);
-  assert.match(worker,/cortez-garage-v281-text-only-order-saves/);
+  assert.match(index,/style\.css\?v=20261015-1&amp;w=17/);
+  assert.match(worker,/cortez-garage-v282-order-save-reliability/);
 });

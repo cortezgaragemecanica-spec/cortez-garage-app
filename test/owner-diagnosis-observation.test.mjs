@@ -4,16 +4,16 @@ import {readFileSync} from 'node:fs';
 
 const read=file=>readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 
-test('proprietário recebe botão próprio para salvar diagnóstico e observações',()=>{
+test('todo usuário recebe botão próprio para salvar diagnóstico e observações',()=>{
   const module=read('src/owner-diagnosis-observation.js');
   const html=read('index.html');
   const worker=read('public/sw.js');
-  assert.match(module,/OWNER_EMAIL='cortezgaragemecanica@gmail\.com'/);
+  assert.doesNotMatch(module,/OWNER_EMAIL|owner\(\)/);
   assert.match(module,/id='ownerDiagnosisObservation'|button\.id='ownerDiagnosisObservation'/);
   assert.match(module,/Inserir diagnóstico e observações/);
   assert.match(module,/Salvar diagnóstico e observações/);
   assert.match(module,/_persistTextFields/);
-  assert.match(html,/owner-diagnosis-observation\.js\?v=20261013-4/);
-  assert.match(worker,/cortez-garage-v281-text-only-order-saves/);
-  assert.match(worker,/owner-diagnosis-observation\.js\?v=20261013-4/);
+  assert.match(html,/owner-diagnosis-observation\.js\?v=20261015-1/);
+  assert.match(worker,/cortez-garage-v282-order-save-reliability/);
+  assert.match(worker,/owner-diagnosis-observation\.js\?v=20261015-1/);
 });
