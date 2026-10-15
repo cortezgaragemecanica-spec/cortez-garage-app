@@ -1,4 +1,4 @@
-import{readSupplierSettlements,saveLuizinhoReturn,updateLuizinhoReturn,deleteLuizinhoReturn}from'./supabase.js?v=20261015-1';
+import{readSupplierSettlements,saveLuizinhoReturn,updateLuizinhoReturn,deleteLuizinhoReturn}from'./supabase.js?v=20261015-2';
 import{defaultLuizinhoReturnWeek,isLuizinhoReturnArchived}from'./luizinho-payment.js?v=20261006-1';
 
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
