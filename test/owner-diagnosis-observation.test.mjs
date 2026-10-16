@@ -13,7 +13,7 @@ test('todo usuário recebe botão próprio para salvar diagnóstico e observaç�
   assert.match(module,/Inserir diagnóstico e observações/);
   assert.match(module,/Salvar diagnóstico e observações/);
   assert.match(module,/_persistTextFields/);
-  assert.match(html,/owner-diagnosis-observation\.js\?v=20261015-2/);
-  assert.match(worker,/cortez-garage-v283-partner-manual-payment/);
-  assert.match(worker,/owner-diagnosis-observation\.js\?v=20261015-2/);
+  assert.match(html,/owner-diagnosis-observation\.js\?v=20261015-3/);
+  assert.match(worker,/cortez-garage-v284-partner-manual-no-cash/);
+  assert.match(worker,/owner-diagnosis-observation\.js\?v=20261015-3/);
 });
