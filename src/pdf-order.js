@@ -1,5 +1,5 @@
 import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js?v=20261008-1';
-import {calculateOrderTotals} from './order-surcharge.js?v=20261015-3';
+import {calculateOrderTotals} from './order-surcharge.js?v=20261017-1';
 
 const DB_KEY='cortez-garage-v1';
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;

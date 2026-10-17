@@ -13,8 +13,8 @@ test('fase 3 organiza a barra da O.S. sem remover as acoes principais',async()=>
   assert.match(layout,/actions\.insertBefore\(button,details\)/);
   assert.match(layout,/print:'Gerar PDF da ordem de serviço'/);
   assert.match(layout,/openClosing:'Abrir fechamento/);
-  assert.match(index,/order-layout\.js\?v=20261015-3/);
-  assert.match(worker,/order-layout\.js\?v=20261015-3/);
+  assert.match(index,/order-layout\.js\?v=20261017-1/);
+  assert.match(worker,/order-layout\.js\?v=20261017-1/);
 });
 
 test('fase 3 melhora toque, foco e leitura no celular',async()=>{
@@ -25,6 +25,6 @@ test('fase 3 melhora toque, foco e leitura no celular',async()=>{
   assert.match(style,/\.order-more-actions-menu/);
   assert.match(style,/min-height:44px/);
   assert.match(style,/summary:focus-visible/);
-  assert.match(index,/style\.css\?v=20261015-3&amp;w=17/);
-  assert.match(worker,/cortez-garage-v284-partner-manual-no-cash/);
+  assert.match(index,/style\.css\?v=20261017-1&amp;w=17/);
+  assert.match(worker,/cortez-garage-v285-partner-week-isolation/);
 });
