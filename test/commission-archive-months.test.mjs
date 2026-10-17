@@ -8,13 +8,17 @@ test('pagamentos arquivados de sócios são filtrados e totalizados por mês',()
   assert.match(source,/partnerArchiveMonth/);
   assert.match(source,/id="partnerArchiveMonth"/);
   assert.match(source,/allArchived\.filter\(item=>commissionArchiveRecordMonth\(item\)===partnerArchiveMonth\)/);
-  assert.match(source,/Total pago no mês/);
+  assert.match(source,/Total arquivado no mês/);
 });
 
-test('pago após o saldo confirmado mostra somente o mês vigente',()=>{
-  assert.match(source,/paidCurrentMonth=ledger\.payments\.filter\(item=>commissionArchiveRecordMonth\(item\)===currentMonth\)/);
-  assert.match(source,/Pago após o saldo confirmado/);
-  assert.match(source,/Somente \$\{esc\(costPlanMonthLabel\(currentMonth\)\)\}/);
+test('visão dos sócios mostra somente a semana vigente de segunda a sábado',()=>{
+  assert.match(source,/partnerCommissionWeek\(localDateOnly\(new Date\(\)\)\)/);
+  assert.match(source,/summarizePartnerCommissionWeek\(ledger,currentWeek\.start\)/);
+  assert.match(source,/Semana vigente/);
+  assert.match(source,/Semanas quitadas e arquivadas/);
+  assert.match(source,/Gerado na semana/);
+  assert.match(source,/Saldo da semana/);
+  assert.doesNotMatch(source,/Outras semanas em aberto/);
 });
 
 test('comissões pagas dos mecânicos podem ser acessadas mês a mês',()=>{
