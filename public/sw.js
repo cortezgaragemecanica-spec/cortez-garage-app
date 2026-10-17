@@ -1,4 +1,4 @@
-const CACHE='cortez-garage-v285-partner-week-isolation';
+const CACHE='cortez-garage-v285-partner-week-isolation-2';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -6,7 +6,7 @@ const SHELL=[
   './src/style.css?v=20261017-1&w=17',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261017-1',
+  './src/boot.js?v=20261017-2',
   './src/main.js?v=20261017-1&w=25',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261017-1',
@@ -23,7 +23,7 @@ const SHELL=[
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261017-1&w=30',
+  './src/admin.js?v=20261017-2&w=31',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -57,8 +57,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261017-1')return null;
-    url.searchParams.set('release','20261017-1');
+    if(url.searchParams.get('release')==='20261017-2')return null;
+    url.searchParams.set('release','20261017-2');
     return client.navigate(url.href);
   }));
 })()));

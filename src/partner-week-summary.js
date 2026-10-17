@@ -1,3 +1,5 @@
+import{allocatePartnerCommission}from'./partner-commission-ledger.js?v=20261003-3';
+
 const value=number=>Math.round((Number(number)||0)*100)/100;
 const weekStart=item=>String(typeof item?.week==='string'?item.week:item?.week?.start||'').slice(0,10);
 const localDate=input=>{if(input instanceof Date)return new Date(input);const[year,month,day]=String(input||'').slice(0,10).split('-').map(Number);return new Date(year,month-1,day,12)};
@@ -12,28 +14,32 @@ export function partnerCommissionWeek(input=new Date()){
 
 export function summarizePartnerCommissionWeek(ledger={},selectedWeek=''){
   const events=(ledger.events||[]).filter(item=>!item.opening&&weekStart(item)===selectedWeek);
-  const rows=(ledger.open||[]).filter(item=>!item.opening&&weekStart(item)===selectedWeek);
-  const otherOpen=(ledger.open||[]).filter(item=>weekStart(item)!==selectedWeek);
+  const payments=(ledger.payments||[]).filter(item=>partnerCommissionWeek(item.dueDate||item.createdAt).start===selectedWeek);
+  const weekly=allocatePartnerCommission(events,payments);
   return{
-    events,
-    rows,
-    generated:value(events.reduce((sum,item)=>sum+Number(item.commission||0),0)),
-    paid:value(events.reduce((sum,item)=>sum+Number(item.paid||0),0)),
-    outstanding:value(rows.reduce((sum,item)=>sum+Number(item.remaining||0),0)),
-    otherOutstanding:value(otherOpen.reduce((sum,item)=>sum+Number(item.remaining||0),0)),
-    totalOutstanding:value(ledger.outstandingTotal)
+    events:weekly.events,
+    rows:weekly.open,
+    generated:weekly.generatedTotal,
+    paid:weekly.appliedTotal,
+    outstanding:weekly.outstandingTotal,
+    otherOutstanding:0,
+    totalOutstanding:weekly.outstandingTotal
   };
 }
 
 export function expiredPartnerCommissionWeeks(ledger={},currentWeekStart=''){
   const weeks=new Map();
-  for(const item of ledger.open||[]){
+  for(const item of ledger.events||[]){
     const start=weekStart(item);
     if(!start||start>=currentWeekStart)continue;
     const end=String(item?.week?.end||partnerCommissionWeek(item.date).end).slice(0,10);
-    const entry=weeks.get(start)||{weekStart:start,weekEnd:end,amount:0};
-    entry.amount=value(entry.amount+Number(item.remaining||0));
+    const entry=weeks.get(start)||{weekStart:start,weekEnd:end,events:[]};
+    entry.events.push(item);
     weeks.set(start,entry);
   }
-  return[...weeks.values()].filter(item=>item.amount>.009).sort((a,b)=>a.weekStart.localeCompare(b.weekStart));
+  return[...weeks.values()].map(entry=>{
+    const payments=(ledger.payments||[]).filter(item=>partnerCommissionWeek(item.dueDate||item.createdAt).start===entry.weekStart);
+    const weekly=allocatePartnerCommission(entry.events,payments);
+    return{weekStart:entry.weekStart,weekEnd:entry.weekEnd,amount:value(weekly.outstandingTotal)};
+  }).filter(item=>item.amount>.009).sort((a,b)=>a.weekStart.localeCompare(b.weekStart));
 }
