@@ -17,7 +17,11 @@ test('semana encerrada transfere o saldo para contas a pagar sem movimentar o ca
 test('arquivamento semanal é idempotente e preserva dívida sincronizada com atraso',()=>{
   assert.match(supabase,/partner-week-rollover-v1-\$\{slug\}-\$\{weekStart\}/);
   assert.match(supabase,/partner-payable-week-v1-\$\{slug\}-\$\{weekStart\}/);
-  assert.match(supabase,/existingPayable\.status==='Realizado'\?amount/);
+  assert.match(supabase,/on_conflict=referencia/);
+  assert.match(supabase,/resolution=merge-duplicates,return=minimal/);
+  assert.match(supabase,/existingPayable\?\.status!==\'Realizado\'/);
+  assert.doesNotMatch(supabase,/Number\(existingPayable\.valor\|\|0\)\+amount/);
+  assert.doesNotMatch(supabase,/Number\(existingTransfer\.valor\|\|0\)\+amount/);
 });
 
 test('semana de comissão persistida segue segunda a sábado',()=>{
