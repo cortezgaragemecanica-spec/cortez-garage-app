@@ -1,5 +1,5 @@
 // Evolui cortez-garage-v285-partner-week-isolation-2 e cortez-garage-v286-weekly-partner-settlement para instalar a lista do acerto semanal.
-const CACHE='cortez-garage-v287-weekly-partner-list';
+const CACHE='cortez-garage-v288-consolidated-commission-payment';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
