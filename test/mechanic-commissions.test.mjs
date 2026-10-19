@@ -644,7 +644,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(admin,/class="commission-summary-card"/);
   assert.match(admin,/class="commission-person-card"/);
   for(const label of ['Ver tabela completa','Já abatido','Vale / abatimento','Saldo acumulado'])assert.ok(admin.includes(label));
-  assert.match(admin,/partnerCommissionLedger\(name\)\.outstandingTotal/);
+  assert.match(admin,/partnerSettlementRecords\(name\)/);
   assert.match(admin,/mechanicCommissionState\(name\)\.total/);
   assert.match(admin,/wireCommissionSummary\(\)/);
   assert.match(style,/\.commission-total-card/);

@@ -7,18 +7,16 @@ const source=await readFile(new URL('../src/admin.js',import.meta.url),'utf8');
 test('pagamentos arquivados de sócios são filtrados e totalizados por mês',()=>{
   assert.match(source,/partnerArchiveMonth/);
   assert.match(source,/id="partnerArchiveMonth"/);
-  assert.match(source,/allArchived\.filter\(item=>commissionArchiveRecordMonth\(item\)===partnerArchiveMonth\)/);
-  assert.match(source,/Total arquivado no mês/);
+  assert.match(source,/archived\.filter\(item=>commissionArchiveRecordMonth\(item\)===partnerArchiveMonth\)/);
+  assert.match(source,/Total pago no período/);
 });
 
-test('visão dos sócios mostra somente a semana vigente de segunda a sábado',()=>{
-  assert.match(source,/partnerCommissionWeek\(localDateOnly\(new Date\(\)\)\)/);
-  assert.match(source,/summarizePartnerCommissionWeek\(ledger,currentWeek\.start\)/);
-  assert.match(source,/Semana vigente/);
-  assert.match(source,/Semanas quitadas e arquivadas/);
-  assert.match(source,/Gerado na semana/);
-  assert.match(source,/Saldo da semana/);
-  assert.doesNotMatch(source,/Outras semanas em aberto/);
+test('visão dos sócios mostra somente comissões lançadas pelo acerto semanal',()=>{
+  assert.match(source,/partnerSettlementRecords/);
+  assert.match(source,/PARTNER_SETTLEMENT_PREFIX/);
+  assert.match(source,/Somente valores lançados pela aba Acerto semanal/);
+  assert.match(source,/Pagas e arquivadas/);
+  assert.doesNotMatch(source,/if\(await rolloverExpiredPartnerCommissions\(\)\)/);
 });
 
 test('comissões pagas dos mecânicos podem ser acessadas mês a mês',()=>{

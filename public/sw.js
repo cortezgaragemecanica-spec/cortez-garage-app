@@ -1,4 +1,5 @@
-const CACHE='cortez-garage-v285-partner-week-isolation-2';
+// Substitui cortez-garage-v285-partner-week-isolation-2 para instalar o novo acerto semanal.
+const CACHE='cortez-garage-v286-weekly-partner-settlement';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
