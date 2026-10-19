@@ -10,7 +10,10 @@ test('acerto semanal é exclusivo do proprietário e substitui o cálculo autom�
   assert.match(admin,/const ownerOnly=\['Acerto semanal','Comissões sócios'\]/);
   assert.match(admin,/function partnerSettlementReceiptEvents\(\)/);
   assert.match(admin,/function partnerSettlementHtml\(\)/);
-  assert.match(admin,/id="launchPartnerSettlement"/);
+  assert.match(admin,/<th>O\.S\.<\/th><th>Cliente<\/th><th>Carro<\/th><th>Peças e custos<\/th><th>Serviços e valores<\/th><th>Total custo<\/th><th>Lucro bruto<\/th><th>Fabiano<\/th><th>Marcelino<\/th>/);
+  assert.match(admin,/data-launch-partner="Fabiano"/);
+  assert.match(admin,/data-launch-partner="Marcelino"/);
+  assert.match(admin,/partners:\[partner\]/);
   assert.match(admin,/saveWeeklyPartnerSettlement/);
   assert.doesNotMatch(admin,/if\(await rolloverExpiredPartnerCommissions\(\)\)/);
 });
@@ -21,6 +24,8 @@ test('lançamento semanal grava somente registros explícitos e não duplica com
   assert.match(supabase,/export async function saveWeeklyPartnerSettlement/);
   assert.match(supabase,/Somente o proprietário pode lançar o acerto semanal dos sócios/);
   assert.match(supabase,/partner-weekly-v2-/);
+  assert.match(block,/partners=\['Fabiano','Marcelino'\]/);
+  assert.match(block,/for\(const partner of selected\)/);
   assert.match(supabase,/if\(existing\?\.status==='Realizado'\)continue/);
   assert.match(block,/if\(existing\)await request/);
   assert.match(block,/method:'PATCH'/);

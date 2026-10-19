@@ -9,6 +9,8 @@ test('acerto semanal lista O.S. recebida com peças, serviço líquido e comiss�
   const[row]=weeklySettlementRows([event],'2026-10-19');
   assert.equal(row.parts[0].cost,200);
   assert.deepEqual(row.services[0],{description:'Mão de obra',value:400,commission:200,net:200});
+  assert.equal(row.totalCost,400);
+  assert.equal(row.grossProfit,600);
   assert.equal(row.base,600);
   assert.equal(row.commissions.Fabiano,150);
   assert.equal(row.commissions.Marcelino,120);
@@ -17,8 +19,10 @@ test('acerto semanal lista O.S. recebida com peças, serviço líquido e comiss�
 test('custo de peça e percentuais podem ser alterados antes do lançamento',()=>{
   const drafts=new Map([['os-1',{partCosts:{'Peça A':250},rates:{Fabiano:30,Marcelino:10}}]]),[row]=weeklySettlementRows([event],'2026-10-19',drafts);
   assert.equal(row.partsCost,250);
+  assert.equal(row.totalCost,450);
+  assert.equal(row.grossProfit,550);
   assert.equal(row.base,550);
   assert.equal(row.commissions.Fabiano,165);
   assert.equal(row.commissions.Marcelino,55);
-  assert.deepEqual(settlementTotals([row]),{received:1000,parts:250,services:200,base:550,Fabiano:165,Marcelino:55});
+  assert.deepEqual(settlementTotals([row]),{received:1000,parts:250,services:200,cost:450,base:550,Fabiano:165,Marcelino:55});
 });
