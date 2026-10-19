@@ -555,9 +555,9 @@ async function writeMechanics(items){if(currentEmail()!==OWNER_EMAIL)throw new E
 export async function saveMechanic(name){name=clean(name).replace(/\s+/g,' ');if(name.length<2)throw new Error('Digite o nome do mecânico.');const items=await readMechanics(),found=items.find(item=>item.name.toLowerCase()===name.toLowerCase());if(found){found.name=name;found.active=true}else items.push({name,active:true});return writeMechanics(items)}
 export async function setMechanicActive(name,active){const items=await readMechanics(),found=items.find(item=>item.name.toLowerCase()===clean(name).toLowerCase());if(!found)throw new Error('Mecânico não encontrado.');found.active=isPrivateMechanic(name)||Boolean(active);return writeMechanics(items)}
 
-const ALL_USER_PERMISSIONS={accessApp:true,manageValues:true,addOrderItems:false,viewDelivered:true,readyOrders:false,createEntries:true,editOrders:true,viewFinance:false};
+const ALL_USER_PERMISSIONS={accessApp:true,manageValues:true,addOrderItems:false,viewDelivered:true,readyOrders:false,createEntries:true,editOrders:true,viewFinance:false,viewPartnerCommissions:false};
 const MANAGED_USER_DEFAULTS=[
-  {name:'Cortez Garage',email:OWNER_EMAIL,active:true,agendaMechanic:'',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:true,createEntries:true,editOrders:true,viewFinance:true}},
+  {name:'Cortez Garage',email:OWNER_EMAIL,active:true,agendaMechanic:'',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:true,createEntries:true,editOrders:true,viewFinance:true,viewPartnerCommissions:true}},
   {name:'Gustavo',email:'gust.cribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
   {name:'Gustavo',email:'gust.ribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
   {name:'Gustavo',email:'gust.ribas@hotmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
@@ -569,7 +569,7 @@ const MANAGED_USER_DEFAULTS=[
 const normalizeEmail=value=>clean(value).toLowerCase();
 const normalizeManagedUsers=value=>{
   const saved=Array.isArray(value)?value:[],byEmail=new Map(MANAGED_USER_DEFAULTS.map(item=>[item.email,{...item,permissions:{...ALL_USER_PERMISSIONS,...item.permissions}}]));
-  for(const item of saved){const email=normalizeEmail(item?.email);if(!email)continue;const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}},agendaMechanic=clean(item.agendaMechanic)||previous.agendaMechanic||defaultMechanicForEmail(email),name=clean(item.name)||previous.name,isMarcelino=name.toLowerCase().split(/\s+/).includes('marcelino'),spectatorDefaults=isMarcelino?{createEntries:false,editOrders:false,viewFinance:true}:{};byEmail.set(email,{...previous,...item,email,name,active:item.active!==false,agendaMechanic,permissions:{...previous.permissions,...spectatorDefaults,...item.permissions}})}
+  for(const item of saved){const email=normalizeEmail(item?.email);if(!email)continue;const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}},agendaMechanic=clean(item.agendaMechanic)||previous.agendaMechanic||defaultMechanicForEmail(email),name=clean(item.name)||previous.name,isMarcelino=name.toLowerCase().split(/\s+/).includes('marcelino'),spectatorDefaults=isMarcelino?{createEntries:false,editOrders:false,viewFinance:true,viewPartnerCommissions:true}:{};byEmail.set(email,{...previous,...item,email,name,active:item.active!==false,agendaMechanic,permissions:{...previous.permissions,...spectatorDefaults,...item.permissions}})}
   return[...byEmail.values()]
 };
 const cacheManagedUsers=users=>{const normalized=normalizeManagedUsers(users);localStorage.setItem(USER_ACCESS_KEY,JSON.stringify(normalized));dispatchEvent(new CustomEvent('cortez:user-access-updated',{detail:normalized}));return normalized};

@@ -625,7 +625,7 @@ test('baixa de conta a receber pergunta o caixa e registra a entrada escolhida',
   assert.match(supabase,/Selecione o caixa em que o valor foi recebido/);
   assert.match(supabase,/forma_pagamento:cashAccount/);
   assert.match(index,/admin\.js\?v=20261017-2/);
-  assert.match(worker,/supabase\.js\?v=20261017-1/);
+  assert.match(worker,/supabase\.js\?v=20261019-3/);
   assert.match(worker,/cortez-garage-v285-partner-week-isolation-2/);
 });
 

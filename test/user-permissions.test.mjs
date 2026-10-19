@@ -9,8 +9,9 @@ test('painel permite controlar entrada, edição de O.S. e visualização financ
   for(const label of ['Registrar nova entrada','Alterar ordens de serviço','Visualizar Financeiro · somente leitura'])assert.ok(admin.includes(label));
   for(const label of ['Liberar Financeiro','Bloquear Financeiro',"'liberado':'bloqueado'"])assert.ok(admin.includes(label));
   assert.match(admin,/toggle-user-finance[\s\S]*viewFinance:!user\.permissions\?\.viewFinance/);
-  for(const permission of ['createEntries','editOrders','viewFinance'])assert.match(supabase,new RegExp(permission));
-  assert.match(supabase,/isMarcelino[\s\S]*createEntries:false,editOrders:false,viewFinance:true/);
+  for(const permission of ['createEntries','editOrders','viewFinance','viewPartnerCommissions'])assert.match(supabase,new RegExp(permission));
+  assert.match(supabase,/isMarcelino[\s\S]*createEntries:false,editOrders:false,viewFinance:true,viewPartnerCommissions:true/);
+  assert.match(admin,/canViewPartnerCommissions=\(\)=>financeOwner\(\)\|\|hasPermission\('viewPartnerCommissions'\)/);
 });
 
 test('todo usuário autenticado altera O.S. e o Financeiro continua protegido',async()=>{
@@ -35,7 +36,7 @@ test('Supabase libera somente leitura financeira conforme painel',async()=>{
   assert.match(sql,/usuario_tem_permissao\(p_permissao text\)/);
   assert.match(sql,/for select to authenticated/);
   assert.match(sql,/usuario_tem_permissao\('viewFinance'\)/);
-  assert.match(sql,/"createEntries":false,"editOrders":false,"viewFinance":true/);
+  assert.match(sql,/"createEntries":false,"editOrders":false,"viewFinance":true,"viewPartnerCommissions":true/);
   assert.doesNotMatch(sql,/for (insert|update|delete)/i);
 });
 

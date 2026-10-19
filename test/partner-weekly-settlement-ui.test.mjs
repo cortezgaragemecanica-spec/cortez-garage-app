@@ -6,8 +6,10 @@ const read=file=>readFile(new URL(`../${file}`,import.meta.url),'utf8');
 
 test('acerto semanal é exclusivo do proprietário e substitui o cálculo automático dos sócios',async()=>{
   const admin=await read('src/admin.js');
-  assert.match(admin,/ownerButtons=financeOwner\(\)\?'<button data-finance-area="Acerto semanal"/);
-  assert.match(admin,/const ownerOnly=\['Acerto semanal','Comissões sócios'\]/);
+  assert.match(admin,/settlementButton=financeOwner\(\)\?'<button data-finance-area="Acerto semanal"/);
+  assert.match(admin,/if\(area==='Acerto semanal'&&!financeOwner\(\)\)area='Fluxo de caixa'/);
+  assert.match(admin,/partnerButton=canViewPartnerCommissions\(\)\?'<button data-finance-area="Comissões sócios"/);
+  assert.match(admin,/if\(area==='Comissões sócios'&&!canViewPartnerCommissions\(\)\)area='Fluxo de caixa'/);
   assert.match(admin,/function partnerSettlementReceiptEvents\(\)/);
   assert.match(admin,/function partnerSettlementHtml\(\)/);
   assert.match(admin,/<th>O\.S\.<\/th><th>Cliente<\/th><th>Carro<\/th><th>Peças e custos<\/th><th>Serviços e valores<\/th><th>Total custo<\/th><th>Lucro bruto<\/th><th>Fabiano<\/th><th>Marcelino<\/th>/);

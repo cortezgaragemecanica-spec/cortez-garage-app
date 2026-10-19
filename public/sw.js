@@ -1,5 +1,5 @@
 // Evolui cortez-garage-v285-partner-week-isolation-2 e cortez-garage-v286-weekly-partner-settlement para instalar a lista do acerto semanal.
-const CACHE='cortez-garage-v288-consolidated-commission-payment';
+const CACHE='cortez-garage-v289-marcelino-partner-history';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -36,7 +36,7 @@ const SHELL=[
   './src/help.js?v=20261017-1',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261017-1',
+  './src/supabase.js?v=20261019-3',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/mechanic-saturday.js?v=20261003-2',
