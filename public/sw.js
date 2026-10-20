@@ -1,5 +1,5 @@
 // Evolui cortez-garage-v285-partner-week-isolation-2 e cortez-garage-v286-weekly-partner-settlement para instalar a lista do acerto semanal.
-const CACHE='cortez-garage-v290-financial-recovery';
+const CACHE='cortez-garage-v291-financial-recovery-cash';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -24,7 +24,7 @@ const SHELL=[
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261017-2&w=31',
+  './src/admin.js?v=20261020-2&w=32',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -33,13 +33,13 @@ const SHELL=[
   './src/order-review-requests.js?v=20261009-2',
   './src/technical-report.js?v=20260914-1',
   './src/mechanic-commissions.js?v=20261003-2',
-  './src/help.js?v=20261017-1',
+  './src/help.js?v=20261020-2',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261019-3',
+  './src/supabase.js?v=20261020-1',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
-  './src/financial-recovery.js?v=20261020-1',
+  './src/financial-recovery.js?v=20261020-2',
   './src/mechanic-saturday.js?v=20261003-2',
   './src/mechanic-privacy.js?v=20261002-1',
   './manifest.webmanifest',
@@ -59,8 +59,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261020-1')return null;
-    url.searchParams.set('release','20261020-1');
+    if(url.searchParams.get('release')==='20261020-2')return null;
+    url.searchParams.set('release','20261020-2');
     return client.navigate(url.href);
   }));
 })()));

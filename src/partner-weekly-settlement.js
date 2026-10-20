@@ -1,11 +1,12 @@
 const cents=value=>Math.round((Number(value)||0)*100)/100;
 const safeRate=value=>Math.min(100,Math.max(0,Number(value)||0));
 const itemKey=(item,index)=>String(item?.id||item?.stockId||item?.description||index);
+import{financialRecoveryProfit,recoveryOrderDate}from'./financial-recovery.js';
 
 export const PARTNER_SETTLEMENT_PREFIX='partner-weekly-v2';
 export const PARTNER_SETTLEMENT_RATES={Fabiano:25,Marcelino:20};
 
-export function weeklySettlementRows(events=[],weekStart='',drafts=new Map()){
+export function weeklySettlementRows(events=[],weekStart='',drafts=new Map(),options={}){
   const grouped=new Map();
   for(const event of events){
     if(String(event?.week?.start||'')!==weekStart||!event?.order?.id)continue;
@@ -31,8 +32,9 @@ export function weeklySettlementRows(events=[],weekStart='',drafts=new Map()){
       return{description:String(service.description||`Serviço ${index+1}`),value,commission,net:cents(value-commission)};
     });
     const rates={Fabiano:safeRate(draft.rates?.Fabiano??PARTNER_SETTLEMENT_RATES.Fabiano),Marcelino:safeRate(draft.rates?.Marcelino??PARTNER_SETTLEMENT_RATES.Marcelino)};
-    const partsCost=cents(parts.reduce((sum,item)=>sum+item.cost,0)),totalCost=cents(partsCost+mechanicCommission+cardFee),grossProfit=cents(Math.max(0,recognized-totalCost)),base=grossProfit;
-    return{order,weekStart,received,recognized,cardFee,mechanicCommission,parts,services,partsCost,totalCost,grossProfit,base,rates,commissions:{Fabiano:cents(base*rates.Fabiano/100),Marcelino:cents(base*rates.Marcelino/100)}};
+    const partsCost=cents(parts.reduce((sum,item)=>sum+item.cost,0)),totalCost=cents(partsCost+mechanicCommission+cardFee),grossProfit=cents(Math.max(0,recognized-totalCost));
+    const integrationApplies=options?.commissionIntegration===true&&(!options?.recoveryStartDate||recoveryOrderDate(order)>=options.recoveryStartDate),recovery=integrationApplies?financialRecoveryProfit(order,ratio):{parts:0,retifica:0,total:0},recoveryDeduction=cents(Math.min(grossProfit,recovery.total)),base=cents(Math.max(0,grossProfit-recoveryDeduction));
+    return{order,weekStart,received,recognized,cardFee,mechanicCommission,parts,services,partsCost,totalCost,grossProfit,recovery,recoveryDeduction,base,rates,commissions:{Fabiano:cents(base*rates.Fabiano/100),Marcelino:cents(base*rates.Marcelino/100)}};
   }).sort((a,b)=>String(a.order.number).localeCompare(String(b.order.number),undefined,{numeric:true}));
 }
 

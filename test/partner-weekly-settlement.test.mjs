@@ -26,3 +26,13 @@ test('custo de peça e percentuais podem ser alterados antes do lançamento',()=
   assert.equal(row.commissions.Marcelino,55);
   assert.deepEqual(settlementTotals([row]),{received:1000,parts:250,services:200,cost:450,base:550,Fabiano:165,Marcelino:55});
 });
+
+test('integração reserva o lucro de peças e retífica fora das comissões dos sócios',()=>{
+  const integratedOrder={...order,deliveredAt:'2026-10-20T12:00:00Z',budget:{...order.budget,parts:[{description:'Peça A',cost:100,value:200,quantity:2},{description:'Plaina cabeçote',cost:50,value:100,quantity:1}]}},integratedEvent={...event,order:integratedOrder,partsCost:250};
+  const[row]=weeklySettlementRows([integratedEvent],'2026-10-19',new Map(),{commissionIntegration:true,recoveryStartDate:'2026-10-01'});
+  assert.equal(row.grossProfit,550);
+  assert.deepEqual(row.recovery,{parts:200,retifica:50,total:250});
+  assert.equal(row.base,300);
+  assert.equal(row.commissions.Fabiano,75);
+  assert.equal(row.commissions.Marcelino,60);
+});
