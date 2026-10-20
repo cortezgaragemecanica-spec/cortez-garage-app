@@ -1,5 +1,5 @@
 // Evolui cortez-garage-v285-partner-week-isolation-2 e cortez-garage-v286-weekly-partner-settlement para instalar a lista do acerto semanal.
-const CACHE='cortez-garage-v289-marcelino-partner-history';
+const CACHE='cortez-garage-v290-financial-recovery';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -39,6 +39,7 @@ const SHELL=[
   './src/supabase.js?v=20261019-3',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
+  './src/financial-recovery.js?v=20261020-1',
   './src/mechanic-saturday.js?v=20261003-2',
   './src/mechanic-privacy.js?v=20261002-1',
   './manifest.webmanifest',
@@ -58,8 +59,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261017-2')return null;
-    url.searchParams.set('release','20261017-2');
+    if(url.searchParams.get('release')==='20261020-1')return null;
+    url.searchParams.set('release','20261020-1');
     return client.navigate(url.href);
   }));
 })()));
