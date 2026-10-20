@@ -31,10 +31,10 @@ export function weeklySettlementRows(events=[],weekStart='',drafts=new Map()){
       return{description:String(service.description||`Serviço ${index+1}`),value,commission,net:cents(value-commission)};
     });
     const rates={Fabiano:safeRate(draft.rates?.Fabiano??PARTNER_SETTLEMENT_RATES.Fabiano),Marcelino:safeRate(draft.rates?.Marcelino??PARTNER_SETTLEMENT_RATES.Marcelino)};
-    const partsCost=cents(parts.reduce((sum,item)=>sum+item.cost,0)),base=cents(Math.max(0,recognized-partsCost-mechanicCommission-cardFee));
-    return{order,weekStart,received,recognized,cardFee,mechanicCommission,parts,services,partsCost,base,rates,commissions:{Fabiano:cents(base*rates.Fabiano/100),Marcelino:cents(base*rates.Marcelino/100)}};
+    const partsCost=cents(parts.reduce((sum,item)=>sum+item.cost,0)),totalCost=cents(partsCost+mechanicCommission+cardFee),grossProfit=cents(Math.max(0,recognized-totalCost)),base=grossProfit;
+    return{order,weekStart,received,recognized,cardFee,mechanicCommission,parts,services,partsCost,totalCost,grossProfit,base,rates,commissions:{Fabiano:cents(base*rates.Fabiano/100),Marcelino:cents(base*rates.Marcelino/100)}};
   }).sort((a,b)=>String(a.order.number).localeCompare(String(b.order.number),undefined,{numeric:true}));
 }
 
-export function settlementTotals(rows=[]){return rows.reduce((sum,row)=>({received:cents(sum.received+row.received),parts:cents(sum.parts+row.partsCost),services:cents(sum.services+row.services.reduce((value,item)=>value+item.net,0)),base:cents(sum.base+row.base),Fabiano:cents(sum.Fabiano+row.commissions.Fabiano),Marcelino:cents(sum.Marcelino+row.commissions.Marcelino)}),{received:0,parts:0,services:0,base:0,Fabiano:0,Marcelino:0})}
+export function settlementTotals(rows=[]){return rows.reduce((sum,row)=>({received:cents(sum.received+row.received),parts:cents(sum.parts+row.partsCost),services:cents(sum.services+row.services.reduce((value,item)=>value+item.net,0)),cost:cents(sum.cost+row.totalCost),base:cents(sum.base+row.base),Fabiano:cents(sum.Fabiano+row.commissions.Fabiano),Marcelino:cents(sum.Marcelino+row.commissions.Marcelino)}),{received:0,parts:0,services:0,cost:0,base:0,Fabiano:0,Marcelino:0})}
 

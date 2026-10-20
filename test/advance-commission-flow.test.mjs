@@ -27,11 +27,26 @@ test('comissão pode ser liberada por serviço antes da entrega e paga com saíd
   assert.match(workflow,/recordOrderCommissions\(order,\[Number\(button\.dataset\.index\)\]\)/);
   assert.match(supabase,/export async function recordOrderCommissions/);
   assert.match(supabase,/serviceCommissionReference=\(order,index\)=>`comissao-os-\$\{order\.id\}-servico-\$\{index\+1\}`/);
-  assert.match(supabase,/export async function payCommission/);
-  assert.match(supabase,/pagamento-comissao-[\s\S]*referencia:reference/);
-  assert.match(admin,/Pagar comissão/);
+  assert.match(supabase,/export async function payCommissions/);
+  assert.match(supabase,/Pagamento consolidado de comissões/);
+  assert.match(supabase,/pending\.reduce\(\(sum,row\)=>sum\+Number\(row\.valor\|\|0\),0\)/);
+  assert.match(supabase,/method:'PATCH'[\s\S]*status:'Realizado'/);
+  assert.match(admin,/Pagar comissões/);
   assert.match(admin,/Caixa utilizado/);
-  assert.match(admin,/await payCommission\(record\.id,account\)/);
+  assert.match(admin,/await payCommissions\(commissions\.map\(record=>record\.id\),account,reference\)/);
+  assert.match(admin,/somente um lançamento consolidado/);
+});
+
+test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
+  const[supabase,admin,worker]=await Promise.all([read('src/supabase.js'),read('src/admin.js'),read('public/sw.js')]);
+  assert.match(admin,/class="primary pay-commissions" data-person="\$\{esc\(partner\)\}"/);
+  assert.match(admin,/class="primary pay-commissions" data-person="\$\{esc\(activeMechanic\)\}"/);
+  assert.match(admin,/Incluída no pagamento consolidado/);
+  assert.match(admin,/partnerSettlementRecords\(button\.dataset\.person\).*'Comissões sócios'/);
+  assert.match(admin,/if\(partner\)activePartner=partner;records=await readFinance\(\);popup\.remove\(\);renderArea\(returnArea\)/);
+  assert.match(supabase,/people\.length!==1.*Consolide separadamente as comissões de cada pessoa/);
+  assert.match(supabase,/os_id:null,referencia:paymentReference/);
+  assert.match(worker,/cortez-garage-v290-financial-recovery/);
 });
 
 test('liberação antecipada pendente pode ser cancelada sem permitir estorno da paga',async()=>{

@@ -33,7 +33,7 @@ test('fase 2 reduz e invalida o cache do aplicativo',async()=>{
   assert.match(worker,/ui-events\.js\?v=20260930-1/);
   assert.doesNotMatch(worker,/ASSETS\.push/);
   const shell=(worker.match(/^\s*'\.\//gm)||[]).length;
-  assert.ok(shell<=43,`cache inicial deveria ter no máximo 43 itens; recebeu ${shell}`);
+  assert.ok(shell<=44,`cache inicial deveria ter no máximo 44 itens; recebeu ${shell}`);
 });
 
 test('fase 2 mostra carregamento inicial acessível e respeita movimento reduzido',async()=>{

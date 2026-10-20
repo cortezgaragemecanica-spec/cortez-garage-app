@@ -37,7 +37,7 @@ set dados = jsonb_set(
         when lower(coalesce(usuario ->> 'name', '')) ~ '(^|[[:space:]])marcelino([[:space:]]|$)'
         then usuario || jsonb_build_object(
           'permissions',
-          coalesce(usuario -> 'permissions', '{}'::jsonb) || '{"createEntries":false,"editOrders":false,"viewFinance":true}'::jsonb
+          coalesce(usuario -> 'permissions', '{}'::jsonb) || '{"createEntries":false,"editOrders":false,"viewFinance":true,"viewPartnerCommissions":true}'::jsonb
         )
         else usuario
       end
