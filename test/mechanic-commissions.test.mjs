@@ -334,6 +334,17 @@ test('nova entrada gera comprovante em PDF e encaminha para o WhatsApp do client
   assert.match(worker,/entry-receipt\.js\?v=20260911-2/);
 });
 
+test('entrada feita por usuário que não é proprietário abre o PDF e o WhatsApp para o grupo',async()=>{
+  const receipt=await read('src/entry-receipt.js');
+  assert.match(receipt,/event\.target\?\.id==='entryForm'&&!owner\(\)/);
+  assert.match(receipt,/event\.target\.dataset\.receipt='1'/);
+  assert.match(receipt,/shareToGroup:!owner\(\)/);
+  assert.match(receipt,/const phone=toGroup\?'':phoneDigits/);
+  assert.match(receipt,/shareReceipt\(blob,fileName,order,message,true\)/);
+  assert.match(receipt,/Enviar PDF para o grupo no WhatsApp/);
+  assert.match(receipt,/https:\/\/web\.whatsapp\.com\//);
+});
+
 test('O.S. recolhe checklist e registra solicitações de peças com aviso ao proprietário',async()=>{
   const [workflow,supabase,access,style,index,worker,activity]=await Promise.all([read('src/order-workflow.js'),read('src/supabase.js'),read('src/access-control.js'),read('src/style.css'),read('index.html'),read('public/sw.js'),read('android/app/src/main/java/com/cortezgarage/app/MainActivity.java')]);
   for(const label of ['☑ Checklist','Solicitar peças','Quantidade','Descrição','Motivo','Mandar para o fornecedor','Solicitado por:'])assert.ok(workflow.includes(label));

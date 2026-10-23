@@ -10,7 +10,7 @@ const sections=[
     <ul><li><b>Acesso rápido:</b> O.S., Financeiro, Comissões, Estoque, Agenda e Relatórios.</li><li><b>O que precisa de atenção:</b> abre diretamente cada etapa do fluxo.</li><li><b>Atividade recente:</b> mostra as últimas ordens alteradas.</li></ul>`},
   {id:'nova-entrada',title:'3. Nova entrada',summary:'Cliente, veículo, checklist e comprovante',content:`
     <ol><li>Toque em <b>Nova Entrada</b>.</li><li>Localize o cliente pelo telefone ou preencha seus dados.</li><li>Escolha um veículo existente ou cadastre placa, modelo, ano, cor, quilometragem e combustível.</li><li>Registre a reclamação e marque o checklist.</li><li>Revise e salve. A confirmação só aparece depois da gravação no banco.</li></ol>
-    <p>O comprovante de entrada pode ser salvo em PDF e enviado ao cliente pelo WhatsApp.</p>`},
+    <p>O comprovante de entrada pode ser salvo em PDF e enviado ao cliente pelo WhatsApp. Quando a entrada for registrada por um usuário que não seja o proprietário, o PDF será aberto automaticamente e o WhatsApp será acionado para selecionar o grupo da oficina.</p>`},
   {id:'fluxo-os',title:'4. Fluxo da ordem de serviço',summary:'Do diagnóstico à entrega',content:`
     <div class="help-flow"><span>Aguardando diagnóstico</span><i>→</i><span>Aguardando aprovação</span><i>→</i><span>Em andamento</span><i>→</i><span>Pronto para entrega</span><i>→</i><span>Entregue</span></div>
     <ul><li><b>Aguardando peça:</b> use quando o serviço estiver parado por falta de material.</li><li><b>Orçamento fora do pátio:</b> proposta feita sem o veículo permanecer na oficina.</li><li><b>Recusado:</b> orçamento não aprovado.</li></ul>
