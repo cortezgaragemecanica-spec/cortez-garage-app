@@ -6,7 +6,7 @@ const addOnlyBlockedActions='.edit-part,.remove-line,.refuse-line,#approveBudget
 const addOnlyProtectedFields='#parts,#labor,#partsValue,#discount,#payment,#budgetPayment,#warrantyTerms';
 const addOnlyMessage='Você pode incluir peças e serviços com valores. Diagnóstico e observação são enviados ao proprietário para revisão. Você não pode alterar ou excluir itens já cadastrados, mudar descontos nem incluir peças no estoque.';
 const message='O checklist pode ser atualizado. Diagnóstico e observação são enviados ao proprietário para revisão; serviços, peças, valores, baixa de estoque e entrega não podem ser alterados.';
-const orderReadOnlyActions='.os-grid button:not(#print):not(#toggleOrderChecklist),.os-head button:not(#print):not(#toggleOrderChecklist),#saveOs,#editOrder,#technicalReport,#sendBudget,#readyOrder,#approveBudget,#previousStatus';
+const orderReadOnlyActions='.os-grid button:not(#print):not(#toggleOrderChecklist):not(#requestParts):not(#requestServiceQuote):not(#ownerDiagnosisObservation),.os-head button:not(#print):not(#toggleOrderChecklist):not(#requestParts):not(#requestServiceQuote):not(#ownerDiagnosisObservation),#saveOs,#editOrder,#technicalReport,#sendBudget,#readyOrder,#approveBudget,#previousStatus';
 const orderReadOnlyFields='.os-grid input,.os-grid textarea,.os-grid select,.os-grid canvas,.os-head select';
 const orderReadOnlyMessage='Modo espectador: esta ordem de serviço está disponível apenas para consulta.';
 

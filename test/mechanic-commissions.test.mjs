@@ -356,6 +356,7 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(workflow,/edit-part-request/);
   assert.match(workflow,/delete-part-request/);
   assert.match(workflow,/items\.some\(item=>item\.quantity<1\|\|!item\.description\)/);
+  assert.match(workflow,/if\(!owner\(\)\)return alert\('Solicite pelo grupo do WhatsApp Pedido de Peças\.'\)/);
   assert.match(access,/:not\(#toggleOrderChecklist\)/);
   assert.match(style,/\.part-request-row/);
   assert.match(style,/#requestParts\{background:#f2c500/);
@@ -395,6 +396,13 @@ test('ações restritas da O.S. ficam somente com o proprietário e Voltar fecha
   assert.match(activity,/modal\.querySelector\('\.part-request-editor,\.part-request-list'\)/);
   assert.match(activity,/webView\.evaluateJavascript\(closePartRequest/);
   assert.match(index,/technical-report\.js\?v=20260914-1/);
+});
+
+test('solicitações de peças e serviços orientam usuários que não são proprietários',async()=>{
+  const[workflow,service,access]=await Promise.all([read('src/order-workflow.js'),read('src/service-quote-requests.js'),read('src/access-control.js')]);
+  assert.match(workflow,/Solicite pelo grupo do WhatsApp Pedido de Peças/);
+  assert.match(service,/if\(!owner\(\)\)return alert\('Solicite pelo grupo do WhatsApp Pedido de Serviços\.'\)/);
+  for(const id of['requestParts','requestServiceQuote','ownerDiagnosisObservation'])assert.ok(access.includes(`:not(#${id})`));
 });
 
 test('campo Serviços a executar passa a se chamar Observação',async()=>{
