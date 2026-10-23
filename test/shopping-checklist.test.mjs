@@ -45,6 +45,6 @@ test('aba Compras e persistência do checklist são publicadas no aplicativo',as
   assert.match(supabase,/purchasedBy:purchased\?/);
   assert.match(index,/shopping\.js\?v=20261023-1/);
   assert.match(worker,/shopping-checklist-data\.js\?v=20261023-3/);
-  assert.match(worker,/cortez-garage-v295-shopping-running/);
+  assert.match(worker,/cortez-garage-v296-owner-order-requests/);
   assert.match(style,/\.shopping-order/);
 });

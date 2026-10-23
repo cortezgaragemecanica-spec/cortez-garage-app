@@ -23,6 +23,7 @@ async function renderOrderHistory(force=false){const order=currentOrder(),target
 
 async function openRequestPopup(order){
   if(!order)return;
+  if(!owner())return alert('Solicite pelo grupo do WhatsApp Pedido de Serviços.');
   const modal=showModal(`<span class="eyebrow">ORÇAMENTO DE SERVIÇOS</span><h3>Solicitar orçamento · O.S. #${esc(order.number)}</h3><p>${esc([order.vehicle?.plate,order.vehicle?.model,order.vehicle?.year,order.vehicle?.color].filter(Boolean).join(' · '))}</p><div class="part-request-editor service-quote-editor">${row()}</div><button type="button" class="secondary add-quote-row">+ Incluir serviço</button><div class="check-popup-actions"><button type="button" class="secondary cancel-quote">Voltar</button><button type="button" class="primary save-quote">Solicitar e salvar</button></div>`),editor=modal.querySelector('.service-quote-editor');
   const wireRows=()=>editor.querySelectorAll('.remove-quote-row').forEach(button=>button.onclick=()=>{if(editor.children.length>1)button.closest('.service-quote-row').remove()});
   wireRows();modal.querySelector('.add-quote-row').onclick=()=>{editor.insertAdjacentHTML('beforeend',row());wireRows()};modal.querySelector('.cancel-quote').onclick=()=>closeModal(modal);

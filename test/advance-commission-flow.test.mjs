@@ -46,7 +46,7 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(admin,/if\(partner\)activePartner=partner;records=await readFinance\(\);popup\.remove\(\);renderArea\(returnArea\)/);
   assert.match(supabase,/people\.length!==1.*Consolide separadamente as comissões de cada pessoa/);
   assert.match(supabase,/os_id:null,referencia:paymentReference/);
-  assert.match(worker,/cortez-garage-v295-shopping-running/);
+  assert.match(worker,/cortez-garage-v296-owner-order-requests/);
 });
 
 test('liberação antecipada pendente pode ser cancelada sem permitir estorno da paga',async()=>{
