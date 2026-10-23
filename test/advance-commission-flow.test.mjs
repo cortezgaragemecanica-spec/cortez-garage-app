@@ -46,7 +46,7 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(admin,/if\(partner\)activePartner=partner;records=await readFinance\(\);popup\.remove\(\);renderArea\(returnArea\)/);
   assert.match(supabase,/people\.length!==1.*Consolide separadamente as comissões de cada pessoa/);
   assert.match(supabase,/os_id:null,referencia:paymentReference/);
-  assert.match(worker,/cortez-garage-v292-partial-receivables/);
+  assert.match(worker,/cortez-garage-v294-shopping-main/);
 });
 
 test('liberação antecipada pendente pode ser cancelada sem permitir estorno da paga',async()=>{
@@ -67,8 +67,8 @@ test('janela de comissões usa tabela ampla no computador e cartões no celular'
   assert.match(style,/\.commission-release-popup \.check-popup-card\{[^}]*width:min\(1180px,[^}]*height:min\(820px/);
   assert.match(style,/\.commission-release-columns,.commission-service-row\{[^}]*grid-template-columns:/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.commission-service-row\{grid-template-columns:1fr 1fr/);
-  assert.match(index,/style\.css\?v=20261017-1/);
-  assert.match(index,/order-workflow\.js\?v=20261017-1/);
+  assert.match(index,/style\.css\?v=20261023-1/);
+  assert.match(index,/order-workflow\.js\?v=20261023-1/);
 });
 
 test('entrega não duplica comissão antecipada nem reabre comissão já paga',async()=>{

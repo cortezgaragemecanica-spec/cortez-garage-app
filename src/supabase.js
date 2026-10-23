@@ -201,7 +201,7 @@ export async function savePartRequest(order,items){
   if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem solicitar peças.');
   const session=await refreshSession();
   if(!session?.access_token)throw new Error('Sessão expirada');
-  const user=getCurrentUser(),id=crypto.randomUUID(),cleanItems=(items||[]).map(item=>({quantity:Math.max(1,Number(item.quantity||1)),description:clean(item.description),reason:clean(item.reason)})).filter(item=>item.description);
+  const user=getCurrentUser(),id=crypto.randomUUID(),cleanItems=(items||[]).map(item=>({id:crypto.randomUUID(),quantity:Math.max(1,Number(item.quantity||1)),description:clean(item.description),reason:clean(item.reason)})).filter(item=>item.description);
   if(!order?.id||!cleanItems.length)throw new Error('Informe ao menos uma peça.');
   const data={id,orderId:order.id,orderNumber:String(order.number||''),vehicle:{plate:clean(order.vehicle?.plate),model:clean(order.vehicle?.model),year:clean(order.vehicle?.year),color:clean(order.vehicle?.color)},items:cleanItems,requestedBy:{id:user.id,email:user.email,name:user.name},status:'Pendente',createdAt:new Date().toISOString()};
   await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{origem:'app',entidade:'solicitacao_pecas',registro_id:id,dados:data}});
@@ -342,11 +342,28 @@ export async function updatePartRequest(requestId,items){
   if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem alterar solicitações.');
   const session=await refreshSession();
   if(!session?.access_token)throw new Error('Sessão expirada');
-  const row=await partRequestRow(session,requestId),cleanItems=(items||[]).map(item=>({quantity:Math.max(1,Number(item.quantity||1)),description:clean(item.description),reason:clean(item.reason)})).filter(item=>item.description);
+  const row=await partRequestRow(session,requestId),previous=Array.isArray(row.dados?.items)?row.dados.items:[],cleanItems=(items||[]).map((item,index)=>{const saved=previous.find(entry=>item.id&&entry.id===item.id)||previous[index]||{};return{...saved,id:item.id||saved.id||crypto.randomUUID(),quantity:Math.max(1,Number(item.quantity||1)),description:clean(item.description),reason:clean(item.reason)}}).filter(item=>item.description);
   if(!cleanItems.length)throw new Error('Informe ao menos uma peça.');
   const data={...(row.dados||{}),items:cleanItems,updatedAt:new Date().toISOString()};
   await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:data}});
   return data;
+}
+
+export async function updatePurchaseChecklistItem(requestId,itemIndex,purchased){
+  if(!hasPermission('editOrders'))throw new Error('Seu usuário não tem permissão para atualizar a lista de compras.');
+  itemIndex=Number(itemIndex);
+  if(!Number.isInteger(itemIndex)||itemIndex<0)throw new Error('Item da lista de compras inválido.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&registro_id=eq.${encodeURIComponent(requestId)}&select=id,dados&limit=1`,{token:session.access_token}),row=rows[0];
+  if(!row)throw new Error('Solicitação de peças não encontrada.');
+  const items=Array.isArray(row.dados?.items)?row.dados.items.map(item=>({...item})):[];
+  if(!items[itemIndex])throw new Error('O item não existe mais nesta solicitação. Atualize a lista.');
+  const now=new Date().toISOString(),user=getCurrentUser();
+  items[itemIndex]={...items[itemIndex],id:items[itemIndex].id||crypto.randomUUID(),purchased:Boolean(purchased),purchasedAt:purchased?now:null,purchasedBy:purchased?{id:user.id,email:user.email,name:user.name}:null};
+  const data={...(row.dados||{}),items,purchaseChecklistUpdatedAt:now};
+  await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:data}});
+  return{...data,id:requestId,rowId:row.id};
 }
 
 export async function deletePartRequest(requestId){
