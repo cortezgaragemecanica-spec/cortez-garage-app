@@ -49,24 +49,28 @@ test('Compras mostra somente O.S. aprovadas',()=>{
 
 test('aba Compras e persistência do checklist são publicadas no aplicativo',async()=>{
   const[shopping,supabase,index,worker,style]=await Promise.all(['../src/shopping.js','../src/supabase.js','../index.html','../public/sw.js','../src/style.css'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
-  for(const label of['Compras','Itens pendentes','Itens comprados','Pendentes','Concluídas','Todas','Fornecedor orçado','Custo total','Já comprado','Saldo de custo','Excluir compra'])assert.ok(shopping.includes(label));
+  for(const label of['Compras','Itens pendentes','Itens comprados','Pendentes','Concluídas','Todas','Fornecedor orçado','Custo total','Já comprado','Saldo de custo','Excluir compra','Relatório do que falta comprar','O.S. com pendências','Peças pendentes','Saldo total'])assert.ok(shopping.includes(label));
   assert.match(shopping,/shopping-shortcut/);
   assert.match(shopping,/O\.S\. aprovadas em execução/);
   assert.match(shopping,/shoppingGroups\(localOrders\(\),checklists\)/);
   assert.doesNotMatch(shopping,/readPartRequests/);
   assert.match(shopping,/updateOrderPurchaseChecklistItem\(orderId,partKey,checked\)/);
   assert.match(shopping,/excludeOrderPurchaseChecklistItem\(orderId,partKey\)/);
+  assert.match(shopping,/emitPendingReport/);
+  assert.match(shopping,/group\.items\.filter\(item=>!purchasedItem\(item\)\)/);
+  assert.match(shopping,/exportReportPdf\(source,`Compras pendentes/);
   assert.match(supabase,/export async function readOrderPurchaseChecklists/);
   assert.match(supabase,/export async function updateOrderPurchaseChecklistItem/);
   assert.match(supabase,/export async function excludeOrderPurchaseChecklistItem/);
   assert.match(supabase,/entidade=eq\.checklist_compras_os/);
   assert.match(supabase,/purchasedAt:purchased\?now:null/);
   assert.match(supabase,/purchasedBy:purchased\?/);
-  assert.match(index,/shopping\.js\?v=20261023-8/);
+  assert.match(index,/shopping\.js\?v=20261023-9/);
   assert.match(worker,/shopping-checklist-data\.js\?v=20261023-8/);
-  assert.match(worker,/cortez-garage-v300-shopping-os-parts/);
+  assert.match(worker,/cortez-garage-v301-shopping-pending-report/);
   assert.match(style,/\.shopping-order/);
   assert.match(style,/\.shopping-cost-summary/);
   assert.match(style,/\.shopping-item-supplier/);
   assert.match(style,/\.shopping-delete-item/);
+  assert.match(style,/\.shopping-report-source/);
 });

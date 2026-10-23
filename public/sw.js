@@ -1,5 +1,5 @@
 // Evolui cortez-garage-v285-partner-week-isolation-2 e cortez-garage-v286-weekly-partner-settlement para instalar a lista do acerto semanal.
-const CACHE='cortez-garage-v300-shopping-os-parts';
+const CACHE='cortez-garage-v301-shopping-pending-report';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -23,7 +23,7 @@ const SHELL=[
   './src/order-layout.js?v=20261017-1',
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
-  './src/shopping.js?v=20261023-8',
+  './src/shopping.js?v=20261023-9',
   './src/shopping-checklist-data.js?v=20261023-8',
   './src/stock.js?v=20261008-1&w=4',
   './src/admin.js?v=20261021-1&w=33',
@@ -61,8 +61,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261023-8')return null;
-    url.searchParams.set('release','20261023-8');
+    if(url.searchParams.get('release')==='20261023-9')return null;
+    url.searchParams.set('release','20261023-9');
     return client.navigate(url.href);
   }));
 })()));
