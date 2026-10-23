@@ -2,10 +2,9 @@ const text=value=>String(value??'').trim();
 
 export const purchasedItem=item=>Boolean(item?.purchased||item?.purchasedAt);
 
-const APPROVED_STATUSES=new Set(['Em andamento','Aguardando peça','Pronto para entrega','Entregue']);
 export function approvedShoppingOrder(order){
   if(!order||order.budget?.approved===false)return false;
-  return order.budget?.approved===true||APPROVED_STATUSES.has(text(order.status));
+  return text(order.status)==='Em andamento';
 }
 
 export function shoppingGroups(requests,orders=[]){
