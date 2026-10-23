@@ -385,6 +385,40 @@ export async function deletePurchaseChecklistItem(requestId,itemIndex){
   return{requestId,deletedRequest:false,request:{...data,id:requestId,rowId:row.id}};
 }
 
+async function orderPurchaseChecklistRow(session,orderId){
+  const rows=await request(`/rest/v1/sincronizacao?entidade=eq.checklist_compras_os&registro_id=eq.${encodeURIComponent(orderId)}&select=id,registro_id,dados&limit=1`,{token:session.access_token});
+  return rows[0]||null;
+}
+
+export async function readOrderPurchaseChecklists(){
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const rows=await readPages('/rest/v1/sincronizacao?entidade=eq.checklist_compras_os&select=id,registro_id,dados',session.access_token);
+  return(rows||[]).map(row=>({...row.dados,id:row.id,orderId:row.registro_id||row.dados?.orderId||'',items:row.dados?.items&&typeof row.dados.items==='object'?row.dados.items:{}}));
+}
+
+async function writeOrderPurchaseChecklist(orderId,partKey,changes){
+  if(!hasPermission('editOrders'))throw new Error('Seu usuário não tem permissão para atualizar a lista de compras.');
+  orderId=clean(orderId);partKey=clean(partKey);
+  if(!orderId||!partKey)throw new Error('Item da lista de compras inválido.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const row=await orderPurchaseChecklistRow(session,orderId),now=new Date().toISOString(),data={...(row?.dados||{}),orderId,items:{...(row?.dados?.items||{}),[partKey]:{...(row?.dados?.items?.[partKey]||{}),...changes,updatedAt:now}},updatedAt:now},body={origem:'app',entidade:'checklist_compras_os',registro_id:orderId,dados:data};
+  if(row)await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});
+  else await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body:{id:crypto.randomUUID(),...body}});
+  return{...data,id:row?.id||'',orderId};
+}
+
+export async function updateOrderPurchaseChecklistItem(orderId,partKey,purchased){
+  const now=new Date().toISOString(),user=getCurrentUser();
+  return writeOrderPurchaseChecklist(orderId,partKey,{excluded:false,purchased:Boolean(purchased),purchasedAt:purchased?now:null,purchasedBy:purchased?{id:user.id,email:user.email,name:user.name}:null});
+}
+
+export async function excludeOrderPurchaseChecklistItem(orderId,partKey){
+  if(!canHandleRequestNotifications()||isKauaUser())throw new Error('Somente o proprietário pode excluir itens da lista de compras.');
+  return writeOrderPurchaseChecklist(orderId,partKey,{excluded:true,purchased:false,purchasedAt:null,purchasedBy:null,excludedAt:new Date().toISOString(),excludedBy:currentEmail()});
+}
+
 export async function deletePartRequest(requestId){
   if(isKauaUser())throw new Error('Kauã não pode excluir solicitações de peças.');
   if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem excluir solicitações.');
