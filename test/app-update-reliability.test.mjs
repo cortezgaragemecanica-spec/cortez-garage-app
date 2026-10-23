@@ -17,6 +17,6 @@ test('nova publicação força atualização no APK sem apagar dados da oficina'
   assert.match(worker,/boot\.js\?v=20261017-2/);
   assert.match(worker,/cortez-garage-v285-partner-week-isolation-2/);
   assert.match(worker,/clients\.matchAll\(\{type:'window'\}\)/);
-  assert.match(worker,/searchParams\.set\('release','20261021-1'\)/);
+  assert.match(worker,/searchParams\.set\('release','20261023-1'\)/);
   assert.match(worker,/client\.navigate\(url\.href\)/);
 });
