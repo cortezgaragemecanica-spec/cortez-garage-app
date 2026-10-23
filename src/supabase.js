@@ -366,6 +366,25 @@ export async function updatePurchaseChecklistItem(requestId,itemIndex,purchased)
   return{...data,id:requestId,rowId:row.id};
 }
 
+export async function deletePurchaseChecklistItem(requestId,itemIndex){
+  if(isKauaUser())throw new Error('Kauã não pode excluir solicitações de peças.');
+  if(!hasPermission('editOrders'))throw new Error('Seu usuário não tem permissão para excluir itens da lista de compras.');
+  itemIndex=Number(itemIndex);
+  if(!Number.isInteger(itemIndex)||itemIndex<0)throw new Error('Item da lista de compras inválido.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const row=await partRequestRow(session,requestId),items=Array.isArray(row.dados?.items)?row.dados.items.map(item=>({...item})):[];
+  if(!items[itemIndex])throw new Error('O item não existe mais nesta solicitação. Atualize a lista.');
+  items.splice(itemIndex,1);
+  if(!items.length){
+    await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'DELETE',prefer:'return=minimal'});
+    return{requestId,deletedRequest:true};
+  }
+  const data={...(row.dados||{}),items,purchaseChecklistUpdatedAt:new Date().toISOString()};
+  await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body:{dados:data}});
+  return{requestId,deletedRequest:false,request:{...data,id:requestId,rowId:row.id}};
+}
+
 export async function deletePartRequest(requestId){
   if(isKauaUser())throw new Error('Kauã não pode excluir solicitações de peças.');
   if(!hasPermission('editOrders'))throw new Error('Usuários em modo espectador não podem excluir solicitações.');

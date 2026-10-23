@@ -51,17 +51,22 @@ test('Compras mostra somente O.S. aprovadas',()=>{
 
 test('aba Compras e persistência do checklist são publicadas no aplicativo',async()=>{
   const[shopping,supabase,index,worker,style]=await Promise.all(['../src/shopping.js','../src/supabase.js','../index.html','../public/sw.js','../src/style.css'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
-  for(const label of['Compras','Itens pendentes','Itens comprados','Pendentes','Concluídas','Todas','Fornecedor orçado','Custo total','Já comprado','Saldo de custo'])assert.ok(shopping.includes(label));
+  for(const label of['Compras','Itens pendentes','Itens comprados','Pendentes','Concluídas','Todas','Fornecedor orçado','Custo total','Já comprado','Saldo de custo','Excluir compra'])assert.ok(shopping.includes(label));
   assert.match(shopping,/shopping-shortcut/);
   assert.match(shopping,/O\.S\. aprovadas em execução/);
   assert.match(shopping,/updatePurchaseChecklistItem\(requestId,itemIndex,checked\)/);
+  assert.match(shopping,/deletePurchaseChecklistItem\(requestId,itemIndex\)/);
   assert.match(supabase,/export async function updatePurchaseChecklistItem/);
+  assert.match(supabase,/export async function deletePurchaseChecklistItem/);
+  assert.match(supabase,/items\.splice\(itemIndex,1\)/);
+  assert.match(supabase,/deletedRequest:true/);
   assert.match(supabase,/purchasedAt:purchased\?now:null/);
   assert.match(supabase,/purchasedBy:purchased\?/);
-  assert.match(index,/shopping\.js\?v=20261023-1/);
+  assert.match(index,/shopping\.js\?v=20261023-7/);
   assert.match(worker,/shopping-checklist-data\.js\?v=20261023-6/);
-  assert.match(worker,/cortez-garage-v298-shopping-supplier-cost/);
+  assert.match(worker,/cortez-garage-v299-shopping-delete/);
   assert.match(style,/\.shopping-order/);
   assert.match(style,/\.shopping-cost-summary/);
   assert.match(style,/\.shopping-item-supplier/);
+  assert.match(style,/\.shopping-delete-item/);
 });
