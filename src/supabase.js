@@ -411,12 +411,35 @@ async function writeOrderPurchaseChecklist(orderId,partKey,changes){
 
 export async function updateOrderPurchaseChecklistItem(orderId,partKey,purchased){
   const now=new Date().toISOString(),user=getCurrentUser();
-  return writeOrderPurchaseChecklist(orderId,partKey,{excluded:false,purchased:Boolean(purchased),purchasedAt:purchased?now:null,purchasedBy:purchased?{id:user.id,email:user.email,name:user.name}:null});
+  const saved=await writeOrderPurchaseChecklist(orderId,partKey,{excluded:false,purchased:Boolean(purchased),purchasedAt:purchased?now:null,purchasedBy:purchased?{id:user.id,email:user.email,name:user.name}:null});
+  await syncOrderPurchasePayable(orderId);
+  return saved;
 }
 
 export async function excludeOrderPurchaseChecklistItem(orderId,partKey){
   if(!canHandleRequestNotifications()||isKauaUser())throw new Error('Somente o proprietário pode excluir itens da lista de compras.');
-  return writeOrderPurchaseChecklist(orderId,partKey,{excluded:true,purchased:false,purchasedAt:null,purchasedBy:null,excludedAt:new Date().toISOString(),excludedBy:currentEmail()});
+  const saved=await writeOrderPurchaseChecklist(orderId,partKey,{excluded:true,purchased:false,purchasedAt:null,purchasedBy:null,excludedAt:new Date().toISOString(),excludedBy:currentEmail()});
+  await syncOrderPurchasePayable(orderId);
+  return saved;
+}
+
+async function syncOrderPurchasePayable(orderId,create=false){
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  return request('/rest/v1/rpc/sincronizar_conta_compras_os',{token:session.access_token,method:'POST',body:{p_os_id:orderId,p_criar:Boolean(create)}});
+}
+
+export async function createOrderPurchasePayable(orderId){
+  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode lançar compras em Contas a pagar.');
+  return syncOrderPurchasePayable(clean(orderId),true);
+}
+
+export async function readOrderPurchasePayables(){
+  if(currentEmail()!==OWNER_EMAIL)return[];
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const rows=await request('/rest/v1/lancamentos_financeiros?select=*&categoria=eq.Conta%20a%20pagar&referencia=like.compras-os-*',{token:session.access_token});
+  return rows.map(mapFinance);
 }
 
 export async function deletePartRequest(requestId){
