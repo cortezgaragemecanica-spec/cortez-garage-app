@@ -48,8 +48,8 @@ test('Compras mostra somente O.S. aprovadas',()=>{
 });
 
 test('aba Compras e persistência do checklist são publicadas no aplicativo',async()=>{
-  const[shopping,supabase,index,worker,style]=await Promise.all(['../src/shopping.js','../src/supabase.js','../index.html','../public/sw.js','../src/style.css'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
-  for(const label of['Compras','Itens pendentes','Itens comprados','Pendentes','Concluídas','Todas','Fornecedor orçado','Custo total','Já comprado','Saldo de custo','Excluir compra','Relatório do que falta comprar','O.S. com pendências','Peças pendentes','Saldo total'])assert.ok(shopping.includes(label));
+  const[shopping,supabase,index,worker,style,sql]=await Promise.all(['../src/shopping.js','../src/supabase.js','../index.html','../public/sw.js','../src/style.css','../supabase/conta-compras-os-dinamica.sql'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
+  for(const label of['Compras','Itens pendentes','Itens comprados','Pendentes','Concluídas','Todas','Fornecedor orçado','Custo total','Já comprado','Saldo de custo','Excluir compra','Relatório do que falta comprar','O.S. com pendências','Peças pendentes','Saldo total','Lançar em Contas a pagar','Conta a pagar vinculada','Vencimento amanhã','Conta já paga'])assert.ok(shopping.includes(label));
   assert.match(shopping,/shopping-shortcut/);
   assert.match(shopping,/O\.S\. aprovadas em execução/);
   assert.match(shopping,/shoppingGroups\(localOrders\(\),checklists\)/);
@@ -65,12 +65,26 @@ test('aba Compras e persistência do checklist são publicadas no aplicativo',as
   assert.match(supabase,/entidade=eq\.checklist_compras_os/);
   assert.match(supabase,/purchasedAt:purchased\?now:null/);
   assert.match(supabase,/purchasedBy:purchased\?/);
-  assert.match(index,/shopping\.js\?v=20261023-9/);
+  assert.match(supabase,/sincronizar_conta_compras_os/);
+  assert.match(supabase,/export async function createOrderPurchasePayable/);
+  assert.match(supabase,/export async function readOrderPurchasePayables/);
+  assert.match(shopping,/createOrderPurchasePayable\(orderId\)/);
+  assert.match(shopping,/refreshLinkedPayable\(orderId\)/);
+  assert.match(index,/shopping\.js\?v=20261024-1/);
   assert.match(worker,/shopping-checklist-data\.js\?v=20261023-8/);
-  assert.match(worker,/cortez-garage-v301-shopping-pending-report/);
+  assert.match(worker,/cortez-garage-v302-shopping-payable/);
   assert.match(style,/\.shopping-order/);
   assert.match(style,/\.shopping-cost-summary/);
+  assert.match(style,/\.shopping-payable/);
   assert.match(style,/\.shopping-item-supplier/);
   assert.match(style,/\.shopping-delete-item/);
   assert.match(style,/\.shopping-report-source/);
+  assert.match(sql,/create or replace function public\.sincronizar_conta_compras_os/);
+  assert.match(sql,/timezone\('America\/Sao_Paulo',now\(\)\)::date \+ 1/);
+  assert.match(sql,/referencia_conta text := 'compras-os-'/);
+  assert.match(sql,/'Conta a pagar','Saída'/);
+  assert.match(sql,/'pagamento-conta-' \|\| conta\.id/);
+  assert.match(sql,/Compras concluídas automaticamente/);
+  assert.match(sql,/Somente o proprietário pode lançar compras em Contas a pagar/);
+  assert.doesNotMatch(sql,/\b(?:drop|truncate|delete)\b/i);
 });
