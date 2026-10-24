@@ -114,8 +114,8 @@ test('acerto Luizinho separa notas por semana e mostra os totais de cada períod
   assert.match(admin,/if\(activeSupplier==='luizinho'\)separateLuizinhoWeeks\(target\)/);
   assert.match(style,/\.luizinho-week-heading td/);
   assert.match(style,/\.luizinho-week-grouped>thead th:first-child/);
-  assert.match(index,/style\.css\?v=20261023-1/);
-  assert.match(index,/admin\.js\?v=20261021-1/);
+  assert.match(index,/style\.css\?v=20261024-2/);
+  assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(worker,/cortez-garage-v285-partner-week-isolation/);
 });
 
@@ -128,8 +128,8 @@ test('nota do Luizinho usa tabela no computador e cartões completos no celular'
   assert.match(style,/\.supplier-note-editor-popup \.supplier-note-items tr\{display:grid/);
   assert.match(style,/\.supplier-note-editor-popup \.supplier-note-items thead\{display:none\}/);
   assert.match(style,/\.note-description\{grid-column:1\/-1\}/);
-  assert.match(index,/style\.css\?v=20261023-1/);
-  assert.match(index,/admin\.js\?v=20261021-1/);
+  assert.match(index,/style\.css\?v=20261024-2/);
+  assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(worker,/cortez-garage-v285-partner-week-isolation/);
 });
 

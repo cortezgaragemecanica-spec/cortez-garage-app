@@ -12,12 +12,29 @@ test('acerto semanal é exclusivo do proprietário e substitui o cálculo autom�
   assert.match(admin,/if\(area==='Comissões sócios'&&!canViewPartnerCommissions\(\)\)area='Fluxo de caixa'/);
   assert.match(admin,/function partnerSettlementReceiptEvents\(\)/);
   assert.match(admin,/function partnerSettlementHtml\(\)/);
-  assert.match(admin,/<th>O\.S\.<\/th><th>Cliente<\/th><th>Carro<\/th><th>Peças e custos<\/th><th>Serviços e valores<\/th><th>Total custo<\/th><th>Lucro bruto<\/th><th>Fabiano<\/th><th>Marcelino<\/th>/);
+  assert.match(admin,/partner-settlement-list/);
+  assert.match(admin,/partner-settlement-order/);
+  assert.match(admin,/partner-settlement-breakdown/);
+  assert.match(admin,/Total recebido/);
+  assert.doesNotMatch(admin,/partner-settlement-table/);
   assert.match(admin,/data-launch-partner="Fabiano"/);
   assert.match(admin,/data-launch-partner="Marcelino"/);
   assert.match(admin,/partners:\[partner\]/);
   assert.match(admin,/saveWeeklyPartnerSettlement/);
   assert.doesNotMatch(admin,/if\(await rolloverExpiredPartnerCommissions\(\)\)/);
+});
+
+test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal cortada',async()=>{
+  const[admin,style,index,worker]=await Promise.all(['src/admin.js','src/style.css','index.html','public/sw.js'].map(read));
+  assert.match(admin,/class="partner-settlement-order"/);
+  assert.match(admin,/class="partner-settlement-breakdown"/);
+  assert.match(style,/\.partner-settlement-breakdown\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(style,/\.partner-settlement-order footer\{[^}]*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
+  assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
+  assert.match(index,/admin\.js\?v=20261024-2/);
+  assert.match(index,/style\.css\?v=20261024-2/);
+  assert.match(worker,/cortez-garage-v303-weekly-settlement-desktop/);
 });
 
 test('lançamento semanal grava somente registros explícitos e não duplica comissão paga',async()=>{
