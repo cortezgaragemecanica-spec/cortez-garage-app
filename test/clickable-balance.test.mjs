@@ -41,7 +41,7 @@ test('publicação invalida os caches do módulo e do estilo',()=>{
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(index,/style\.css\?v=20261024-2/);
   assert.match(worker,/cortez-garage-v285-partner-week-isolation/);
-  assert.match(worker,/admin\.js\?v=20261024-2&w=34/);
+  assert.match(worker,/admin\.js\?v=20261024-2&w=35/);
   assert.match(worker,/style\.css\?v=20261024-2&w=19/);
 });
 

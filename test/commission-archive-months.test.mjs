@@ -23,7 +23,8 @@ test('histórico dos pagamentos dos sócios fica em uma consulta separada',()=>{
   assert.match(source,/const partnerPaymentRecords=/);
   assert.match(source,/data-partner-view="payments"/);
   assert.match(source,/Histórico de pagamentos/);
-  assert.match(source,/cashAccount\(record\)!=='Sem movimentação de caixa'/);
+  assert.match(source,/\^comiss\(\?:ao\|oes\)\\b/);
+  assert.match(source,/!\/\^partner-week-rollover-/);
 });
 
 test('comissões pagas dos mecânicos podem ser acessadas mês a mês',()=>{
