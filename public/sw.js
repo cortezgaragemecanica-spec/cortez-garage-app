@@ -1,10 +1,10 @@
 // Evolui cortez-garage-v285-partner-week-isolation-2 e cortez-garage-v286-weekly-partner-settlement para instalar a lista do acerto semanal.
-const CACHE='cortez-garage-v302-shopping-payable';
+const CACHE='cortez-garage-v303-weekly-settlement-desktop';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20261023-1&w=18',
+  './src/style.css?v=20261024-2&w=19',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20261017-2',
@@ -26,7 +26,7 @@ const SHELL=[
   './src/shopping.js?v=20261024-1',
   './src/shopping-checklist-data.js?v=20261023-8',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261021-1&w=33',
+  './src/admin.js?v=20261024-2&w=34',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -61,8 +61,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261024-1')return null;
-    url.searchParams.set('release','20261024-1');
+    if(url.searchParams.get('release')==='20261024-2')return null;
+    url.searchParams.set('release','20261024-2');
     return client.navigate(url.href);
   }));
 })()));
