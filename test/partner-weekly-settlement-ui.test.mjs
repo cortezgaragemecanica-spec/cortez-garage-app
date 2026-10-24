@@ -34,7 +34,7 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(index,/style\.css\?v=20261024-2/);
-  assert.match(worker,/cortez-garage-v303-weekly-settlement-desktop/);
+  assert.match(worker,/cortez-garage-v304-payable-month-partner-history/);
 });
 
 test('lançamento semanal grava somente registros explícitos e não duplica comissão paga',async()=>{

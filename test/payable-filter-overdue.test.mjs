@@ -21,8 +21,11 @@ test('pesquisa combina descrição e categoria e atualiza total visível',()=>{
   assert.match(admin,/openTotal\+=Number\(row\.dataset\.payableRemaining/);
 });
 
-test('somente contas abertas com vencimento anterior a hoje recebem destaque',()=>{
-  assert.match(admin,/record\.status!==\'Realizado\'.*record\.dueDate.*<localDateOnly\(new Date\(\)\)/);
+test('status das contas a pagar considera o mês do vencimento',()=>{
+  assert.match(admin,/function payableMonthStatus/);
+  for(const label of ['Paga · Arquivada','mês anterior','mês vigente','mês futuro'])assert.ok(admin.includes(label));
+  assert.match(admin,/dueMonth<currentMonth/);
+  assert.match(admin,/dueMonth===currentMonth/);
   assert.match(admin,/payable-overdue/);
   assert.match(style,/\.payable-entry\.payable-overdue td\{background:/);
   assert.match(style,/box-shadow:inset 4px 0 #d93838/);
@@ -32,7 +35,7 @@ test('versões publicadas invalidam cache do módulo e do estilo',()=>{
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(index,/style\.css\?v=20261024-2/);
   assert.match(worker,/cortez-garage-v285-partner-week-isolation/);
-  assert.match(worker,/admin\.js\?v=20261024-2&w=34/);
+  assert.match(worker,/admin\.js\?v=20261024-2&w=35/);
   assert.match(worker,/style\.css\?v=20261024-2&w=19/);
 });
 
