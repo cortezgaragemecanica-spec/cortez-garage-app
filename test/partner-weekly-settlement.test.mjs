@@ -29,6 +29,14 @@ test('percentuais do lucro das peças podem ser definidos separadamente para cad
   assert.equal(row.commissions.Marcelino,140);
 });
 
+test('percentuais globais dos sócios substituem os campos individuais de todas as O.S.',()=>{
+  const drafts=new Map([['os-1',{rates:{Fabiano:1,Marcelino:1},partsRates:{Fabiano:1,Marcelino:1}}]]),[row]=weeklySettlementRows([event],'2026-10-19',drafts,{rates:{Fabiano:30,Marcelino:10},partsRates:{Fabiano:40,Marcelino:20}});
+  assert.deepEqual(row.rates,{Fabiano:30,Marcelino:10});
+  assert.deepEqual(row.partsRates,{Fabiano:40,Marcelino:20});
+  assert.deepEqual(row.commissionDetails.Fabiano,{other:120,parts:80,total:200});
+  assert.deepEqual(row.commissionDetails.Marcelino,{other:40,parts:40,total:80});
+});
+
 test('margem de reserva global reduz o lucro das peças antes das comissões',()=>{
   const[row]=weeklySettlementRows([event],'2026-10-19',new Map(),{reserveRate:25});
   assert.equal(row.partsProfitBeforeReserve,200);
