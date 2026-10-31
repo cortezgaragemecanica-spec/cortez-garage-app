@@ -2,7 +2,7 @@ import test from'node:test';
 import assert from'node:assert/strict';
 import{weeklySettlementRows,settlementTotals}from'../src/partner-weekly-settlement.js';
 
-const order={id:'os-1',number:'150',total:1000,vehicle:{plate:'ABC1D23'},budget:{parts:[{description:'Peça A',cost:100,quantity:2}],services:[{description:'Mão de obra',value:400,commissionRate:.5}]}};
+const order={id:'os-1',number:'150',total:1000,vehicle:{plate:'ABC1D23'},budget:{parts:[{description:'Peça A',cost:100,value:200,quantity:2}],services:[{description:'Mão de obra',value:400,commissionRate:.5}]}};
 const event={order,week:{start:'2026-10-19',end:'2026-10-24'},grossOrderValue:1000,orderValue:1000,partsCost:200,laborCommission:200,cardFee:0};
 
 test('acerto semanal lista O.S. recebida com peças, serviço líquido e comissão dos sócios',()=>{
@@ -12,8 +12,21 @@ test('acerto semanal lista O.S. recebida com peças, serviço líquido e comiss�
   assert.equal(row.totalCost,400);
   assert.equal(row.grossProfit,600);
   assert.equal(row.base,600);
+  assert.equal(row.commissionablePartsProfit,200);
+  assert.equal(row.otherBase,400);
+  assert.deepEqual(row.partsRates,{Fabiano:25,Marcelino:20});
   assert.equal(row.commissions.Fabiano,150);
   assert.equal(row.commissions.Marcelino,120);
+});
+
+test('percentuais do lucro das peças podem ser definidos separadamente para cada sócio',()=>{
+  const drafts=new Map([['os-1',{rates:{Fabiano:10,Marcelino:20},partsRates:{Fabiano:50,Marcelino:30}}]]),[row]=weeklySettlementRows([event],'2026-10-19',drafts);
+  assert.equal(row.commissionablePartsProfit,200);
+  assert.equal(row.otherBase,400);
+  assert.deepEqual(row.commissionDetails.Fabiano,{other:40,parts:100,total:140});
+  assert.deepEqual(row.commissionDetails.Marcelino,{other:80,parts:60,total:140});
+  assert.equal(row.commissions.Fabiano,140);
+  assert.equal(row.commissions.Marcelino,140);
 });
 
 test('custo de peça e percentuais podem ser alterados antes do lançamento',()=>{
@@ -33,6 +46,8 @@ test('integração reserva o lucro de peças e retífica fora das comissões dos
   assert.equal(row.grossProfit,550);
   assert.deepEqual(row.recovery,{parts:200,retifica:50,total:250});
   assert.equal(row.base,300);
+  assert.equal(row.commissionablePartsProfit,0);
+  assert.equal(row.otherBase,300);
   assert.equal(row.commissions.Fabiano,75);
   assert.equal(row.commissions.Marcelino,60);
 });
