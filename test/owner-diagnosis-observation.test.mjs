@@ -16,6 +16,6 @@ test('botão de diagnóstico fica visível, mas somente o proprietário abre o f
   assert.match(module,/if\(!owner\(\)\)return alert\('Solicite pelo grupo do WhatsApp Diagnóstico e Observações\.'\)/);
   assert.match(module,/_persistTextFields/);
   assert.match(html,/owner-diagnosis-observation\.js\?v=20261017-1/);
-  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
+  assert.match(worker,/cortez-garage-v306-weekly-settlement-pdf-list/);
   assert.match(worker,/owner-diagnosis-observation\.js\?v=20261017-1/);
 });

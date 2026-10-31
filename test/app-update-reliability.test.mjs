@@ -15,8 +15,8 @@ test('nova publicação força atualização no APK sem apagar dados da oficina'
   assert.match(boot,/location\.replace\(url\.href\)/);
   assert.match(index,/boot\.js\?v=20261017-2/);
   assert.match(worker,/boot\.js\?v=20261017-2/);
-  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
+  assert.match(worker,/cortez-garage-v306-weekly-settlement-pdf-list/);
   assert.match(worker,/clients\.matchAll\(\{type:'window'\}\)/);
-  assert.match(worker,/searchParams\.set\('release','20261031-1'\)/);
+  assert.match(worker,/searchParams\.set\('release','20261031-2'\)/);
   assert.match(worker,/client\.navigate\(url\.href\)/);
 });

@@ -34,11 +34,11 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(index,/style\.css\?v=20261024-2/);
-  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
+  assert.match(worker,/cortez-garage-v306-weekly-settlement-pdf-list/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
-  const[admin,style]=await Promise.all(['src/admin.js','src/style.css'].map(read));
+  const[admin,style,exporter]=await Promise.all(['src/admin.js','src/style.css','src/report-pdf-export.js'].map(read));
   assert.match(admin,/function partnerSettlementPdfContent\(\)/);
   assert.match(admin,/class="partner-settlement-pdf-list"/);
   assert.match(admin,/class="partner-settlement-pdf-row"/);
@@ -47,6 +47,11 @@ test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
   assert.match(style,/\.partner-settlement-pdf \.report-pdf-sheet[^}]*background:#fff!important/);
   assert.match(style,/\.partner-settlement-pdf-row\{[^}]*break-inside:avoid[^}]*background:#fff/);
   assert.match(style,/\.partner-settlement-pdf-details\{[^}]*grid-template-columns:1fr 1fr/);
+  assert.match(exporter,/settlement=container\.querySelector\('\.partner-settlement-pdf-content'\)/);
+  assert.match(exporter,/const drawSettlement=/);
+  assert.match(exporter,/if\(settlement\)\{drawSettlement\(\);return pages\}/);
+  assert.match(exporter,/ctx\.fillStyle='#eee'/);
+  assert.doesNotMatch(exporter,/if\(settlement\)[^}]*ctx\.fillRect\(MARGIN,50,CONTENT,118\)/);
 });
 
 test('lançamento semanal grava somente registros explícitos e não duplica comissão paga',async()=>{
