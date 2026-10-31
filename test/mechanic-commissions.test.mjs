@@ -646,7 +646,7 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/forma_pagamento:paymentType/);
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(worker,/supabase\.js\?v=20261024-1/);
-  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
+  assert.match(worker,/cortez-garage-v306-weekly-settlement-pdf-list/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -673,7 +673,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261024-2/);
   assert.match(index,/admin\.js\?v=20261024-2/);
-  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
+  assert.match(worker,/cortez-garage-v306-weekly-settlement-pdf-list/);
 });
 
 

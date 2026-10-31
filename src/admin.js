@@ -3,7 +3,7 @@ import{reconciledPartnerLedger,partnerEventKey,PARTNER_OPENING,activePartnerConf
 import{getCurrentUser,hasPermission,canManageLuizinhoNotes,readFinance,saveFinanceRecord,updateFinanceRecord,markFinanceDone,settlePayable,settleReceivable,payCommissions,savePartnerCommissionManualPayment,archivePartnerCommissionWeek,saveWeeklyPartnerSettlement,deleteFinanceRecord,readMechanics,saveMechanic,setMechanicActive,readUserAccess,createManagedUser,updateManagedUser,readUserUsage,readPartnerCommissionRates,savePartnerCommissionRates,readFinancialRecoveryConfig,saveFinancialRecoveryConfig,readCostPlans,saveCostPlan,readStock,readSupplierSettlements,saveSupplierSettlement,updateSupplierSettlement,deleteSupplierSettlement,saveLuizinhoNote,updateLuizinhoNote,setLuizinhoNoteChecked,deleteLuizinhoNote,createOperationalBackup,restoreOperationalBackup,readMechanicCommissionConfirmations,reconcileLuizinhoPayables}from'./supabase.js?v=20261021-1';
 import{getSyncConfig}from'./sync.js';
 import{allocateLuizinhoPayments,isLuizinhoPaymentDescription,luizinhoPaymentWeek}from'./luizinho-payment.js?v=20260923-1';
-import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
+import{exportReportPdf}from'./report-pdf-export.js?v=20261031-1';
 import{appliedMechanicAdvanceRows,mechanicAdvanceRows,normalizeCommissionText}from'./mechanic-advances.js?v=20260925-2';
 import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261002-1';
 import{hasSaturdaySchedule,mechanicCommissionWeekEnd,mechanicCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-2';
