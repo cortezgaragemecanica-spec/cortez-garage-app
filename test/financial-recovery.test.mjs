@@ -42,9 +42,12 @@ test('interface de recuperação financeira é exclusiva do proprietário',async
   assert.match(admin,/recoveryButton=financeOwner\(\)\?'<button data-finance-area="Recuperação financeira"/);
   assert.match(admin,/\['Acerto semanal','Recuperação financeira'\]\.includes\(area\)&&!financeOwner\(\)/);
   for(const label of['Caixa de peças','Caixa da retífica','Peças por O.S. e fornecedor','Itens de retífica'])assert.ok(admin.includes(label));
-  for(const label of['Data de início','Implementar nas comissões','Registrar saída','Saídas dos caixas'])assert.ok(admin.includes(label));
+  for(const label of['Data de início','Implementar nas comissões','Cancelar implementação nas comissões','Registrar saída','Saídas dos caixas'])assert.ok(admin.includes(label));
   assert.match(admin,/saveFinancialRecoveryConfig/);
   assert.match(admin,/commissionIntegration:financialRecoveryConfig\.commissionIntegration/);
+  assert.match(admin,/id="cancelRecoveryCommissionIntegration"/);
+  assert.match(admin,/commissionIntegration:false/);
+  assert.match(admin,/Comissões já lançadas ou pagas não serão alteradas/);
   assert.match(worker,/financial-recovery\.js\?v=20261020-2/);
   assert.match(help,/Recuperação financeira:<\/b> área exclusiva do proprietário/);
 });

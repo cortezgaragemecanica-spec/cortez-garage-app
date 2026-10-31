@@ -59,5 +59,5 @@ test('agenda e banco aplicam sábado somente a Gustavo e Tony',async()=>{
   assert.match(sql,/periodo_segunda_sabado/);
   assert.match(sql,/Sábado é exclusivo das agendas de Gustavo e Tony/);
   assert.match(index,/agenda\.js\?v=20261003-2/);
-  assert.match(worker,/cortez-garage-v306-weekly-settlement-pdf-list/);
+  assert.match(worker,/cortez-garage-v307-cancel-recovery-commissions/);
 });
