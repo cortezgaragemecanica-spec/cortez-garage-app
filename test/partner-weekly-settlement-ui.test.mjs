@@ -17,8 +17,12 @@ test('acerto semanal é exclusivo do proprietário e substitui o cálculo autom�
   assert.match(admin,/partner-settlement-breakdown/);
   assert.match(admin,/Total recebido/);
   assert.doesNotMatch(admin,/partner-settlement-table/);
-  assert.match(admin,/data-launch-partner="Fabiano"/);
-  assert.match(admin,/data-launch-partner="Marcelino"/);
+  assert.match(admin,/data-launch-partner="\$\{partner\}"/);
+  assert.match(admin,/launchCard\('Fabiano'\)/);
+  assert.match(admin,/launchCard\('Marcelino'\)/);
+  assert.match(admin,/data-cancel-partner="\$\{partner\}"/);
+  assert.match(admin,/cancelWeeklyPartnerSettlement/);
+  assert.match(admin,/Comissões já pagas não serão alteradas/);
   assert.match(admin,/data-settlement-parts-rate/);
   assert.match(admin,/Lucro das peças/);
   assert.match(admin,/partsRates:row\.partsRates/);
@@ -35,9 +39,9 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.partner-settlement-order footer\{[^}]*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-2/);
+  assert.match(index,/admin\.js\?v=20261031-3/);
   assert.match(index,/style\.css\?v=20261031-1/);
-  assert.match(worker,/cortez-garage-v309-partner-rates-pdf/);
+  assert.match(worker,/cortez-garage-v310-cancel-partner-settlement/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
@@ -76,6 +80,19 @@ test('lançamento semanal grava somente registros explícitos e não duplica com
   assert.match(block,/partsRate/);
   assert.match(block,/peças/);
   assert.doesNotMatch(block,/method:'DELETE'/);
+});
+
+test('cancelamento do acerto remove somente comissões pendentes da semana vigente',async()=>{
+  const supabase=await read('src/supabase.js');
+  const start=supabase.indexOf('export async function cancelWeeklyPartnerSettlement'),end=supabase.indexOf('\nexport ',start+20),block=supabase.slice(start,end);
+  assert.match(block,/Somente o proprietário pode cancelar/);
+  assert.match(block,/weekStart!==partnerCommissionWeekStart\(\)/);
+  assert.match(block,/row\.status==='Pendente'/);
+  assert.match(block,/startsWith\(prefix\)/);
+  assert.match(block,/id=eq\.\$\{encodeURIComponent\(row\.id\)\}&status=eq\.Pendente/);
+  assert.match(block,/method:'DELETE'/);
+  assert.match(block,/prefer:'return=representation'/);
+  assert.doesNotMatch(block,/status==='Realizado'.*method:'DELETE'/);
 });
 
 test('fechamento mensal usa apenas as comissões lançadas no novo acerto',async()=>{
