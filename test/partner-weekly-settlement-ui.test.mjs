@@ -50,13 +50,14 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.settlement-partner-result\{[^}]*display:grid/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-5/);
+  assert.match(index,/admin\.js\?v=20261031-6/);
   assert.match(index,/style\.css\?v=20261031-3/);
-  assert.match(worker,/cortez-garage-v312-global-partner-rates/);
+  assert.match(worker,/cortez-garage-v313-hide-partner-rates-output/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
   const[admin,style,exporter]=await Promise.all(['src/admin.js','src/style.css','src/report-pdf-export.js'].map(read));
+  const pdfStart=admin.indexOf('function partnerSettlementPdfContent'),pdfEnd=admin.indexOf('\nfunction ',pdfStart+20),pdfBlock=admin.slice(pdfStart,pdfEnd);
   assert.match(admin,/function partnerSettlementPdfContent\(\)/);
   assert.match(admin,/class="partner-settlement-pdf-list"/);
   assert.match(admin,/class="partner-settlement-pdf-row"/);
@@ -67,8 +68,12 @@ test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
   assert.match(style,/\.partner-settlement-pdf-details\{[^}]*grid-template-columns:1fr 1fr/);
   assert.match(exporter,/settlement=container\.querySelector\('\.partner-settlement-pdf-content'\)/);
   assert.match(exporter,/const drawSettlement=/);
-  assert.match(admin,/Fabiano · geral \$\{row\.rates\.Fabiano\.toFixed\(2\)\}% · peças \$\{row\.partsRates\.Fabiano\.toFixed\(2\)\}%/);
-  assert.match(admin,/Marcelino · geral \$\{row\.rates\.Marcelino\.toFixed\(2\)\}% · peças \$\{row\.partsRates\.Marcelino\.toFixed\(2\)\}%/);
+  assert.doesNotMatch(admin,/Fabiano · geral \$\{row\.rates\.Fabiano\.toFixed\(2\)\}%/);
+  assert.doesNotMatch(admin,/Marcelino · geral \$\{row\.rates\.Marcelino\.toFixed\(2\)\}%/);
+  assert.doesNotMatch(admin,/Demais lucros \$\{row\.rates\[partner\]\.toFixed\(2\)\}%/);
+  assert.match(admin,/Comissão sobre demais lucros:/);
+  assert.match(admin,/comissão sobre peças:/);
+  assert.doesNotMatch(pdfBlock,/row\.rates|row\.partsRates/);
   assert.match(exporter,/details\.forEach\(detail=>line\('Detalhamento',detail\)\)/);
   assert.match(exporter,/querySelector\('span'\)\?\.textContent/);
   assert.match(exporter,/if\(settlement\)\{drawSettlement\(\);return pages\}/);
