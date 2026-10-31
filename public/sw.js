@@ -1,10 +1,10 @@
-// Permite cancelar e relançar as comissões pendentes dos sócios.
-const CACHE='cortez-garage-v310-cancel-partner-settlement';
+// Aplica margem de reserva ao lucro das peças no acerto semanal.
+const CACHE='cortez-garage-v311-weekly-reserve-margin';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20261031-1&w=21',
+  './src/style.css?v=20261031-2&w=22',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20261017-2',
@@ -26,7 +26,7 @@ const SHELL=[
   './src/shopping.js?v=20261024-1',
   './src/shopping-checklist-data.js?v=20261023-8',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261031-3&w=41',
+  './src/admin.js?v=20261031-4&w=42',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -38,7 +38,7 @@ const SHELL=[
   './src/help.js?v=20261024-1',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261031-2',
+  './src/supabase.js?v=20261031-3',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/financial-recovery.js?v=20261020-2',
@@ -61,8 +61,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261031-6')return null;
-    url.searchParams.set('release','20261031-6');
+    if(url.searchParams.get('release')==='20261031-7')return null;
+    url.searchParams.set('release','20261031-7');
     return client.navigate(url.href);
   }));
 })()));

@@ -25,6 +25,10 @@ test('acerto semanal é exclusivo do proprietário e substitui o cálculo autom�
   assert.match(admin,/Comissões já pagas não serão alteradas/);
   assert.match(admin,/data-settlement-parts-rate/);
   assert.match(admin,/Lucro das peças/);
+  assert.match(admin,/id="partnerSettlementReserveRate"/);
+  assert.match(admin,/Margem de reserva sobre o lucro das peças/);
+  assert.match(admin,/reserveRate:partnerSettlementReserveRate/);
+  assert.match(admin,/reserveAmount:row\.reserveAmount/);
   assert.match(admin,/partsRates:row\.partsRates/);
   assert.match(admin,/partners:\[partner\]/);
   assert.match(admin,/saveWeeklyPartnerSettlement/);
@@ -37,11 +41,12 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(admin,/class="partner-settlement-breakdown"/);
   assert.match(style,/\.partner-settlement-breakdown\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(style,/\.partner-settlement-order footer\{[^}]*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(style,/\.partner-settlement-controls\{[^}]*grid-template-columns:/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-3/);
-  assert.match(index,/style\.css\?v=20261031-1/);
-  assert.match(worker,/cortez-garage-v310-cancel-partner-settlement/);
+  assert.match(index,/admin\.js\?v=20261031-4/);
+  assert.match(index,/style\.css\?v=20261031-2/);
+  assert.match(worker,/cortez-garage-v311-weekly-reserve-margin/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
@@ -79,6 +84,9 @@ test('lançamento semanal grava somente registros explícitos e não duplica com
   assert.match(block,/method:'POST'/);
   assert.match(block,/partsRate/);
   assert.match(block,/peças/);
+  assert.match(block,/reserveRate/);
+  assert.match(block,/reserveAmount/);
+  assert.match(block,/reserva/);
   assert.doesNotMatch(block,/method:'DELETE'/);
 });
 

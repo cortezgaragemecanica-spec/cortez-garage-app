@@ -29,6 +29,19 @@ test('percentuais do lucro das peças podem ser definidos separadamente para cad
   assert.equal(row.commissions.Marcelino,140);
 });
 
+test('margem de reserva global reduz o lucro das peças antes das comissões',()=>{
+  const[row]=weeklySettlementRows([event],'2026-10-19',new Map(),{reserveRate:25});
+  assert.equal(row.partsProfitBeforeReserve,200);
+  assert.equal(row.reserveRate,25);
+  assert.equal(row.reserveAmount,50);
+  assert.equal(row.commissionablePartsProfit,150);
+  assert.equal(row.baseBeforeReserve,600);
+  assert.equal(row.base,550);
+  assert.equal(row.otherBase,400);
+  assert.equal(row.commissions.Fabiano,137.5);
+  assert.equal(row.commissions.Marcelino,110);
+});
+
 test('custo de peça e percentuais podem ser alterados antes do lançamento',()=>{
   const drafts=new Map([['os-1',{partCosts:{'Peça A':250},rates:{Fabiano:30,Marcelino:10}}]]),[row]=weeklySettlementRows([event],'2026-10-19',drafts);
   assert.equal(row.partsCost,250);
@@ -37,7 +50,7 @@ test('custo de peça e percentuais podem ser alterados antes do lançamento',()=
   assert.equal(row.base,550);
   assert.equal(row.commissions.Fabiano,165);
   assert.equal(row.commissions.Marcelino,55);
-  assert.deepEqual(settlementTotals([row]),{received:1000,parts:250,services:200,cost:450,base:550,Fabiano:165,Marcelino:55});
+  assert.deepEqual(settlementTotals([row]),{received:1000,parts:250,services:200,cost:450,gross:550,partsProfit:150,reserve:0,base:550,Fabiano:165,Marcelino:55});
 });
 
 test('integração reserva o lucro de peças e retífica fora das comissões dos sócios',()=>{
