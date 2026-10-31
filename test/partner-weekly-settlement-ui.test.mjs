@@ -35,9 +35,9 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.partner-settlement-order footer\{[^}]*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-1/);
+  assert.match(index,/admin\.js\?v=20261031-2/);
   assert.match(index,/style\.css\?v=20261031-1/);
-  assert.match(worker,/cortez-garage-v308-partner-parts-commission/);
+  assert.match(worker,/cortez-garage-v309-partner-rates-pdf/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
@@ -52,6 +52,10 @@ test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
   assert.match(style,/\.partner-settlement-pdf-details\{[^}]*grid-template-columns:1fr 1fr/);
   assert.match(exporter,/settlement=container\.querySelector\('\.partner-settlement-pdf-content'\)/);
   assert.match(exporter,/const drawSettlement=/);
+  assert.match(admin,/Fabiano · geral \$\{row\.rates\.Fabiano\.toFixed\(2\)\}% · peças \$\{row\.partsRates\.Fabiano\.toFixed\(2\)\}%/);
+  assert.match(admin,/Marcelino · geral \$\{row\.rates\.Marcelino\.toFixed\(2\)\}% · peças \$\{row\.partsRates\.Marcelino\.toFixed\(2\)\}%/);
+  assert.match(exporter,/details\.forEach\(detail=>line\('Detalhamento',detail\)\)/);
+  assert.match(exporter,/querySelector\('span'\)\?\.textContent/);
   assert.match(exporter,/if\(settlement\)\{drawSettlement\(\);return pages\}/);
   assert.match(exporter,/ctx\.fillStyle='#eee'/);
   assert.doesNotMatch(exporter,/if\(settlement\)[^}]*ctx\.fillRect\(MARGIN,50,CONTENT,118\)/);
