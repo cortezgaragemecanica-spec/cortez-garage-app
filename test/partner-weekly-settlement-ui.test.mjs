@@ -19,6 +19,9 @@ test('acerto semanal é exclusivo do proprietário e substitui o cálculo autom�
   assert.doesNotMatch(admin,/partner-settlement-table/);
   assert.match(admin,/data-launch-partner="Fabiano"/);
   assert.match(admin,/data-launch-partner="Marcelino"/);
+  assert.match(admin,/data-settlement-parts-rate/);
+  assert.match(admin,/Lucro das peças/);
+  assert.match(admin,/partsRates:row\.partsRates/);
   assert.match(admin,/partners:\[partner\]/);
   assert.match(admin,/saveWeeklyPartnerSettlement/);
   assert.doesNotMatch(admin,/if\(await rolloverExpiredPartnerCommissions\(\)\)/);
@@ -32,9 +35,9 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.partner-settlement-order footer\{[^}]*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261024-2/);
-  assert.match(index,/style\.css\?v=20261024-2/);
-  assert.match(worker,/cortez-garage-v307-cancel-recovery-commissions/);
+  assert.match(index,/admin\.js\?v=20261031-1/);
+  assert.match(index,/style\.css\?v=20261031-1/);
+  assert.match(worker,/cortez-garage-v308-partner-parts-commission/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
@@ -66,6 +69,8 @@ test('lançamento semanal grava somente registros explícitos e não duplica com
   assert.match(block,/if\(existing\)await request/);
   assert.match(block,/method:'PATCH'/);
   assert.match(block,/method:'POST'/);
+  assert.match(block,/partsRate/);
+  assert.match(block,/peças/);
   assert.doesNotMatch(block,/method:'DELETE'/);
 });
 
