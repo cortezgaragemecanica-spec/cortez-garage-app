@@ -17,17 +17,18 @@ test('cartão do balanço é acessível por clique e teclado',()=>{
 
 test('detalhamento apresenta todos os componentes da fórmula',()=>{
   assert.match(admin,/function openBalanceDetails\(\)/);
-  for(const label of ['Banco do Brasil','Mercado Livre','Dinheiro','Contas a receber · O.S. prontas','Contas a pagar vencidas ou desta semana','Comissões da equipe','Comissões dos sócios','Balanço atual'])assert.ok(admin.includes(label));
+  for(const label of ['Banco do Brasil','Mercado Livre','Dinheiro','Contas a receber · O.S. prontas','Contas a pagar vencidas ou do mês vigente','Comissões da equipe','Comissões dos sócios','Balanço atual'])assert.ok(admin.includes(label));
   assert.match(admin,/money\(total\.balanceSheet\)/);
   assert.match(admin,/items\.map/);
 });
 
-test('acerto Luizinho da semana vigente entra no balanço antes do vencimento',()=>{
-  const start=admin.indexOf('function balancePayableWindow('),end=admin.indexOf('function totals()',start),context=vm.createContext({localDateOnly:value=>String(value).slice(0,10),workWeek:()=>({start:'2026-09-21',end:'2026-09-25'}),Date});
-  const payable=vm.runInContext(`${admin.slice(start,end)};payableForBalance`,context),record=(week,dueDate='2026-09-28')=>({category:'Conta a pagar',status:'Pendente',dueDate,reference:`acerto-luizinho-${week}`});
-  assert.equal(payable(record('2026-09-21')),true);
-  assert.equal(payable(record('2026-09-14')),true);
-  assert.equal(payable(record('2026-09-28')),false);
+test('contas a pagar vencidas e do mês vigente entram no balanço',()=>{
+  const start=admin.indexOf('function payableForBalance('),end=admin.indexOf('function totals()',start),context=vm.createContext({localDateOnly:value=>String(value).slice(0,10),Date});
+  const payable=vm.runInContext(`${admin.slice(start,end)};payableForBalance`,context),record=dueDate=>({category:'Conta a pagar',status:'Pendente',dueDate});
+  assert.equal(payable(record('2026-09-01'),'2026-10-24'),true);
+  assert.equal(payable(record('2026-10-31'),'2026-10-24'),true);
+  assert.equal(payable(record('2026-11-01'),'2026-10-24'),false);
+  assert.equal(payable({...record('2026-10-20'),status:'Realizado'},'2026-10-24'),false);
 });
 
 test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
@@ -40,8 +41,8 @@ test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
 test('publicação invalida os caches do módulo e do estilo',()=>{
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(index,/style\.css\?v=20261024-2/);
-  assert.match(worker,/cortez-garage-v304-payable-month-partner-history/);
-  assert.match(worker,/admin\.js\?v=20261024-2&w=35/);
-  assert.match(worker,/style\.css\?v=20261024-2&w=19/);
+  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
+  assert.match(worker,/admin\.js\?v=20261024-2&w=36/);
+  assert.match(worker,/style\.css\?v=20261024-2&w=20/);
 });
 

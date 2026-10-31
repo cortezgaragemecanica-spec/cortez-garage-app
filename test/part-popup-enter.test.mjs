@@ -15,6 +15,6 @@ test('Enter avança os campos visíveis e inclui a peça no último campo',async
   assert.match(budget,/modal\.querySelector\('#includePart'\)\.click\(\)/);
   assert.match(html,/budget-order\.js\?v=20261017-1/);
   assert.match(worker,/budget-order\.js\?v=20261017-1/);
-  assert.match(worker,/cortez-garage-v304-payable-month-partner-history/);
+  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
 });
 

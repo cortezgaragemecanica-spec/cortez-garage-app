@@ -34,7 +34,19 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(index,/style\.css\?v=20261024-2/);
-  assert.match(worker,/cortez-garage-v304-payable-month-partner-history/);
+  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
+});
+
+test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
+  const[admin,style]=await Promise.all(['src/admin.js','src/style.css'].map(read));
+  assert.match(admin,/function partnerSettlementPdfContent\(\)/);
+  assert.match(admin,/class="partner-settlement-pdf-list"/);
+  assert.match(admin,/class="partner-settlement-pdf-row"/);
+  assert.match(admin,/settlement=area==='Acerto semanal'/);
+  assert.match(admin,/settlement\?partnerSettlementPdfContent\(\):content\.innerHTML/);
+  assert.match(style,/\.partner-settlement-pdf \.report-pdf-sheet[^}]*background:#fff!important/);
+  assert.match(style,/\.partner-settlement-pdf-row\{[^}]*break-inside:avoid[^}]*background:#fff/);
+  assert.match(style,/\.partner-settlement-pdf-details\{[^}]*grid-template-columns:1fr 1fr/);
 });
 
 test('lançamento semanal grava somente registros explícitos e não duplica comissão paga',async()=>{

@@ -518,7 +518,7 @@ test('botão de solicitar orçamento de serviços aparece em azul',async()=>{
   const [style,index,worker]=await Promise.all([read('src/style.css'),read('index.html'),read('public/sw.js')]);
   assert.match(style,/#requestServiceQuote\{[^}]*background:#1764c8;[^}]*color:#fff/);
   assert.match(index,/style\.css\?v=20261024-2/);
-  assert.match(worker,/style\.css\?v=20261024-2&w=19/);
+  assert.match(worker,/style\.css\?v=20261024-2&w=20/);
 
 });
 
@@ -579,7 +579,7 @@ test('solicitações de serviços e peças ocupam a tela inteira no computador',
   assert.match(style,/\.service-quote-modal>\.check-popup-card\{[^}]*width:100%[^}]*height:calc\(100dvh - 28px\)[^}]*max-height:none/);
   assert.match(style,/\.service-quote-owner-list[^}]*flex:1[^}]*overflow:auto/);
   assert.match(index,/style\.css\?v=20261024-2/);
-  assert.match(worker,/style\.css\?v=20261024-2&w=19/);
+  assert.match(worker,/style\.css\?v=20261024-2&w=20/);
 
 });
 
@@ -646,7 +646,7 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/forma_pagamento:paymentType/);
   assert.match(index,/admin\.js\?v=20261024-2/);
   assert.match(worker,/supabase\.js\?v=20261024-1/);
-  assert.match(worker,/cortez-garage-v304-payable-month-partner-history/);
+  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -673,7 +673,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261024-2/);
   assert.match(index,/admin\.js\?v=20261024-2/);
-  assert.match(worker,/cortez-garage-v304-payable-month-partner-history/);
+  assert.match(worker,/cortez-garage-v305-payables-month-settlement-pdf/);
 });
 
 
