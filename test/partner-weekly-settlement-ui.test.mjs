@@ -23,7 +23,11 @@ test('acerto semanal é exclusivo do proprietário e substitui o cálculo autom�
   assert.match(admin,/data-cancel-partner="\$\{partner\}"/);
   assert.match(admin,/cancelWeeklyPartnerSettlement/);
   assert.match(admin,/Comissões já pagas não serão alteradas/);
-  assert.match(admin,/data-settlement-parts-rate/);
+  assert.match(admin,/data-global-settlement-rate/);
+  assert.match(admin,/data-global-settlement-parts-rate/);
+  assert.match(admin,/PERCENTUAIS PARA TODAS AS O\.S\./);
+  assert.doesNotMatch(admin,/data-settlement-rate data-order-id/);
+  assert.doesNotMatch(admin,/data-settlement-parts-rate data-order-id/);
   assert.match(admin,/Lucro das peças/);
   assert.match(admin,/id="partnerSettlementReserveRate"/);
   assert.match(admin,/Margem de reserva sobre o lucro das peças/);
@@ -42,11 +46,13 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.partner-settlement-breakdown\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(style,/\.partner-settlement-order footer\{[^}]*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(style,/\.partner-settlement-controls\{[^}]*grid-template-columns:/);
+  assert.match(style,/\.partner-settlement-global-rates\{[^}]*grid-column:1\/-1/);
+  assert.match(style,/\.settlement-partner-result\{[^}]*display:grid/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-4/);
-  assert.match(index,/style\.css\?v=20261031-2/);
-  assert.match(worker,/cortez-garage-v311-weekly-reserve-margin/);
+  assert.match(index,/admin\.js\?v=20261031-5/);
+  assert.match(index,/style\.css\?v=20261031-3/);
+  assert.match(worker,/cortez-garage-v312-global-partner-rates/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{

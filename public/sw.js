@@ -1,10 +1,10 @@
-// Aplica margem de reserva ao lucro das peças no acerto semanal.
-const CACHE='cortez-garage-v311-weekly-reserve-margin';
+// Centraliza os percentuais dos sócios para todas as O.S. do acerto.
+const CACHE='cortez-garage-v312-global-partner-rates';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20261031-2&w=22',
+  './src/style.css?v=20261031-3&w=23',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20261017-2',
@@ -26,7 +26,7 @@ const SHELL=[
   './src/shopping.js?v=20261024-1',
   './src/shopping-checklist-data.js?v=20261023-8',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261031-4&w=42',
+  './src/admin.js?v=20261031-5&w=43',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -61,8 +61,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261031-7')return null;
-    url.searchParams.set('release','20261031-7');
+    if(url.searchParams.get('release')==='20261031-8')return null;
+    url.searchParams.set('release','20261031-8');
     return client.navigate(url.href);
   }));
 })()));
