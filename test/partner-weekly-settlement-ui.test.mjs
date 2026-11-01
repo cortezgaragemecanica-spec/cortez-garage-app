@@ -50,9 +50,9 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.settlement-partner-result\{[^}]*display:grid/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-6/);
-  assert.match(index,/style\.css\?v=20261031-3/);
-  assert.match(worker,/cortez-garage-v313-hide-partner-rates-output/);
+  assert.match(index,/admin\.js\?v=20261031-7/);
+  assert.match(index,/style\.css\?v=20261031-4/);
+  assert.match(worker,/cortez-garage-v314-archive-weekly-settlement/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
@@ -112,6 +112,22 @@ test('cancelamento do acerto remove somente comissões pendentes da semana vigen
   assert.match(block,/method:'DELETE'/);
   assert.match(block,/prefer:'return=representation'/);
   assert.doesNotMatch(block,/status==='Realizado'.*method:'DELETE'/);
+});
+
+test('acerto é arquivado quando os dois sócios foram lançados e pode ser consultado',async()=>{
+  const[admin,style]=await Promise.all(['src/admin.js','src/style.css'].map(read));
+  assert.match(admin,/const PARTNER_SETTLEMENT_PARTNERS=\['Fabiano','Marcelino'\]/);
+  assert.match(admin,/partnerSettlementWeekArchived=weekStart=>PARTNER_SETTLEMENT_PARTNERS\.every/);
+  assert.match(admin,/partnerSettlementWeekRecords\(weekStart\)\.some\(record=>record\.mechanic===partner\)/);
+  assert.match(admin,/if\(partnerSettlementWeekArchived\(week\.start\)\)return partnerSettlementArchivedHtml\(week\)/);
+  assert.match(admin,/id="partnerSettlementArchiveWeek"/);
+  assert.match(admin,/ACERTO ARQUIVADO/);
+  assert.match(admin,/Semana arquivada/);
+  assert.match(admin,/O acerto da semana foi arquivado/);
+  assert.match(admin,/O acerto foi reaberto para correção e novo lançamento/);
+  assert.match(admin,/function partnerSettlementArchivedPdfContent\(week\)/);
+  assert.match(style,/\.partner-settlement-archive-banner\{/);
+  assert.match(style,/\.partner-settlement-archive-list\{/);
 });
 
 test('fechamento mensal usa apenas as comissões lançadas no novo acerto',async()=>{
