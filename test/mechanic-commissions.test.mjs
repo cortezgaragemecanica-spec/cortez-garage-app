@@ -497,7 +497,7 @@ test('proprietário e Gustavo precificam a solicitação e enviam os serviços p
   assert.match(index,/style\.css\?v=20261031-6/);
   assert.match(index,/budget-order\.js\?v=20261017-1/);
   assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
-  assert.match(worker,/boot\.js\?v=20261101-3/);
+  assert.match(worker,/boot\.js\?v=20261101-4/);
 
 });
 
@@ -534,7 +534,7 @@ test('proprietário e Gustavo administram solicitações de orçamento de servi�
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
   assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
-  assert.match(worker,/boot\.js\?v=20261101-3/);
+  assert.match(worker,/boot\.js\?v=20261101-4/);
 
 });
 
@@ -609,7 +609,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
   assert.match(index,/admin\.js\?v=20261101-1/);
   assert.match(index,/reports\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261101-3/);
+  assert.match(worker,/boot\.js\?v=20261101-4/);
 
 });
 
@@ -646,7 +646,7 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/forma_pagamento:paymentType/);
   assert.match(index,/admin\.js\?v=20261101-1/);
   assert.match(worker,/supabase\.js\?v=20261101-3/);
-  assert.match(worker,/cortez-garage-v320-gustavo-no-finance/);
+  assert.match(worker,/cortez-garage-v321-open-fix/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -673,7 +673,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261031-6/);
   assert.match(index,/admin\.js\?v=20261101-1/);
-  assert.match(worker,/cortez-garage-v320-gustavo-no-finance/);
+  assert.match(worker,/cortez-garage-v321-open-fix/);
 });
 
 

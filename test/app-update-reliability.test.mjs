@@ -4,22 +4,18 @@ import{readFile}from'node:fs/promises';
 
 const read=file=>readFile(new URL(`../${file}`,import.meta.url),'utf8');
 
-test('nova publicação força atualização no APK sem apagar dados da oficina',async()=>{
+test('nova publicação atualiza sem prender navegador ou atalho em recarregamentos',async()=>{
   const[boot,index,worker]=await Promise.all([read('src/boot.js'),read('index.html'),read('public/sw.js')]);
-  assert.match(boot,/const RELEASE='20261101-3'/);
+  assert.match(boot,/const RELEASE='20261101-4'/);
   assert.match(boot,/localStorage\.setItem\(RELEASE_KEY,RELEASE\)/);
   assert.doesNotMatch(boot,/localStorage\.clear\(\)/);
-  assert.match(boot,/caches\.keys\(\).*caches\.delete/s);
-  assert.match(boot,/getRegistrations.*unregister/s);
   assert.match(boot,/url\.searchParams\.set\('release',RELEASE\)/);
-  assert.match(boot,/location\.replace\(url\.href\)/);
-  assert.match(index,/boot\.js\?v=20261101-3/);
-  assert.match(worker,/boot\.js\?v=20261101-3/);
-  assert.match(worker,/cortez-garage-v320-gustavo-no-finance/);
-  assert.match(worker,/clients\.matchAll\(\{type:'window'\}\)/);
-  assert.match(worker,/searchParams\.set\('release','20261101-3'\)/);
-  assert.match(worker,/client\.navigate\(url\.href\)/);
-  assert.match(boot,/Promise\.race\(\[Promise\.allSettled\(tasks\),wait\(2500\)\]\)/);
-  assert.doesNotMatch(boot,/await new Promise\(\(\)=>\{\}\)/);
+  assert.match(boot,/history\.replaceState\(history\.state,'',url\.href\)/);
+  assert.doesNotMatch(boot,/location\.replace/);
+  assert.doesNotMatch(boot,/getRegistrations|unregister|caches\.delete/);
+  assert.match(index,/boot\.js\?v=20261101-4/);
+  assert.match(worker,/boot\.js\?v=20261101-4/);
+  assert.match(worker,/cortez-garage-v321-open-fix/);
+  assert.doesNotMatch(worker,/client\.navigate|clients\.matchAll/);
   assert.match(boot,/mainUrl\.searchParams\.set\('release',RELEASE\)/);
 });

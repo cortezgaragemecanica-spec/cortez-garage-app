@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v320-gustavo-no-finance';
+const CACHE='cortez-garage-v321-open-fix';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -7,7 +7,7 @@ const SHELL=[
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261101-3',
+  './src/boot.js?v=20261101-4',
   './src/main.js?v=20261017-1&w=25',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261017-1',
@@ -58,13 +58,6 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const keys=await caches.keys();
   await Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)));
   await self.clients.claim();
-  const windows=await self.clients.matchAll({type:'window'});
-  await Promise.all(windows.map(client=>{
-    const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261101-3')return null;
-    url.searchParams.set('release','20261101-3');
-    return client.navigate(url.href);
-  }));
 })()));
 
 self.addEventListener('fetch',event=>{

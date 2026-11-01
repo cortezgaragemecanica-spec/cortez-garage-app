@@ -1,19 +1,11 @@
-const RELEASE='20261101-3';
+const RELEASE='20261101-4';
 const RELEASE_KEY='cortez-web-release';
-const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
-const activateRelease=async()=>{
-  if(localStorage.getItem(RELEASE_KEY)===RELEASE)return;
-  localStorage.setItem(RELEASE_KEY,RELEASE);
-  const tasks=[];
-  if(window.caches?.keys)tasks.push(caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))));
-  if(navigator.serviceWorker?.getRegistrations)tasks.push(navigator.serviceWorker.getRegistrations().then(items=>Promise.all(items.map(item=>item.unregister()))));
-  await Promise.race([Promise.allSettled(tasks),wait(2500)]);
-  const url=new URL(location.href);url.searchParams.set('release',RELEASE);location.replace(url.href);
-  // Um atalho instalado pode demorar para concluir a navegação. O núcleo segue
-  // depois deste intervalo para a tela nunca ficar presa no carregamento.
-  await wait(600);
+const activateRelease=()=>{
+  try{localStorage.setItem(RELEASE_KEY,RELEASE)}catch(error){console.warn('Não foi possível registrar a versão localmente:',error)}
+  const url=new URL(location.href);
+  if(url.searchParams.get('release')!==RELEASE){url.searchParams.set('release',RELEASE);history.replaceState(history.state,'',url.href)}
 };
-await activateRelease();
+activateRelease();
 
 const loadModules=async(names,label)=>{
   const results=await Promise.allSettled(names.map(name=>import(name)));
