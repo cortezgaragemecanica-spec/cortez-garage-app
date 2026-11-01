@@ -1,4 +1,4 @@
-const RELEASE='20261101-2';
+const RELEASE='20261101-3';
 const RELEASE_KEY='cortez-web-release';
 const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
 const activateRelease=async()=>{
