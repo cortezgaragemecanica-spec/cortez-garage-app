@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v325-mobile-responsive';
+const CACHE='cortez-garage-v326-mobile-responsive';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -7,13 +7,13 @@ const SHELL=[
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261101-8',
-  './src/main.js?v=20261017-1&w=25',
+  './src/boot.js?v=20261101-9',
+  './src/main.js?v=20261101-2&w=26',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261017-1',
   './src/pdf-order.js?v=20261017-1',
   './src/owner-diagnosis-observation.js?v=20261031-1',
-  './src/order-workflow.js?v=20261101-3',
+  './src/order-workflow.js?v=20261101-4',
   './src/order-stock-links.js?v=20261008-1',
   './src/order-status.js?v=20261009-3',
   './src/delete-order.js?v=20260905-1',
@@ -38,7 +38,7 @@ const SHELL=[
   './src/help.js?v=20261031-2',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261101-3',
+  './src/supabase.js?v=20261101-4',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/financial-recovery.js?v=20261020-2',
@@ -53,7 +53,7 @@ const CORE=SHELL.filter(path=>[
   './',
   './index.html',
   './src/style.css?v=20261031-6&w=26',
-  './src/boot.js?v=20261101-8',
+  './src/boot.js?v=20261101-9',
   './official-logo.png',
   './icons/icon-192.png'
 ].includes(path));
