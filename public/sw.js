@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v324-mobile-responsive';
+const CACHE='cortez-garage-v325-mobile-responsive';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -7,7 +7,7 @@ const SHELL=[
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261101-7',
+  './src/boot.js?v=20261101-8',
   './src/main.js?v=20261017-1&w=25',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261017-1',
@@ -49,9 +49,17 @@ const SHELL=[
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
+const CORE=SHELL.filter(path=>[
+  './',
+  './index.html',
+  './src/style.css?v=20261031-6&w=26',
+  './src/boot.js?v=20261101-8',
+  './official-logo.png',
+  './icons/icon-192.png'
+].includes(path));
 
 self.addEventListener('install',event=>event.waitUntil(
-  caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>new URL(path,self.location).href))).then(()=>self.skipWaiting())
+  caches.open(CACHE).then(cache=>cache.addAll(CORE.map(path=>new URL(path,self.location).href))).then(()=>self.skipWaiting())
 ));
 
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
