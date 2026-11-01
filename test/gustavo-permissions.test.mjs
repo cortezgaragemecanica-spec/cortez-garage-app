@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {canAdministerRequests,canHandleRequestNotifications,canManagePurchaseChecklist,getManagedUser,hasPermission} from '../src/supabase.js';
+import {canAdministerRequests,canHandleRequestNotifications,canManagePurchaseChecklist,getManagedUser,hasPermission,isGustavoUser} from '../src/supabase.js';
 import {summarizeOrderChanges} from '../src/owner-order-change-notifications.js';
 import {readFile} from 'node:fs/promises';
 
@@ -18,10 +18,21 @@ test('Gustavo recebe as permissões ampliadas sem acesso financeiro de Compras',
       assert.equal(canAdministerRequests(),true);
       assert.equal(canHandleRequestNotifications(),true);
       assert.equal(canManagePurchaseChecklist(),false);
+      assert.equal(isGustavoUser(),true);
       assert.equal(hasPermission('viewFinance'),false);
       assert.equal(hasPermission('viewPartnerCommissions'),false);
     }
   }finally{if(originalStorage===undefined)delete globalThis.localStorage;else globalThis.localStorage=originalStorage}
+});
+
+test('Gustavo não visualiza Financeiro nem Administrativo mesmo com permissão antiga salva',async()=>{
+  const admin=await readFile(new URL('../src/admin.js',import.meta.url),'utf8');
+  const supabase=await readFile(new URL('../src/supabase.js',import.meta.url),'utf8');
+  assert.match(admin,/financeVisible=\(\)=>!isGustavoUser\(\)&&\(financeOwner\(\)\|\|hasPermission\('viewFinance'\)\)/);
+  assert.match(admin,/canViewPartnerCommissions=\(\)=>!isGustavoUser\(\)/);
+  assert.match(supabase,/required=GUSTAVO_EMAILS\.has\(email\)\?[\s\S]*?viewFinance:false,viewPartnerCommissions:false/);
+  assert.match(supabase,/requireFinanceViewing\(\)\{if\(isGustavoUser\(\)\|\|!hasPermission\('viewFinance'\)\)/);
+  assert.match(supabase,/gustavoNoFinance20261101/);
 });
 
 test('notificação do proprietário detalha peças, serviços e valores alterados',()=>{

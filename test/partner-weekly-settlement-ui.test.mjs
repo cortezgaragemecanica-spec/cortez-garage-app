@@ -50,9 +50,9 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.settlement-partner-result\{[^}]*display:grid/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-10/);
+  assert.match(index,/admin\.js\?v=20261101-1/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
+  assert.match(worker,/cortez-garage-v320-gustavo-no-finance/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
