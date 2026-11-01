@@ -1,14 +1,17 @@
-const RELEASE='20261017-2';
+const RELEASE='20261101-2';
 const RELEASE_KEY='cortez-web-release';
+const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
 const activateRelease=async()=>{
   if(localStorage.getItem(RELEASE_KEY)===RELEASE)return;
   localStorage.setItem(RELEASE_KEY,RELEASE);
   const tasks=[];
   if(window.caches?.keys)tasks.push(caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))));
   if(navigator.serviceWorker?.getRegistrations)tasks.push(navigator.serviceWorker.getRegistrations().then(items=>Promise.all(items.map(item=>item.unregister()))));
-  await Promise.allSettled(tasks);
+  await Promise.race([Promise.allSettled(tasks),wait(2500)]);
   const url=new URL(location.href);url.searchParams.set('release',RELEASE);location.replace(url.href);
-  await new Promise(()=>{});
+  // Um atalho instalado pode demorar para concluir a navegação. O núcleo segue
+  // depois deste intervalo para a tela nunca ficar presa no carregamento.
+  await wait(600);
 };
 await activateRelease();
 
@@ -22,7 +25,17 @@ const loadModules=async(names,label)=>{
 const manifest=document.querySelector('#moduleManifest');
 const modules=value=>String(value||'').split(',').map(item=>item.trim()).filter(Boolean);
 if(!manifest)throw new Error('Manifesto de módulos não encontrado.');
-await import(manifest.dataset.main);
+try{
+  const mainUrl=new URL(manifest.dataset.main,import.meta.url);
+  mainUrl.searchParams.set('release',RELEASE);
+  await import(mainUrl.href);
+}catch(error){
+  console.error('Falha ao iniciar o aplicativo',error);
+  const app=document.querySelector('#app');
+  if(app)app.innerHTML=`<main class="login-page"><div class="login-card"><img src="./official-logo.png" alt="Cortez Garage"><h1>Não foi possível abrir o aplicativo</h1><p>O carregamento foi interrompido. Atualize para tentar novamente sem apagar os dados deste aparelho.</p><button class="primary wide" id="retryAppBoot">Tentar novamente</button><small>${String(error?.message||'Falha de inicialização').replace(/[<>&]/g,'')}</small></div></main>`;
+  document.querySelector('#retryAppBoot')?.addEventListener('click',()=>location.reload());
+  throw error;
+}
 const workflowModules=modules(manifest.dataset.workflow),featureModules=modules(manifest.dataset.features);
 
 const workflowReady=loadModules(workflowModules,'recursos da O.S.');
