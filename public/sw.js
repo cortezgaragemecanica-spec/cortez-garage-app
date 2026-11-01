@@ -26,7 +26,7 @@ const SHELL=[
   './src/shopping.js?v=20261031-1',
   './src/shopping-checklist-data.js?v=20261023-8',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261101-1&w=49',
+  './src/admin.js?v=20261101-1&w=50',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
