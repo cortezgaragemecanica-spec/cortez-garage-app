@@ -1,7 +1,7 @@
-import{getCurrentUser}from'./supabase.js?v=20261023-1';
+import{getCurrentUser,getManagedUser}from'./supabase.js?v=20261023-1';
+import{canUseOrderRequestForms}from'./order-request-access.js?v=20261031-1';
 
-const OWNER='cortezgaragemecanica@gmail.com';
-const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
+const requestAccess=()=>{const user=getCurrentUser();return canUseOrderRequestForms(user,getManagedUser(user.email))};
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 function closeEditor(modal){
@@ -10,7 +10,7 @@ function closeEditor(modal){
 }
 
 function openEditor(){
-  if(!owner())return alert('Solicite pelo grupo do WhatsApp Diagnóstico e Observações.');
+  if(!requestAccess())return alert('Solicite pelo grupo do WhatsApp Diagnóstico e Observações.');
   const diagnosis=document.querySelector('#diagnosis'),observation=document.querySelector('#services');
   if(!diagnosis||!observation)return;
   document.querySelector('.owner-diagnosis-modal')?.remove();
