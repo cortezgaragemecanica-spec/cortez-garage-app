@@ -32,7 +32,8 @@ test('custos pagos não geram valores negativos nem escondem outras obrigações
 test('resumo e detalhamento usam o mesmo cálculo sem duplicidade',()=>{
   assert.match(source,/plan=remainingFixedCommitments\(month,today\),remainingFixed=plan.reduce/);
   assert.match(source,/rows=remainingFixedCommitments\(month,today\).filter/);
-  assert.match(source,/commitments=Math\.max\(0,payable\)\+Math\.max\(0,total\.commissions\)\+remainingFixed\+retifica/);
+  assert.match(source,/commitments=Math\.max\(0,payable\)\+Math\.max\(0,total\.commissions\)\+remainingFixed,coverage=/);
+  assert.doesNotMatch(source,/\['retifica','Saldo devedor da Retífica',health.retifica\]/);
   assert.match(source,/mechanicCommissions:Math\.max\(0,total\.mechanicCommissions\)/);
   assert.match(source,/partnerCommissions:Math\.max\(0,total\.partnerCommissions\)/);
 });
