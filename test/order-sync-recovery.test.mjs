@@ -49,5 +49,5 @@ test('publicação invalida o cache dos módulos corrigidos',async()=>{
   assert.match(index,/main\.js\?v=20261017-1/);
   assert.match(worker,/main\.js\?v=20261017-1&w=25/);
   assert.match(worker,/supabase\.js\?v=20261031-3/);
-  assert.match(worker,/cortez-garage-v314-archive-weekly-settlement/);
+  assert.match(worker,/cortez-garage-v315-partner-commission-details/);
 });
