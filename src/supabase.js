@@ -55,7 +55,9 @@ export async function restoreOperationalBackup(backup){if(currentEmail()!==OWNER
 export function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}}
 export function getCurrentUser(){const user=getSession()?.user,metadata=user?.user_metadata||{};return{id:user?.id||'',name:metadata.name||metadata.nome||user?.email?.split('@')[0]||'Usuário',email:user?.email||'',deviceId:localStorage.getItem(DEVICE_KEY)||metadata.device_id||''}}
 const currentEmail=()=>getCurrentUser().email.trim().toLowerCase();
-export const canHandleRequestNotifications=()=>currentEmail()===OWNER_EMAIL||KAUA_EMAILS.has(currentEmail());
+export const canAdministerRequests=()=>currentEmail()===OWNER_EMAIL||GUSTAVO_EMAILS.has(currentEmail());
+export const canHandleRequestNotifications=()=>canAdministerRequests()||KAUA_EMAILS.has(currentEmail());
+export const canManagePurchaseChecklist=()=>currentEmail()===OWNER_EMAIL||KAUA_EMAILS.has(currentEmail());
 export const isKauaUser=()=>KAUA_EMAILS.has(currentEmail());
 export const canManageLuizinhoNotes=()=>currentEmail()===OWNER_EMAIL||KAUA_EMAILS.has(currentEmail());
 export function canManageServices(){return hasPermission('manageValues')}
@@ -274,7 +276,7 @@ export async function deleteOrderReviewRequest(requestId){
 }
 
 export async function deleteServiceQuoteRequest(requestId){
-  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode excluir solicitações de orçamento de serviços.');
+  if(!canAdministerRequests())throw new Error('Seu usuário não pode excluir solicitações de orçamento de serviços.');
   if(!isUuid(requestId))throw new Error('Identificador da solicitação inválido.');
   const session=await refreshSession();
   if(!session?.access_token)throw new Error('Sessão expirada');
@@ -295,7 +297,7 @@ export async function acknowledgeServiceQuoteRequests(ids){
 }
 
 export async function sendServiceQuoteToOrder(requestId,items){
-  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode enviar solicitações de serviços para a O.S.');
+  if(!canAdministerRequests())throw new Error('Seu usuário não pode enviar solicitações de serviços para a O.S.');
   if(!isUuid(requestId))throw new Error('Identificador da solicitação inválido.');
   const prepared=(items||[]).map(item=>({quantity:Math.max(1,Number(item.quantity)||1),description:clean(item.description),mechanic:clean(item.mechanic),value:Number(item.value)}));
   if(!prepared.length||prepared.some(item=>!item.description||!item.mechanic||!Number.isFinite(item.value)||item.value<=0))throw new Error('Preencha descrição, mecânico e valor de todos os serviços.');
@@ -334,7 +336,7 @@ async function partRequestRow(session,requestId){
   const rows=await request(`/rest/v1/sincronizacao?entidade=eq.solicitacao_pecas&registro_id=eq.${encodeURIComponent(requestId)}&select=id,dados&limit=1`,{token:session.access_token});
   if(!rows[0])throw new Error('Solicitação de peças não encontrada.');
   const actor=currentEmail(),requester=clean(rows[0].dados?.requestedBy?.email).toLowerCase();
-  if(actor!==OWNER_EMAIL&&actor!==requester)throw new Error('Você só pode alterar suas próprias solicitações.');
+  if(!canAdministerRequests()&&actor!==requester)throw new Error('Você só pode alterar suas próprias solicitações.');
   return rows[0];
 }
 
@@ -417,7 +419,7 @@ export async function updateOrderPurchaseChecklistItem(orderId,partKey,purchased
 }
 
 export async function excludeOrderPurchaseChecklistItem(orderId,partKey){
-  if(!canHandleRequestNotifications()||isKauaUser())throw new Error('Somente o proprietário pode excluir itens da lista de compras.');
+  if(!canManagePurchaseChecklist()||isKauaUser())throw new Error('Somente o proprietário pode excluir itens da lista de compras.');
   const saved=await writeOrderPurchaseChecklist(orderId,partKey,{excluded:true,purchased:false,purchasedAt:null,purchasedBy:null,excludedAt:new Date().toISOString(),excludedBy:currentEmail()});
   await syncOrderPurchasePayable(orderId);
   return saved;
@@ -654,9 +656,9 @@ export async function setMechanicActive(name,active){const items=await readMecha
 const ALL_USER_PERMISSIONS={accessApp:true,manageValues:true,addOrderItems:false,viewDelivered:true,readyOrders:false,createEntries:true,editOrders:true,viewFinance:false,viewPartnerCommissions:false};
 const MANAGED_USER_DEFAULTS=[
   {name:'Cortez Garage',email:OWNER_EMAIL,active:true,agendaMechanic:'',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:true,createEntries:true,editOrders:true,viewFinance:true,viewPartnerCommissions:true}},
-  {name:'Gustavo',email:'gust.cribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
-  {name:'Gustavo',email:'gust.ribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
-  {name:'Gustavo',email:'gust.ribas@hotmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
+  {name:'Gustavo',email:'gust.cribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:false}},
+  {name:'Gustavo',email:'gust.ribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:false}},
+  {name:'Gustavo',email:'gust.ribas@hotmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:false}},
   {name:'Fabio',email:'fabiomaier19850901@gmail.com',active:true,agendaMechanic:'Fabio',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
   {name:'Kaua',email:'kaugg490@gmail.com',active:true,agendaMechanic:'',permissions:{accessApp:true,manageValues:false,addOrderItems:true,viewDelivered:true,readyOrders:false}},
   {name:'Kaua Vinicius',email:'kauavinicius.cortez@gmail.com',active:true,agendaMechanic:'',permissions:{accessApp:true,manageValues:false,addOrderItems:true,viewDelivered:true,readyOrders:false}},
@@ -665,7 +667,11 @@ const MANAGED_USER_DEFAULTS=[
 const normalizeEmail=value=>clean(value).toLowerCase();
 const normalizeManagedUsers=value=>{
   const saved=Array.isArray(value)?value:[],byEmail=new Map(MANAGED_USER_DEFAULTS.map(item=>[item.email,{...item,permissions:{...ALL_USER_PERMISSIONS,...item.permissions}}]));
-  for(const item of saved){const email=normalizeEmail(item?.email);if(!email)continue;const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}},agendaMechanic=clean(item.agendaMechanic)||previous.agendaMechanic||defaultMechanicForEmail(email),name=clean(item.name)||previous.name,isMarcelino=name.toLowerCase().split(/\s+/).includes('marcelino'),spectatorDefaults=isMarcelino?{createEntries:false,editOrders:false,viewFinance:true,viewPartnerCommissions:true}:{};byEmail.set(email,{...previous,...item,email,name,active:item.active!==false,agendaMechanic,permissions:{...previous.permissions,...spectatorDefaults,...item.permissions}})}
+  for(const item of saved){
+    const email=normalizeEmail(item?.email);if(!email)continue;
+    const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}},agendaMechanic=clean(item.agendaMechanic)||previous.agendaMechanic||defaultMechanicForEmail(email),name=clean(item.name)||previous.name,isMarcelino=name.toLowerCase().split(/\s+/).includes('marcelino'),spectatorDefaults=isMarcelino?{createEntries:false,editOrders:false,viewFinance:true,viewPartnerCommissions:true}:{},required=GUSTAVO_EMAILS.has(email)?{manageValues:true,addOrderItems:true,viewDelivered:true,createEntries:true,editOrders:true}:{};
+    byEmail.set(email,{...previous,...item,email,name,active:item.active!==false,agendaMechanic,permissions:{...previous.permissions,...spectatorDefaults,...item.permissions,...required}})
+  }
   return[...byEmail.values()]
 };
 const cacheManagedUsers=users=>{const normalized=normalizeManagedUsers(users);localStorage.setItem(USER_ACCESS_KEY,JSON.stringify(normalized));dispatchEvent(new CustomEvent('cortez:user-access-updated',{detail:normalized}));return normalized};
@@ -677,7 +683,29 @@ function requireOrderEditing(){if(!hasPermission('editOrders'))throw new Error('
 function requireFinanceViewing(){if(!hasPermission('viewFinance'))throw new Error('A visualização do Financeiro está bloqueada pelo proprietário.')}
 function requireFinanceEditing(){if(currentEmail()!==OWNER_EMAIL)throw new Error('O Financeiro está em modo somente leitura para este usuário.')}
 async function userAccessConfig(session){const rows=await request('/rest/v1/sincronizacao?entidade=eq.configuracao&registro_id=eq.usuarios-permissoes&select=id,dados&limit=1',{token:session.access_token});return rows[0]||null}
-export async function readUserAccess(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const row=await userAccessConfig(session),saved=row?.dados?.users||MANAGED_USER_DEFAULTS;if(currentEmail()===OWNER_EMAIL&&!row?.dados?.permissionMigrations?.kauaAddItems20260915){const users=normalizeManagedUsers(saved),emails=new Set(['kaugg490@gmail.com','kauavinicius.cortez@gmail.com','kauavinicius.cortezz@gmail.com']);for(const user of users)if(emails.has(user.email))user.permissions.addOrderItems=true;const body={origem:'app',entidade:'configuracao',registro_id:'usuarios-permissoes',dados:{...row?.dados,users,permissionMigrations:{...row?.dados?.permissionMigrations,kauaAddItems20260915:true},updatedAt:new Date().toISOString()}};try{if(row)await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});else await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body});return cacheManagedUsers(users)}catch(error){console.error('Não foi possível registrar a nova permissão do Kauã no banco:',error)}}return cacheManagedUsers(saved)}
+export async function readUserAccess(){
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  const row=await userAccessConfig(session),saved=row?.dados?.users||MANAGED_USER_DEFAULTS,migrations=row?.dados?.permissionMigrations||{};
+  if(currentEmail()!==OWNER_EMAIL)return cacheManagedUsers(saved);
+  const users=normalizeManagedUsers(saved),nextMigrations={...migrations};
+  let changed=false;
+  if(!migrations.kauaAddItems20260915){
+    for(const user of users)if(KAUA_EMAILS.has(user.email))user.permissions.addOrderItems=true;
+    nextMigrations.kauaAddItems20260915=true;changed=true;
+  }
+  if(!migrations.gustavoFullOrders20261031){
+    for(const user of users)if(GUSTAVO_EMAILS.has(user.email))Object.assign(user.permissions,{manageValues:true,addOrderItems:true,viewDelivered:true,createEntries:true,editOrders:true});
+    nextMigrations.gustavoFullOrders20261031=true;changed=true;
+  }
+  if(!changed)return cacheManagedUsers(users);
+  const body={origem:'app',entidade:'configuracao',registro_id:'usuarios-permissoes',dados:{...row?.dados,users,permissionMigrations:nextMigrations,updatedAt:new Date().toISOString()}};
+  try{
+    if(row)await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(row.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});
+    else await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body});
+    return cacheManagedUsers(users)
+  }catch(error){console.error('Não foi possível registrar as permissões obrigatórias no banco:',error);return cacheManagedUsers(users)}
+}
 async function writeUserAccess(users){if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode gerenciar usuários.');const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');const current=await userAccessConfig(session),normalized=normalizeManagedUsers(users),body={origem:'app',entidade:'configuracao',registro_id:'usuarios-permissoes',dados:{...current?.dados,users:normalized,updatedAt:new Date().toISOString()}};if(current)await request(`/rest/v1/sincronizacao?id=eq.${encodeURIComponent(current.id)}`,{token:session.access_token,method:'PATCH',prefer:'return=minimal',body});else await request('/rest/v1/sincronizacao',{token:session.access_token,method:'POST',prefer:'return=minimal',body});return cacheManagedUsers(normalized)}
 export async function updateManagedUser(email,changes){email=normalizeEmail(email);const users=await readUserAccess(),index=users.findIndex(item=>item.email===email);if(index<0)throw new Error('Usuário não encontrado.');if(email===OWNER_EMAIL&&changes?.active===false)throw new Error('O acesso do proprietário não pode ser desativado.');users[index]={...users[index],...changes,email,permissions:{...users[index].permissions,...changes?.permissions}};return writeUserAccess(users)}
 export async function createManagedUser({name,email,password,agendaMechanic='',permissions={}}){if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode adicionar usuários.');name=clean(name);email=normalizeEmail(email);password=String(password||'');if(!name||!email.includes('@'))throw new Error('Informe nome e e-mail válidos.');if(password.length<6)throw new Error('A senha deve ter pelo menos 6 caracteres.');if(!clean(agendaMechanic))throw new Error('Selecione a agenda do mecânico para o novo usuário.');try{await request('/auth/v1/signup',{method:'POST',body:{email,password,data:{name,managed_by:OWNER_EMAIL}}})}catch(error){if(!/already|registered|cadastrad/i.test(error.message||''))throw error}const users=await readUserAccess(),index=users.findIndex(item=>item.email===email),entry={name,email,active:true,agendaMechanic:clean(agendaMechanic),permissions:{...ALL_USER_PERMISSIONS,accessApp:true,readyOrders:false,...permissions}};if(index>=0)users[index]={...users[index],...entry,permissions:{...users[index].permissions,...entry.permissions}};else users.push(entry);return writeUserAccess(users)}

@@ -28,10 +28,10 @@ test('tela informa cache, falha do banco e oferece atualização manual',async()
   assert.match(supabase,/body:plan\.rows/);
   assert.match(supabase,/saved\.warning=/);
   assert.match(html,/stock\.js\?v=20261008-1/);
-  assert.match(html,/style\.css\?v=20261031-5/);
-  assert.match(worker,/supabase\.js\?v=20261031-4/);
+  assert.match(html,/style\.css\?v=20261031-6/);
+  assert.match(worker,/supabase\.js\?v=20261031-5/);
   assert.match(worker,/stock-save-plan\.js/);
-  assert.match(worker,/cortez-garage-v318-mechanic-request-access/);
+  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
   assert.match(style,/\.stock-summary/);
 });
 

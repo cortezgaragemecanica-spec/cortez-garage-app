@@ -38,7 +38,8 @@ test('Kauã mantém as permissões específicas e usa o salvamento completo de O
   assert.match(supabase,/order\.status!==remote\.status/);
   assert.match(supabase,/order\.discount\|\|0/);
   assert.match(supabase,/atualizado_em=eq/);
-  assert.match(supabase,/permissionMigrations\?\.kauaAddItems20260915/);
+  assert.match(supabase,/migrations\.kauaAddItems20260915/);
+  assert.match(supabase,/migrations\.gustavoFullOrders20261031/);
   assert.match(supabase,/dados:\{\.\.\.current\?\.dados,users:normalized/);
   assert.match(admin,/addOrderItems:'Adicionar peças e serviços com valores'/);
   assert.match(admin,/Sem agenda individual/);
