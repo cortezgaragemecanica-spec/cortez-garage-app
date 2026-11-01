@@ -18,7 +18,7 @@
   </main>
   <script>
     (async()=>{
-      const status=document.querySelector('#status'),release='20261101-8';
+      const status=document.querySelector('#status'),release='20261101-9';
       try{
         const tasks=[];
         if(window.caches?.keys)tasks.push(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('cortez-garage-')).map(key=>caches.delete(key)))));

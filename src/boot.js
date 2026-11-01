@@ -1,5 +1,8 @@
-const RELEASE='20261101-8';
+const RELEASE='20261101-9';
 const RELEASE_KEY='cortez-web-release';
+const DATABASE_CACHE_KEY='cortez-garage-v1';
+const PENDING_DATABASE_KEY='cortez-garage-pending-db-v1';
+const RECOVERY_DATABASE_KEY='cortez-garage-recovery-db-v1';
 const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
 const waitForIdle=()=>new Promise(resolve=>{
   if(window.requestIdleCallback)return window.requestIdleCallback(()=>resolve(),{timeout:750});
@@ -9,6 +12,13 @@ const activateRelease=async()=>{
   let previousRelease='';
   try{previousRelease=localStorage.getItem(RELEASE_KEY)||''}catch(error){console.warn('Não foi possível consultar a versão local:',error)}
   try{localStorage.setItem(RELEASE_KEY,RELEASE)}catch(error){console.warn('Não foi possível registrar a versão localmente:',error)}
+  try{
+    const cachedDatabase=localStorage.getItem(DATABASE_CACHE_KEY);
+    if(cachedDatabase?.length>1000000&&!localStorage.getItem(PENDING_DATABASE_KEY)&&!localStorage.getItem(RECOVERY_DATABASE_KEY)){
+      localStorage.setItem(RECOVERY_DATABASE_KEY,cachedDatabase);
+      if(localStorage.getItem(RECOVERY_DATABASE_KEY)===cachedDatabase)localStorage.removeItem(DATABASE_CACHE_KEY);
+    }
+  }catch(error){console.warn('Não foi possível aliviar o cache local antigo:',error)}
   const url=new URL(location.href);
   if(url.searchParams.get('release')!==RELEASE){url.searchParams.set('release',RELEASE);history.replaceState(history.state,'',url.href)}
   if(previousRelease===RELEASE)return;

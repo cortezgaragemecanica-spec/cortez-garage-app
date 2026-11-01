@@ -6,7 +6,7 @@ const read=file=>readFile(new URL(`../${file}`,import.meta.url),'utf8');
 
 test('nova publicação atualiza sem prender navegador ou atalho em recarregamentos',async()=>{
   const[boot,index,worker]=await Promise.all([read('src/boot.js'),read('index.html'),read('public/sw.js')]);
-  assert.match(boot,/const RELEASE='20261101-8'/);
+  assert.match(boot,/const RELEASE='20261101-9'/);
   assert.match(boot,/localStorage\.setItem\(RELEASE_KEY,RELEASE\)/);
   assert.doesNotMatch(boot,/localStorage\.clear\(\)/);
   assert.match(boot,/url\.searchParams\.set\('release',RELEASE\)/);
@@ -16,11 +16,15 @@ test('nova publicação atualiza sem prender navegador ou atalho em recarregamen
   assert.match(boot,/caches\.keys\(\).*caches\.delete/s);
   assert.match(boot,/getRegistrations.*unregister/s);
   assert.match(boot,/Promise\.race\(\[Promise\.allSettled\(cleanup\),wait\(1800\)\]\)/);
-  assert.match(index,/boot\.js\?v=20261101-8/);
-  assert.match(worker,/boot\.js\?v=20261101-8/);
-  assert.match(worker,/cortez-garage-v325-mobile-responsive/);
+  assert.match(index,/boot\.js\?v=20261101-9/);
+  assert.match(worker,/boot\.js\?v=20261101-9/);
+  assert.match(worker,/cortez-garage-v326-mobile-responsive/);
   assert.doesNotMatch(worker,/client\.navigate|clients\.matchAll/);
   assert.match(boot,/mainUrl\.searchParams\.set\('release',RELEASE\)/);
+  assert.match(boot,/cachedDatabase\?\.length>1000000/);
+  assert.match(boot,/!localStorage\.getItem\(PENDING_DATABASE_KEY\)/);
+  assert.match(boot,/localStorage\.setItem\(RECOVERY_DATABASE_KEY,cachedDatabase\)/);
+  assert.match(boot,/localStorage\.removeItem\(DATABASE_CACHE_KEY\)/);
   assert.match(worker,/cache\.addAll\(CORE\.map/);
   assert.doesNotMatch(worker,/cache\.addAll\(SHELL\.map/);
 });
