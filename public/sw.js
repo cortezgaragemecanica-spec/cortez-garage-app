@@ -1,5 +1,5 @@
-// Consolida o pagamento das comissões dos sócios em uma saída por pessoa.
-const CACHE='cortez-garage-v316-consolidated-partner-payment';
+// Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
+const CACHE='cortez-garage-v317-commitment-window';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -26,7 +26,7 @@ const SHELL=[
   './src/shopping.js?v=20261024-1',
   './src/shopping-checklist-data.js?v=20261023-8',
   './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261031-9&w=47',
+  './src/admin.js?v=20261031-10&w=48',
   './src/luizinho-returns.js?v=20261009-1',
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
@@ -61,8 +61,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261031-12')return null;
-    url.searchParams.set('release','20261031-12');
+    if(url.searchParams.get('release')==='20261031-13')return null;
+    url.searchParams.set('release','20261031-13');
     return client.navigate(url.href);
   }));
 })()));
