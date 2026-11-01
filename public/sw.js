@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v323-mobile-responsive';
+const CACHE='cortez-garage-v324-mobile-responsive';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -7,7 +7,7 @@ const SHELL=[
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261101-6',
+  './src/boot.js?v=20261101-7',
   './src/main.js?v=20261017-1&w=25',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261017-1',
