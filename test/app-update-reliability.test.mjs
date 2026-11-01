@@ -6,7 +6,7 @@ const read=file=>readFile(new URL(`../${file}`,import.meta.url),'utf8');
 
 test('nova publicação atualiza sem prender navegador ou atalho em recarregamentos',async()=>{
   const[boot,index,worker]=await Promise.all([read('src/boot.js'),read('index.html'),read('public/sw.js')]);
-  assert.match(boot,/const RELEASE='20261101-6'/);
+  assert.match(boot,/const RELEASE='20261101-7'/);
   assert.match(boot,/localStorage\.setItem\(RELEASE_KEY,RELEASE\)/);
   assert.doesNotMatch(boot,/localStorage\.clear\(\)/);
   assert.match(boot,/url\.searchParams\.set\('release',RELEASE\)/);
@@ -16,18 +16,21 @@ test('nova publicação atualiza sem prender navegador ou atalho em recarregamen
   assert.match(boot,/caches\.keys\(\).*caches\.delete/s);
   assert.match(boot,/getRegistrations.*unregister/s);
   assert.match(boot,/Promise\.race\(\[Promise\.allSettled\(cleanup\),wait\(1800\)\]\)/);
-  assert.match(index,/boot\.js\?v=20261101-6/);
-  assert.match(worker,/boot\.js\?v=20261101-6/);
-  assert.match(worker,/cortez-garage-v323-mobile-responsive/);
+  assert.match(index,/boot\.js\?v=20261101-7/);
+  assert.match(worker,/boot\.js\?v=20261101-7/);
+  assert.match(worker,/cortez-garage-v324-mobile-responsive/);
   assert.doesNotMatch(worker,/client\.navigate|clients\.matchAll/);
   assert.match(boot,/mainUrl\.searchParams\.set\('release',RELEASE\)/);
 });
 
-test('módulos são carregados em lotes para não travar o toque no celular',async()=>{
+test('módulos são carregados um por vez e em momentos ociosos para não travar o toque no celular',async()=>{
   const boot=await read('src/boot.js');
-  assert.match(boot,/names\.slice\(index,index\+3\)/);
-  assert.match(boot,/Promise\.allSettled\(batch\.map\(name=>import\(name\)\)\)/);
-  assert.match(boot,/await wait\(0\)/);
+  assert.match(boot,/for\(const name of names\)/);
+  assert.match(boot,/await waitForIdle\(\)/);
+  assert.match(boot,/Promise\.allSettled\(\[import\(name\)\]\)/);
+  assert.match(boot,/await wait\(16\)/);
+  assert.match(boot,/await workflowReady;\s*await wait\(500\);\s*const featuresReady=/s);
+  assert.doesNotMatch(boot,/Promise\.all\(\[workflowReady,loadModules/);
   assert.doesNotMatch(boot,/Promise\.allSettled\(names\.map\(name=>import\(name\)\)\)/);
 });
 

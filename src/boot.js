@@ -1,6 +1,10 @@
-const RELEASE='20261101-6';
+const RELEASE='20261101-7';
 const RELEASE_KEY='cortez-web-release';
 const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
+const waitForIdle=()=>new Promise(resolve=>{
+  if(window.requestIdleCallback)return window.requestIdleCallback(()=>resolve(),{timeout:750});
+  setTimeout(resolve,40);
+});
 const activateRelease=async()=>{
   let previousRelease='';
   try{previousRelease=localStorage.getItem(RELEASE_KEY)||''}catch(error){console.warn('Não foi possível consultar a versão local:',error)}
@@ -17,10 +21,11 @@ await activateRelease();
 
 const loadModules=async(names,label)=>{
   const failed=[];
-  for(let index=0;index<names.length;index+=3){
-    const batch=names.slice(index,index+3),results=await Promise.allSettled(batch.map(name=>import(name)));
+  for(const name of names){
+    await waitForIdle();
+    const results=await Promise.allSettled([import(name)]);
     failed.push(...results.filter(result=>result.status==='rejected'));
-    await wait(0);
+    await wait(16);
   }
   if(failed.length)console.error(`Falha ao carregar ${label}`,failed.map(result=>result.reason));
   return failed.length===0;
@@ -45,7 +50,9 @@ const workflowModules=modules(manifest.dataset.workflow),featureModules=modules(
 const workflowReady=loadModules(workflowModules,'recursos da O.S.');
 const schedule=window.requestIdleCallback||((callback,options)=>setTimeout(callback,Math.min(options?.timeout||500,500)));
 schedule(async()=>{
-  const[,featuresReady]=await Promise.all([workflowReady,loadModules(featureModules,'áreas complementares')]);
+  await workflowReady;
+  await wait(500);
+  const featuresReady=await loadModules(featureModules,'áreas complementares');
   document.documentElement.dataset.modulesReady=featuresReady?'true':'partial';
   document.dispatchEvent(new CustomEvent('cortez:modules-ready',{detail:{featuresReady}}));
 },{timeout:700});
