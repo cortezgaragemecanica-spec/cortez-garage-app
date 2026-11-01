@@ -47,7 +47,10 @@ function renderButton(){
   const header=document.querySelector('.header-actions');if(!header)return;
   let button=document.querySelector('#ownerOrderChangeNotifications');
   if(!button){button=document.createElement('button');button.id='ownerOrderChangeNotifications';button.type='button';button.className='part-request-notification';button.onclick=openNotifications;header.prepend(button)}
-  const unread=records().filter(item=>!item.read).length;button.innerHTML=`<span aria-hidden="true">✎</span><b>${unread}</b><small>Alterações</small>`;button.classList.toggle('has-pending',unread>0);button.setAttribute('aria-label',`${unread} alterações do Gustavo ainda não visualizadas`)
+  const unread=records().filter(item=>!item.read).length;
+  if(button.dataset.unread===String(unread))return;
+  button.dataset.unread=String(unread);
+  button.innerHTML=`<span aria-hidden="true">✎</span><b>${unread}</b><small>Alterações</small>`;button.classList.toggle('has-pending',unread>0);button.setAttribute('aria-label',`${unread} alterações do Gustavo ainda não visualizadas`)
 }
 
 export function checkOwnerOrderChanges(){
