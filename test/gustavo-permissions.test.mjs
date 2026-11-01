@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {canAdministerRequests,canHandleRequestNotifications,canManagePurchaseChecklist,getManagedUser,hasPermission,isGustavoUser} from '../src/supabase.js';
+import {canAdministerRequests,canCloseOrders,canHandleRequestNotifications,canManagePurchaseChecklist,getManagedUser,hasPermission,isGustavoUser} from '../src/supabase.js';
 import {summarizeOrderChanges} from '../src/owner-order-change-notifications.js';
 import {readFile} from 'node:fs/promises';
 
@@ -19,6 +19,8 @@ test('Gustavo recebe as permissões ampliadas sem acesso financeiro de Compras',
       assert.equal(canHandleRequestNotifications(),true);
       assert.equal(canManagePurchaseChecklist(),false);
       assert.equal(isGustavoUser(),true);
+      assert.equal(hasPermission('closeOrders'),true);
+      assert.equal(canCloseOrders(),true);
       assert.equal(hasPermission('viewFinance'),false);
       assert.equal(hasPermission('viewPartnerCommissions'),false);
     }
@@ -33,6 +35,21 @@ test('Gustavo não visualiza Financeiro nem Administrativo mesmo com permissão 
   assert.match(supabase,/required=GUSTAVO_EMAILS\.has\(email\)\?[\s\S]*?viewFinance:false,viewPartnerCommissions:false/);
   assert.match(supabase,/requireFinanceViewing\(\)\{if\(isGustavoUser\(\)\|\|!hasPermission\('viewFinance'\)\)/);
   assert.match(supabase,/gustavoNoFinance20261101/);
+  assert.match(supabase,/gustavoCloseOrders20261101/);
+});
+
+test('Gustavo fecha O.S. sem ganhar acesso ao restante do Financeiro',async()=>{
+  const[workflow,supabase,sql]=await Promise.all([
+    readFile(new URL('../src/order-workflow.js',import.meta.url),'utf8'),
+    readFile(new URL('../src/supabase.js',import.meta.url),'utf8'),
+    readFile(new URL('../supabase/gustavo-fechamento-os.sql',import.meta.url),'utf8')
+  ]);
+  assert.match(workflow,/if\(!canCloseOrders\(\)\)\{document\.querySelector\('#openClosing'\)\?\.remove\(\);return\}/);
+  assert.match(supabase,/if\(!canCloseOrders\(\)\)throw new Error\('Seu usuário não tem permissão para fechar ordens de serviço\.'/);
+  assert.match(supabase,/allowOrderClosing:true/);
+  assert.match(sql,/usuario_pode_fechar_os\(\)/);
+  assert.match(sql,/financeiro_fechamento_os_(select|insert|update|delete)/);
+  assert.match(sql,/closeOrders":true,"viewFinance":false/);
 });
 
 test('notificação do proprietário detalha peças, serviços e valores alterados',()=>{
