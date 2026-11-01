@@ -14,8 +14,8 @@ test('as três contas do Kauã recebem solicitações, mas não podem excluir',a
       assert.equal(canHandleRequestNotifications(),true);
       assert.equal(isKauaUser(),true);
       await assert.rejects(deletePartRequest('id'),/não pode excluir/);
-      await assert.rejects(deleteServiceQuoteRequest('id'),/Somente o proprietário/);
-      await assert.rejects(sendServiceQuoteToOrder('id',[]),/Somente o proprietário/);
+      await assert.rejects(deleteServiceQuoteRequest('id'),/não pode excluir/);
+      await assert.rejects(sendServiceQuoteToOrder('id',[]),/não pode enviar/);
     }
     asUser('cortezgaragemecanica@gmail.com');
     assert.equal(canHandleRequestNotifications(),true);
@@ -41,7 +41,7 @@ test('telas mostram envio ao fornecedor sem apresentar exclusão para Kauã',asy
   assert.match(workflow,/canDeletePartRequest=request=>!isKauaUser\(\)/);
   assert.match(workflow,/supplier:canHandleRequestNotifications\(\)/);
   assert.match(workflow,/if\(!canHandleRequestNotifications\(\)\)return alert\('Você não tem permissão para enviar pedidos ao fornecedor/);
-  assert.match(quote,/owner\(\)\?deleteButton\(request\):''/);
+  assert.match(quote,/canAdministerRequests\(\)\?deleteButton\(request\):''/);
   assert.match(quote,/if\(!canHandleRequestNotifications\(\)\)return/);
   assert.match(quote,/requests\.filter\(pendingForViewer\)/);
 });

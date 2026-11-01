@@ -46,7 +46,7 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(admin,/if\(partner\)activePartner=partner;records=await readFinance\(\);popup\.remove\(\);renderArea\(returnArea\)/);
   assert.match(supabase,/people\.length!==1.*Consolide separadamente as comissões de cada pessoa/);
   assert.match(supabase,/os_id:null,referencia:paymentReference/);
-  assert.match(worker,/cortez-garage-v318-mechanic-request-access/);
+  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
 });
 
 test('pagamento de sócio relê e baixa todas as comissões pendentes em uma única saída',async()=>{
@@ -80,8 +80,8 @@ test('janela de comissões usa tabela ampla no computador e cartões no celular'
   assert.match(style,/\.commission-release-popup \.check-popup-card\{[^}]*width:min\(1180px,[^}]*height:min\(820px/);
   assert.match(style,/\.commission-release-columns,.commission-service-row\{[^}]*grid-template-columns:/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.commission-service-row\{grid-template-columns:1fr 1fr/);
-  assert.match(index,/style\.css\?v=20261031-5/);
-  assert.match(index,/order-workflow\.js\?v=20261031-1/);
+  assert.match(index,/style\.css\?v=20261031-6/);
+  assert.match(index,/order-workflow\.js\?v=20261031-2/);
 });
 
 test('entrega não duplica comissão antecipada nem reabre comissão já paga',async()=>{

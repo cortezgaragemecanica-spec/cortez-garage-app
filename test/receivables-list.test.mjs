@@ -29,7 +29,7 @@ test('contas a receber aceitam baixa parcial e preservam o saldo restante',async
   for(const label of ['Valor original','Recebido','Saldo','Valor recebido agora','Registrar recebimento parcial','Recebimento parcial registrado'])assert.ok(admin.includes(label));
   assert.match(admin,/function receivablePaymentInfo\(record\)/);
   assert.match(admin,/await settleReceivable\(record\.id,account,amount\)/);
-  assert.match(admin,/supabase\.js\?v=20261031-4/);
+  assert.match(admin,/supabase\.js\?v=20261031-5/);
   assert.match(supabase,/export async function settleReceivable\(id,paymentType,amount\)/);
   assert.match(supabase,/status:settled\?'Realizado':'Pendente'/);
   assert.match(supabase,/valor:settled\?Number\(amount\.toFixed\(2\)\):Number\(remaining\.toFixed\(2\)\)/);

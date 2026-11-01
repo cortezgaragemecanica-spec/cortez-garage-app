@@ -1,10 +1,10 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v318-mechanic-request-access';
+const CACHE='cortez-garage-v319-gustavo-permissions';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
   './index.html',
-  './src/style.css?v=20261031-5&w=25',
+  './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20261017-2',
@@ -13,7 +13,7 @@ const SHELL=[
   './src/budget-order.js?v=20261017-1',
   './src/pdf-order.js?v=20261017-1',
   './src/owner-diagnosis-observation.js?v=20261031-1',
-  './src/order-workflow.js?v=20261031-1',
+  './src/order-workflow.js?v=20261031-2',
   './src/order-stock-links.js?v=20261008-1',
   './src/order-status.js?v=20261009-3',
   './src/delete-order.js?v=20260905-1',
@@ -23,7 +23,7 @@ const SHELL=[
   './src/order-layout.js?v=20261017-1',
   './src/vehicle-table.js?v=20260924-3',
   './src/checklist-history.js?v=20260924-1',
-  './src/shopping.js?v=20261024-1',
+  './src/shopping.js?v=20261031-1',
   './src/shopping-checklist-data.js?v=20261023-8',
   './src/stock.js?v=20261008-1&w=4',
   './src/admin.js?v=20261031-10&w=48',
@@ -31,14 +31,14 @@ const SHELL=[
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
   './src/agenda-enhancements.js?v=20261003-2',
-  './src/service-quote-requests.js?v=20261031-1',
+  './src/service-quote-requests.js?v=20261031-2',
   './src/order-review-requests.js?v=20261009-2',
   './src/technical-report.js?v=20260914-1',
   './src/mechanic-commissions.js?v=20261003-2',
-  './src/help.js?v=20261031-1',
+  './src/help.js?v=20261031-2',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261031-4',
+  './src/supabase.js?v=20261031-5',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/financial-recovery.js?v=20261020-2',
@@ -61,8 +61,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261031-14')return null;
-    url.searchParams.set('release','20261031-14');
+    if(url.searchParams.get('release')==='20261031-15')return null;
+    url.searchParams.set('release','20261031-15');
     return client.navigate(url.href);
   }));
 })()));

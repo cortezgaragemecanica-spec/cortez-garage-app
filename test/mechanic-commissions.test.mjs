@@ -152,7 +152,7 @@ test('ações do orçamento ficam juntas e o salvamento manual confirma os itens
   assert.doesNotMatch(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(access,/canSaveOrders/);
   assert.match(index,/budget-order\.js\?v=20261017-1/);
-  assert.match(index,/order-workflow\.js\?v=20261031-1/);
+  assert.match(index,/order-workflow\.js\?v=20261031-2/);
 
 });
 
@@ -373,7 +373,7 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(style,/#requestParts\{background:#f2c500/);
   assert.match(activity,/shareTextToWhatsApp/);
   assert.match(activity,/shareTextToWhatsApp[\s\S]*?setPackage\("com\.whatsapp"\)[\s\S]*?setPackage\("com\.whatsapp\.w4b"\)/);
-  assert.match(index,/order-workflow\.js\?v=20261031-1/);
+  assert.match(index,/order-workflow\.js\?v=20261031-2/);
   assert.match(index,/access-control\.js\?v=20261009-2/);
 
 });
@@ -423,7 +423,7 @@ test('campo Serviços a executar passa a se chamar Observação',async()=>{
   assert.match(workflow,/field&&field\.placeholder!==placeholder/);
   assert.match(pdf,/paragraph\('Observação',order\.services\)/);
   assert.doesNotMatch(pdf,/Serviços a executar/);
-  assert.match(index,/order-workflow\.js\?v=20261031-1/);
+  assert.match(index,/order-workflow\.js\?v=20261031-2/);
   assert.match(index,/pdf-order\.js\?v=20261017-1/);
 });
 
@@ -472,11 +472,11 @@ test('mecânico solicita orçamento de serviços e proprietário vê a tabela',a
   assert.match(supabase,/entidade:'solicitacao_orcamento_servicos'/);
   assert.match(supabase,/export async function readServiceQuoteRequests/);
   assert.match(style,/#requestServiceQuote/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-1/);
-  assert.match(worker,/service-quote-requests\.js\?v=20261031-1/);
+  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
+  assert.match(worker,/service-quote-requests\.js\?v=20261031-2/);
 });
 
-test('proprietário precifica a solicitação e envia os serviços para a O.S. sem duplicar',async()=>{
+test('proprietário e Gustavo precificam a solicitação e enviam os serviços para a O.S. sem duplicar',async()=>{
   const[service,supabase,budget,style,index,worker]=await Promise.all(['src/service-quote-requests.js','src/supabase.js','src/budget-order.js','src/style.css','index.html','public/sw.js'].map(file=>readFile(file,'utf8')));
   for(const label of ['Abrir solicitação','Descrição do serviço','Mecânico','Valor total','Enviar para a O.S.'])assert.ok(service.includes(label));
   assert.match(service,/function preferredMechanic\(request\)/);
@@ -484,7 +484,7 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(service,/applyImportedOrder\(result,request\)/);
   assert.match(service,/request\.importedAt\?'Enviada para O\.S\.'/);
   assert.match(supabase,/export async function sendServiceQuoteToOrder\(requestId,items\)/);
-  assert.match(supabase,/Somente o proprietário pode enviar solicitações/);
+  assert.match(supabase,/if\(!canAdministerRequests\(\)\)throw new Error\('Seu usuário não pode enviar solicitações/);
   assert.match(supabase,/orderRow\.status==='Entregue'/);
   assert.match(supabase,/sourceRequestId:requestId/);
   assert.match(supabase,/filter\(item=>item\.sourceRequestId===requestId\)/);
@@ -494,9 +494,9 @@ test('proprietário precifica a solicitação e envia os serviços para a O.S. s
   assert.match(service,/cortez:service-quote-imported/);
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
-  assert.match(index,/style\.css\?v=20261031-5/);
+  assert.match(index,/style\.css\?v=20261031-6/);
   assert.match(index,/budget-order\.js\?v=20261017-1/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-1/);
+  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
   assert.match(worker,/boot\.js\?v=20261017-2/);
 
 });
@@ -511,29 +511,29 @@ test('solicitações de serviços ficam no histórico da O.S. fora do PDF e avis
   assert.match(service,/menu\.insertAdjacentElement\('afterend',panel\)/);
   assert.doesNotMatch(pdf,/serviceQuoteHistory|solicitacao_orcamento_servicos/);
   assert.match(style,/@media print\{#serviceQuoteHistory/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-1/);
+  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
 });
 
 test('botão de solicitar orçamento de serviços aparece em azul',async()=>{
   const [style,index,worker]=await Promise.all([read('src/style.css'),read('index.html'),read('public/sw.js')]);
   assert.match(style,/#requestServiceQuote\{[^}]*background:#1764c8;[^}]*color:#fff/);
-  assert.match(index,/style\.css\?v=20261031-5/);
-  assert.match(worker,/style\.css\?v=20261031-5&w=25/);
+  assert.match(index,/style\.css\?v=20261031-6/);
+  assert.match(worker,/style\.css\?v=20261031-6&w=26/);
 
 });
 
-test('somente o proprietário exclui solicitação de orçamento de serviços no banco',async()=>{
+test('proprietário e Gustavo administram solicitações de orçamento de serviços',async()=>{
   const [service,supabase,index,worker]=await Promise.all([read('src/service-quote-requests.js'),read('src/supabase.js'),read('index.html'),read('public/sw.js')]);
-  assert.match(service,/owner\(\)\?deleteButton\(request\):''/);
+  assert.match(service,/canAdministerRequests\(\)\?deleteButton\(request\):''/);
   assert.match(service,/class="danger delete-service-quote"/);
-  assert.match(service,/if\(!owner\(\)\)return;const requestId=button\.dataset\.requestId/);
+  assert.match(service,/if\(!canAdministerRequests\(\)\)return;const requestId=button\.dataset\.requestId/);
   assert.match(service,/confirm\('Excluir permanentemente esta solicitação/);
   assert.match(service,/await deleteServiceQuoteRequest\(requestId\)/);
   assert.match(supabase,/export async function deleteServiceQuoteRequest/);
-  assert.match(supabase,/if\(currentEmail\(\)!==OWNER_EMAIL\)throw new Error\('Somente o proprietário pode excluir/);
+  assert.match(supabase,/if\(!canAdministerRequests\(\)\)throw new Error\('Seu usuário não pode excluir/);
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-1/);
+  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
   assert.match(worker,/boot\.js\?v=20261017-2/);
 
 });
@@ -548,8 +548,8 @@ test('painel de solicitações de peças fica junto ao de orçamentos de serviç
   assert.match(workflow,/renderPartRequestNotification\(\);if\(partRequestsLoading\|\|/);
   assert.match(service,/id='serviceQuoteDashboardAlert'/);
   assert.match(style,/\.part-request-dashboard-alert\{/);
-  assert.match(index,/order-workflow\.js\?v=20261031-1/);
-  assert.match(worker,/order-workflow\.js\?v=20261031-1/);
+  assert.match(index,/order-workflow\.js\?v=20261031-2/);
+  assert.match(worker,/order-workflow\.js\?v=20261031-2/);
 
 });
 
@@ -567,7 +567,7 @@ test('solicitações de peças enviadas ficam recolhidas em Já enviadas e abrem
   assert.match(workflow,/archive\.querySelector\('\.part-request-list'\)\.append\(\.\.\.sentCards\)/);
   assert.match(workflow,/Reenviar para o fornecedor/);
   assert.match(style,/\.part-request-archive summary\{/);
-  assert.match(index,/order-workflow\.js\?v=20261031-1/);
+  assert.match(index,/order-workflow\.js\?v=20261031-2/);
 
 });
 
@@ -578,8 +578,8 @@ test('solicitações de serviços e peças ocupam a tela inteira no computador',
   assert.match(style,/\.os-workflow-modal:has\(\.part-request-list\)/);
   assert.match(style,/\.service-quote-modal>\.check-popup-card\{[^}]*width:100%[^}]*height:calc\(100dvh - 28px\)[^}]*max-height:none/);
   assert.match(style,/\.service-quote-owner-list[^}]*flex:1[^}]*overflow:auto/);
-  assert.match(index,/style\.css\?v=20261031-5/);
-  assert.match(worker,/style\.css\?v=20261031-5&w=25/);
+  assert.match(index,/style\.css\?v=20261031-6/);
+  assert.match(worker,/style\.css\?v=20261031-6&w=26/);
 
 });
 
@@ -645,8 +645,8 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/Selecione o caixa em que o valor foi recebido/);
   assert.match(supabase,/forma_pagamento:paymentType/);
   assert.match(index,/admin\.js\?v=20261031-10/);
-  assert.match(worker,/supabase\.js\?v=20261031-4/);
-  assert.match(worker,/cortez-garage-v318-mechanic-request-access/);
+  assert.match(worker,/supabase\.js\?v=20261031-5/);
+  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -671,9 +671,9 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-popup \.check-popup-card/);
   assert.match(style,/width:min\(1180px/);
   assert.match(style,/\.commission-summary-card b/);
-  assert.match(index,/style\.css\?v=20261031-5/);
+  assert.match(index,/style\.css\?v=20261031-6/);
   assert.match(index,/admin\.js\?v=20261031-10/);
-  assert.match(worker,/cortez-garage-v318-mechanic-request-access/);
+  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
 });
 
 

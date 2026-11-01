@@ -1,4 +1,4 @@
-import{canHandleRequestNotifications,createOrderPurchasePayable,excludeOrderPurchaseChecklistItem,hasPermission,isKauaUser,readOrderPurchaseChecklists,readOrderPurchasePayables,updateOrderPurchaseChecklistItem}from'./supabase.js?v=20261024-1';
+import{canManagePurchaseChecklist,createOrderPurchasePayable,excludeOrderPurchaseChecklistItem,hasPermission,isKauaUser,readOrderPurchaseChecklists,readOrderPurchasePayables,updateOrderPurchaseChecklistItem}from'./supabase.js?v=20261031-5';
 import{purchasedItem,shoppingGroups}from'./shopping-checklist-data.js?v=20261023-8';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
@@ -10,8 +10,8 @@ const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036
 const localOrders=()=>{try{return JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]}catch{return[]}};
 const date=value=>value?new Date(value).toLocaleDateString('pt-BR'):'Sem data';
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const canDeleteItem=()=>hasPermission('editOrders')&&!isKauaUser()&&canHandleRequestNotifications();
-const canLaunchPayable=()=>canHandleRequestNotifications()&&!isKauaUser();
+const canDeleteItem=()=>hasPermission('editOrders')&&!isKauaUser()&&canManagePurchaseChecklist();
+const canLaunchPayable=()=>canManagePurchaseChecklist()&&!isKauaUser();
 const replaceChecklist=saved=>{const index=checklists.findIndex(item=>String(item.orderId)===String(saved.orderId));if(index>=0)checklists[index]=saved;else checklists.push(saved)};
 const payableFor=orderId=>purchasePayables.find(item=>String(item.orderId)===String(orderId)&&String(item.reference||'')===`compras-os-${orderId}`);
 

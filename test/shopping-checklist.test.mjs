@@ -70,9 +70,9 @@ test('aba Compras e persistência do checklist são publicadas no aplicativo',as
   assert.match(supabase,/export async function readOrderPurchasePayables/);
   assert.match(shopping,/createOrderPurchasePayable\(orderId\)/);
   assert.match(shopping,/refreshLinkedPayable\(orderId\)/);
-  assert.match(index,/shopping\.js\?v=20261024-1/);
+  assert.match(index,/shopping\.js\?v=20261031-1/);
   assert.match(worker,/shopping-checklist-data\.js\?v=20261023-8/);
-  assert.match(worker,/cortez-garage-v318-mechanic-request-access/);
+  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
   assert.match(style,/\.shopping-order/);
   assert.match(style,/\.shopping-cost-summary/);
   assert.match(style,/\.shopping-payable/);
