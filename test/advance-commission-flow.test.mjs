@@ -46,7 +46,20 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(admin,/if\(partner\)activePartner=partner;records=await readFinance\(\);popup\.remove\(\);renderArea\(returnArea\)/);
   assert.match(supabase,/people\.length!==1.*Consolide separadamente as comissões de cada pessoa/);
   assert.match(supabase,/os_id:null,referencia:paymentReference/);
-  assert.match(worker,/cortez-garage-v315-partner-commission-details/);
+  assert.match(worker,/cortez-garage-v316-consolidated-partner-payment/);
+});
+
+test('pagamento de sócio relê e baixa todas as comissões pendentes em uma única saída',async()=>{
+  const[supabase,admin]=await Promise.all([read('src/supabase.js'),read('src/admin.js')]);
+  const start=supabase.indexOf('export async function payAllPartnerCommissions'),end=supabase.indexOf('\nexport ',start+20),block=supabase.slice(start,end);
+  assert.match(block,/Somente o proprietário pode pagar as comissões dos sócios/);
+  assert.match(block,/\['Fabiano','Marcelino'\]\.includes\(partner\)/);
+  assert.match(block,/categoria=eq\.\$\{encodeURIComponent\('Comissões'\)\}&status=neq\.Realizado&mecanico=eq/);
+  assert.match(block,/startsWith\('partner-weekly-v2-'\)/);
+  assert.match(block,/return payCommissions\(ids,paymentType,reference\)/);
+  assert.match(admin,/partner\?await payAllPartnerCommissions\(partner,account,reference\):await payCommissions/);
+  assert.match(admin,/paidCount=result\.records\.length,paidTotal=result\.total/);
+  assert.match(admin,/Uma única saída de \$\{money\(paidTotal\)\}/);
 });
 
 test('liberação antecipada pendente pode ser cancelada sem permitir estorno da paga',async()=>{

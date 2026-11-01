@@ -39,10 +39,10 @@ test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
 });
 
 test('publicação invalida os caches do módulo e do estilo',()=>{
-  assert.match(index,/admin\.js\?v=20261031-8/);
+  assert.match(index,/admin\.js\?v=20261031-9/);
   assert.match(index,/style\.css\?v=20261031-5/);
-  assert.match(worker,/cortez-garage-v315-partner-commission-details/);
-  assert.match(worker,/admin\.js\?v=20261031-8&w=46/);
+  assert.match(worker,/cortez-garage-v316-consolidated-partner-payment/);
+  assert.match(worker,/admin\.js\?v=20261031-9&w=47/);
   assert.match(worker,/style\.css\?v=20261031-5&w=25/);
 });
 
