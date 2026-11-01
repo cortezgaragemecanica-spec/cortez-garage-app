@@ -50,9 +50,9 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.settlement-partner-result\{[^}]*display:grid/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261031-7/);
-  assert.match(index,/style\.css\?v=20261031-4/);
-  assert.match(worker,/cortez-garage-v314-archive-weekly-settlement/);
+  assert.match(index,/admin\.js\?v=20261031-8/);
+  assert.match(index,/style\.css\?v=20261031-5/);
+  assert.match(worker,/cortez-garage-v315-partner-commission-details/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
@@ -128,6 +128,20 @@ test('acerto é arquivado quando os dois sócios foram lançados e pode ser cons
   assert.match(admin,/function partnerSettlementArchivedPdfContent\(week\)/);
   assert.match(style,/\.partner-settlement-archive-banner\{/);
   assert.match(style,/\.partner-settlement-archive-list\{/);
+});
+
+test('comissões dos sócios mostram O.S., veículo e divisão entre peças e mão de obra',async()=>{
+  const[admin,style]=await Promise.all(['src/admin.js','src/style.css'].map(read));
+  assert.match(admin,/function partnerCommissionBreakdown\(record\)/);
+  assert.match(admin,/const order=financeOrder\(record\)/);
+  assert.match(admin,/demais\\s\+\(\[\\d\.,\]\+\)\\s\+x/);
+  assert.match(admin,/peças\\s\+\(\[\\d\.,\]\+\)\\s\+x/);
+  assert.match(admin,/function partnerCommissionDescriptionHtml\(record\)/);
+  assert.match(admin,/O\.S\. #\$\{esc\(detail\.number\)\} · \$\{esc\(detail\.vehicle\)\}/);
+  assert.match(admin,/Comissão das peças: \$\{money\(detail\.partsCommission\)\}/);
+  assert.match(admin,/Comissão da mão de obra: \$\{money\(detail\.laborCommission\)\}/);
+  assert.match(admin,/partnerPaymentHistory\?esc\(item\.description\):partnerCommissionDescriptionHtml\(item\)/);
+  assert.match(style,/\.partner-commission-description\{[^}]*white-space:normal/);
 });
 
 test('fechamento mensal usa apenas as comissões lançadas no novo acerto',async()=>{
