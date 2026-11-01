@@ -8,7 +8,7 @@ const SHELL=[
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
   './src/boot.js?v=20261101-9',
-  './src/main.js?v=20261101-2&w=26',
+  './src/main.js?v=20261101-3&w=27',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261017-1',
   './src/pdf-order.js?v=20261017-1',

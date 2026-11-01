@@ -124,7 +124,7 @@ test('ordens entregues são separadas por semana',async()=>{
   assert.match(sql,/numero in \(3, 5, 7, 8, 13, 20, 24, 26, 27\)/);
   assert.match(sql,/set entregue_em = data_entrada::date/);
   assert.match(style,/\.delivered-week-head/);
-  assert.match(index,/main\.js\?v=20261101-2/);
+  assert.match(index,/main\.js\?v=20261101-3/);
 });
 
 test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',async()=>{
@@ -135,7 +135,7 @@ test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',
   assert.doesNotMatch(main,/id="photos"/);
   assert.doesNotMatch(main,/Checklist e fotos/);
   assert.doesNotMatch(main,/compressImage/);
-  assert.match(index,/main\.js\?v=20261101-2/);
+  assert.match(index,/main\.js\?v=20261101-3/);
 });
 
 test('ações do orçamento ficam juntas e o salvamento manual confirma os itens',async()=>{
@@ -275,7 +275,7 @@ test('ano e cor são obrigatórios na nova entrada',async()=>{
   assert.match(main,/function requireVehicleYearAndColor/);
   assert.match(main,/\['year','Ano \*'\],\['color','Cor \*'\]/);
   assert.match(main,/input\.required=true/);
-  assert.match(index,/main\.js\?v=20261101-2/);
+  assert.match(index,/main\.js\?v=20261101-3/);
 
 });
 
@@ -286,7 +286,7 @@ test('telefone cadastrado abre seleção entre veículo existente e novo veícul
   for(const label of ['CLIENTE LOCALIZADO','Incluir este veículo','Incluir novo veículo','Nenhum veículo cadastrado para este cliente.'])assert.ok(main.includes(label));
   assert.match(main,/clientVehiclePopup\(client,input\)/);
   assert.match(style,/\.entry-client-vehicles/);
-  assert.match(index,/main\.js\?v=20261101-2/);
+  assert.match(index,/main\.js\?v=20261101-3/);
 
 });
 
@@ -298,7 +298,7 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   assert.match(main,/peopleSearch=e\.target\.value;peoplePage=1;render\(\)/);
   assert.match(main,/paginate\(filtered,peoplePage,30\)/);
   assert.match(style,/\.people-toolbar/);
-  assert.match(index,/main\.js\?v=20261101-2/);
+  assert.match(index,/main\.js\?v=20261101-3/);
 
 });
 
@@ -454,8 +454,8 @@ test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',asy
   assert.match(supabase,/const editableRows=insertOnly\?\[\]/);
   assert.match(supabase,/patchOrderRow\(token,source\|\|\{id:remote\.id,number:row\.numero\},remote,row/);
   assert.doesNotMatch(supabase,/upsert\(token,'ordens_servico',rows,'numero'\)/);
-  assert.match(index,/main\.js\?v=20261101-2/);
-  assert.match(worker,/main\.js\?v=20261101-2&w=26/);
+  assert.match(index,/main\.js\?v=20261101-3/);
+  assert.match(worker,/main\.js\?v=20261101-3&w=27/);
 });
 
 test('mecânico solicita orçamento de serviços e proprietário vê a tabela',async()=>{

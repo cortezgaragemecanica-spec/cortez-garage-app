@@ -12,10 +12,10 @@ test('sincronização inicial não baixa todas as fotos das O.S.',async()=>{
   assert.match(supabase,/photosLoaded:row\.fotos!==undefined/);
 });
 
-test('fotos são consultadas sob demanda sem serem apagadas ao salvar',async()=>{
+test('seção de consulta de fotos removida preserva fotos antigas ao salvar',async()=>{
   const[main,supabase]=await Promise.all([read('src/main.js'),read('src/supabase.js')]);
-  assert.match(main,/Consultar fotos do veículo/);
-  assert.match(main,/await readOrderPhotos\(order\.id\)/);
+  assert.doesNotMatch(main,/Consultar fotos do veículo/);
+  assert.doesNotMatch(main,/mountOrderPhotoLoader/);
   assert.match(supabase,/order\.photosLoaded===false\?current\.fotos\|\|\[\]/);
   assert.match(supabase,/item\.photosLoaded===false\?remote\?\.fotos\|\|\[\]/);
 });
