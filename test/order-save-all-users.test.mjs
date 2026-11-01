@@ -31,6 +31,6 @@ test('todo usuário autenticado pode criar editar e concluir O.S.',async()=>{
 test('permissões financeiras e administrativas continuam independentes',async()=>{
   const[supabase,sql]=await Promise.all([read('src/supabase.js'),read('supabase/liberar-salvamento-os-todos-usuarios.sql')]);
   assert.doesNotMatch(sql,/p_permissao in \([^)]*viewFinance/);
-  assert.match(supabase,/function requireFinanceViewing\(\)\{if\(!hasPermission\('viewFinance'\)\)/);
+  assert.match(supabase,/function requireFinanceViewing\(\)\{if\(isGustavoUser\(\)\|\|!hasPermission\('viewFinance'\)\)/);
   assert.match(supabase,/function requireFinanceEditing\(\)\{if\(currentEmail\(\)!==OWNER_EMAIL\)/);
 });

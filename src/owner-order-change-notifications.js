@@ -1,4 +1,4 @@
-import{getCurrentUser}from'./supabase.js?v=20261031-5';
+import{getCurrentUser}from'./supabase.js?v=20261101-1';
 
 const OWNER='cortezgaragemecanica@gmail.com';
 const GUSTAVO_EMAILS=new Set(['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com']);

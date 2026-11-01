@@ -11,7 +11,7 @@ test('painel permite controlar entrada, edição de O.S. e visualização financ
   assert.match(admin,/toggle-user-finance[\s\S]*viewFinance:!user\.permissions\?\.viewFinance/);
   for(const permission of ['createEntries','editOrders','viewFinance','viewPartnerCommissions'])assert.match(supabase,new RegExp(permission));
   assert.match(supabase,/isMarcelino[\s\S]*createEntries:false,editOrders:false,viewFinance:true,viewPartnerCommissions:true/);
-  assert.match(admin,/canViewPartnerCommissions=\(\)=>financeOwner\(\)\|\|hasPermission\('viewPartnerCommissions'\)/);
+  assert.match(admin,/canViewPartnerCommissions=\(\)=>!isGustavoUser\(\)&&\(financeOwner\(\)\|\|hasPermission\('viewPartnerCommissions'\)\)/);
 });
 
 test('todo usuário autenticado altera O.S. e o Financeiro continua protegido',async()=>{

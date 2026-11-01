@@ -15,7 +15,7 @@ test('backup no computador usa download direto em vez do compartilhamento',()=>{
 });
 
 test('versão publicada inclui a correção do backup no PC',()=>{
-  assert.match(index,/admin\.js\?v=20261031-10&amp;w=48/);
-  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
-  assert.match(worker,/admin\.js\?v=20261031-10&w=48/);
+  assert.match(index,/admin\.js\?v=20261101-1&amp;w=49/);
+  assert.match(worker,/cortez-garage-v320-gustavo-no-finance/);
+  assert.match(worker,/admin\.js\?v=20261101-1&w=49/);
 });

@@ -58,6 +58,7 @@ const currentEmail=()=>getCurrentUser().email.trim().toLowerCase();
 export const canAdministerRequests=()=>currentEmail()===OWNER_EMAIL||GUSTAVO_EMAILS.has(currentEmail());
 export const canHandleRequestNotifications=()=>canAdministerRequests()||KAUA_EMAILS.has(currentEmail());
 export const canManagePurchaseChecklist=()=>currentEmail()===OWNER_EMAIL||KAUA_EMAILS.has(currentEmail());
+export const isGustavoUser=()=>GUSTAVO_EMAILS.has(currentEmail());
 export const isKauaUser=()=>KAUA_EMAILS.has(currentEmail());
 export const canManageLuizinhoNotes=()=>currentEmail()===OWNER_EMAIL||KAUA_EMAILS.has(currentEmail());
 export function canManageServices(){return hasPermission('manageValues')}
@@ -669,7 +670,7 @@ const normalizeManagedUsers=value=>{
   const saved=Array.isArray(value)?value:[],byEmail=new Map(MANAGED_USER_DEFAULTS.map(item=>[item.email,{...item,permissions:{...ALL_USER_PERMISSIONS,...item.permissions}}]));
   for(const item of saved){
     const email=normalizeEmail(item?.email);if(!email)continue;
-    const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}},agendaMechanic=clean(item.agendaMechanic)||previous.agendaMechanic||defaultMechanicForEmail(email),name=clean(item.name)||previous.name,isMarcelino=name.toLowerCase().split(/\s+/).includes('marcelino'),spectatorDefaults=isMarcelino?{createEntries:false,editOrders:false,viewFinance:true,viewPartnerCommissions:true}:{},required=GUSTAVO_EMAILS.has(email)?{manageValues:true,addOrderItems:true,viewDelivered:true,createEntries:true,editOrders:true}:{};
+    const previous=byEmail.get(email)||{name:email.split('@')[0],email,active:true,agendaMechanic:'',permissions:{...ALL_USER_PERMISSIONS}},agendaMechanic=clean(item.agendaMechanic)||previous.agendaMechanic||defaultMechanicForEmail(email),name=clean(item.name)||previous.name,isMarcelino=name.toLowerCase().split(/\s+/).includes('marcelino'),spectatorDefaults=isMarcelino?{createEntries:false,editOrders:false,viewFinance:true,viewPartnerCommissions:true}:{},required=GUSTAVO_EMAILS.has(email)?{manageValues:true,addOrderItems:true,viewDelivered:true,createEntries:true,editOrders:true,viewFinance:false,viewPartnerCommissions:false}:{};
     byEmail.set(email,{...previous,...item,email,name,active:item.active!==false,agendaMechanic,permissions:{...previous.permissions,...spectatorDefaults,...item.permissions,...required}})
   }
   return[...byEmail.values()]
@@ -680,7 +681,7 @@ export function getManagedUser(email=currentEmail()){return getCachedManagedUser
 const ORDER_SAVE_PERMISSIONS=new Set(['createEntries','editOrders','readyOrders']);
 export function hasPermission(permission){if(currentEmail()===OWNER_EMAIL)return true;const user=getManagedUser();if(ORDER_SAVE_PERMISSIONS.has(permission))return !user||user.active!==false&&user.permissions?.accessApp!==false;if(!user)return['accessApp','manageValues','viewDelivered'].includes(permission);return user.active!==false&&user.permissions?.accessApp!==false&&user.permissions?.[permission]===true}
 function requireOrderEditing(){if(!hasPermission('editOrders'))throw new Error('Seu usuário possui acesso somente para visualizar ordens de serviço.')}
-function requireFinanceViewing(){if(!hasPermission('viewFinance'))throw new Error('A visualização do Financeiro está bloqueada pelo proprietário.')}
+function requireFinanceViewing(){if(isGustavoUser()||!hasPermission('viewFinance'))throw new Error('A visualização do Financeiro está bloqueada pelo proprietário.')}
 function requireFinanceEditing(){if(currentEmail()!==OWNER_EMAIL)throw new Error('O Financeiro está em modo somente leitura para este usuário.')}
 async function userAccessConfig(session){const rows=await request('/rest/v1/sincronizacao?entidade=eq.configuracao&registro_id=eq.usuarios-permissoes&select=id,dados&limit=1',{token:session.access_token});return rows[0]||null}
 export async function readUserAccess(){
@@ -697,6 +698,10 @@ export async function readUserAccess(){
   if(!migrations.gustavoFullOrders20261031){
     for(const user of users)if(GUSTAVO_EMAILS.has(user.email))Object.assign(user.permissions,{manageValues:true,addOrderItems:true,viewDelivered:true,createEntries:true,editOrders:true});
     nextMigrations.gustavoFullOrders20261031=true;changed=true;
+  }
+  if(!migrations.gustavoNoFinance20261101){
+    for(const user of users)if(GUSTAVO_EMAILS.has(user.email))Object.assign(user.permissions,{viewFinance:false,viewPartnerCommissions:false});
+    nextMigrations.gustavoNoFinance20261101=true;changed=true;
   }
   if(!changed)return cacheManagedUsers(users);
   const body={origem:'app',entidade:'configuracao',registro_id:'usuarios-permissoes',dados:{...row?.dados,users,permissionMigrations:nextMigrations,updatedAt:new Date().toISOString()}};

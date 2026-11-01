@@ -16,6 +16,6 @@ test('botão de diagnóstico libera proprietário, Fábio, Tony e Gustavo',()=>{
   assert.match(module,/if\(!requestAccess\(\)\)return alert\('Solicite pelo grupo do WhatsApp Diagnóstico e Observações\.'\)/);
   assert.match(module,/_persistTextFields/);
   assert.match(html,/owner-diagnosis-observation\.js\?v=20261031-1/);
-  assert.match(worker,/cortez-garage-v319-gustavo-permissions/);
+  assert.match(worker,/cortez-garage-v320-gustavo-no-finance/);
   assert.match(worker,/owner-diagnosis-observation\.js\?v=20261031-1/);
 });
