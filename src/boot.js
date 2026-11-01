@@ -1,11 +1,16 @@
-const RELEASE='20261101-4';
+const RELEASE='20261101-5';
 const RELEASE_KEY='cortez-web-release';
-const activateRelease=()=>{
+const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
+const activateRelease=async()=>{
   try{localStorage.setItem(RELEASE_KEY,RELEASE)}catch(error){console.warn('Não foi possível registrar a versão localmente:',error)}
   const url=new URL(location.href);
   if(url.searchParams.get('release')!==RELEASE){url.searchParams.set('release',RELEASE);history.replaceState(history.state,'',url.href)}
+  const cleanup=[];
+  if(window.caches?.keys)cleanup.push(caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key)))));
+  if(navigator.serviceWorker?.getRegistrations)cleanup.push(navigator.serviceWorker.getRegistrations().then(items=>Promise.all(items.map(item=>item.unregister()))));
+  await Promise.race([Promise.allSettled(cleanup),wait(1800)]);
 };
-activateRelease();
+await activateRelease();
 
 const loadModules=async(names,label)=>{
   const results=await Promise.allSettled(names.map(name=>import(name)));

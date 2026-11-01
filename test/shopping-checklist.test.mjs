@@ -72,7 +72,7 @@ test('aba Compras e persistência do checklist são publicadas no aplicativo',as
   assert.match(shopping,/refreshLinkedPayable\(orderId\)/);
   assert.match(index,/shopping\.js\?v=20261031-1/);
   assert.match(worker,/shopping-checklist-data\.js\?v=20261023-8/);
-  assert.match(worker,/cortez-garage-v321-open-fix/);
+  assert.match(worker,/cortez-garage-v322-cache-recovery/);
   assert.match(style,/\.shopping-order/);
   assert.match(style,/\.shopping-cost-summary/);
   assert.match(style,/\.shopping-payable/);
