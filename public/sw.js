@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v317-commitment-window';
+const CACHE='cortez-garage-v318-mechanic-request-access';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './',
@@ -12,8 +12,8 @@ const SHELL=[
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261017-1',
   './src/pdf-order.js?v=20261017-1',
-  './src/owner-diagnosis-observation.js?v=20261017-1',
-  './src/order-workflow.js?v=20261023-1',
+  './src/owner-diagnosis-observation.js?v=20261031-1',
+  './src/order-workflow.js?v=20261031-1',
   './src/order-stock-links.js?v=20261008-1',
   './src/order-status.js?v=20261009-3',
   './src/delete-order.js?v=20260905-1',
@@ -31,11 +31,11 @@ const SHELL=[
   './src/reports.js?v=20260918-1&w=5',
   './src/agenda.js?v=20261003-2',
   './src/agenda-enhancements.js?v=20261003-2',
-  './src/service-quote-requests.js?v=20261017-1',
+  './src/service-quote-requests.js?v=20261031-1',
   './src/order-review-requests.js?v=20261009-2',
   './src/technical-report.js?v=20260914-1',
   './src/mechanic-commissions.js?v=20261003-2',
-  './src/help.js?v=20261024-1',
+  './src/help.js?v=20261031-1',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
   './src/supabase.js?v=20261031-4',
@@ -61,8 +61,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window'});
   await Promise.all(windows.map(client=>{
     const url=new URL(client.url);
-    if(url.searchParams.get('release')==='20261031-13')return null;
-    url.searchParams.set('release','20261031-13');
+    if(url.searchParams.get('release')==='20261031-14')return null;
+    url.searchParams.set('release','20261031-14');
     return client.navigate(url.href);
   }));
 })()));

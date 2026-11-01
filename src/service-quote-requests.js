@@ -1,8 +1,10 @@
-import{acknowledgeServiceQuoteRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261017-1';
+import{acknowledgeServiceQuoteRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261017-1';
 import{isServiceQuotePendingForViewer}from'./request-notification-state.js';
+import{canUseOrderRequestForms}from'./order-request-access.js?v=20261031-1';
 
 const DB_KEY='cortez-garage-v1',OWNER='cortezgaragemecanica@gmail.com';
 const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
+const requestAccess=()=>{const user=getCurrentUser();return canUseOrderRequestForms(user,getManagedUser(user.email))};
 const pendingForViewer=request=>isServiceQuotePendingForViewer(request,getCurrentUser().email);
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -23,7 +25,7 @@ async function renderOrderHistory(force=false){const order=currentOrder(),target
 
 async function openRequestPopup(order){
   if(!order)return;
-  if(!owner())return alert('Solicite pelo grupo do WhatsApp Pedido de Serviços.');
+  if(!requestAccess())return alert('Solicite pelo grupo do WhatsApp Pedido de Serviços.');
   const modal=showModal(`<span class="eyebrow">ORÇAMENTO DE SERVIÇOS</span><h3>Solicitar orçamento · O.S. #${esc(order.number)}</h3><p>${esc([order.vehicle?.plate,order.vehicle?.model,order.vehicle?.year,order.vehicle?.color].filter(Boolean).join(' · '))}</p><div class="part-request-editor service-quote-editor">${row()}</div><button type="button" class="secondary add-quote-row">+ Incluir serviço</button><div class="check-popup-actions"><button type="button" class="secondary cancel-quote">Voltar</button><button type="button" class="primary save-quote">Solicitar e salvar</button></div>`),editor=modal.querySelector('.service-quote-editor');
   const wireRows=()=>editor.querySelectorAll('.remove-quote-row').forEach(button=>button.onclick=()=>{if(editor.children.length>1)button.closest('.service-quote-row').remove()});
   wireRows();modal.querySelector('.add-quote-row').onclick=()=>{editor.insertAdjacentHTML('beforeend',row());wireRows()};modal.querySelector('.cancel-quote').onclick=()=>closeModal(modal);
