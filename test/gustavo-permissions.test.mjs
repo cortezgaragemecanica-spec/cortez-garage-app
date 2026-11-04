@@ -9,7 +9,7 @@ function asUser(email){globalThis.localStorage={getItem:key=>key==='cortez-garag
 
 test('Gustavo recebe as permissões ampliadas sem acesso financeiro de Compras',()=>{
   try{
-    for(const email of ['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com']){
+    for(const email of ['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com','cortezgaragemotorcycles@gmail.com']){
       asUser(email);const user=getManagedUser(email);
       assert.equal(user.permissions.manageValues,true);
       assert.equal(user.permissions.addOrderItems,true);

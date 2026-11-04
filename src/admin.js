@@ -5,7 +5,7 @@ import{getSyncConfig}from'./sync.js';
 import{allocateLuizinhoPayments,isLuizinhoPaymentDescription,luizinhoPaymentWeek}from'./luizinho-payment.js?v=20260923-1';
 import{exportReportPdf}from'./report-pdf-export.js?v=20261031-2';
 import{appliedMechanicAdvanceRows,mechanicAdvanceRows,normalizeCommissionText}from'./mechanic-advances.js?v=20260925-2';
-import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261002-1';
+import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261103-1';
 import{hasSaturdaySchedule,mechanicCommissionWeekEnd,mechanicCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-2';
 import{summarizeMonthlyClosing}from'./monthly-closing.js?v=20261006-1&w=5';
 import{enableProgressiveTables}from'./pagination.js?v=20260930-1';

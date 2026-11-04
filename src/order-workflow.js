@@ -1,9 +1,9 @@
-import{reverseDeliveredOrder,cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261103-1';
+import{reverseDeliveredOrder,cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261103-2';
 import{calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';
 import{resolveOrderStockLinks}from'./order-stock-links.js?v=20261008-1';
 import{createInstallmentPlan,suggestedInstallmentDates}from'./order-installments.js?v=20260928-1';
 import{CARD_FEE_RATES,calculateCardSettlement,cardInstallmentLabel}from'./card-fees.js?v=20261006-1';
-import{canUseOrderRequestForms}from'./order-request-access.js?v=20261031-1';
+import{canUseOrderRequestForms}from'./order-request-access.js?v=20261103-1';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1';
 const owner=()=>getCurrentUser().email.toLowerCase()===OWNER;
