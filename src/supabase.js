@@ -541,6 +541,13 @@ export async function finalizeOrderReady(order,selections=[]){
   }
 }
 
+export async function reverseDeliveredOrder(orderId){
+  if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode estornar a entrega.');
+  const session=await refreshSession();
+  if(!session?.access_token)throw new Error('Sessão expirada');
+  try{return await request('/rest/v1/rpc/estornar_os_entregue',{token:session.access_token,method:'POST',body:{p_order_id:orderId}})}
+  catch(error){if(/PGRST202|schema cache/i.test(error.message||''))throw new Error('Instale a atualização estornar-os-entregue.sql no Supabase para ativar o estorno.');throw error}
+}
 export async function reopenReadyOrder(orderId){
   if(currentEmail()!==OWNER_EMAIL)throw new Error('Somente o proprietário pode reabrir uma O.S. pronta.');
   const session=await refreshSession();

@@ -1,4 +1,4 @@
-import{cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261101-4';
+import{reverseDeliveredOrder,cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261101-4';
 import{calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';
 import{resolveOrderStockLinks}from'./order-stock-links.js?v=20261008-1';
 import{createInstallmentPlan,suggestedInstallmentDates}from'./order-installments.js?v=20260928-1';
@@ -78,6 +78,10 @@ async function commissionReleasePopup(order){
 function installWorkflow(){
   const actions=document.querySelector('.os-head>div:last-child'),status=document.querySelector('#status');if(!actions||!status)return;
   const order=currentOrder(),billing=document.querySelector('.billing'),approval=document.querySelector('.budget-approval');
+  if(owner()&&order?.status==='Entregue'&&!document.querySelector('#reverseDeliveredOs')){
+    const button=document.createElement('button');button.id='reverseDeliveredOs';button.type='button';button.className='danger';button.textContent='↶ Estornar O.S. entregue';
+    button.onclick=async()=>{if(!confirm('Estornar a entrega? A O.S. voltará para Em andamento, as peças voltarão ao estoque e os recebimentos da entrega e comissões pendentes serão estornados. Adiantamentos permanecem registrados. Comissões já pagas impedem o estorno.'))return;button.disabled=true;button.textContent='Estornando…';try{await reverseDeliveredOrder(order.id);order.status='Em andamento';order.deliveredAt=null;order.closingReceipt=null;saveLocalOrder(order);location.reload()}catch(error){button.disabled=false;button.textContent='↶ Estornar O.S. entregue';alert(error.message)}};actions.append(button);
+  }
   for(const option of status.options)if(['Pronto para entrega','Entregue'].includes(option.value)&&option.value!==order?.status)option.disabled=true;
   status.disabled=['Pronto para entrega','Entregue'].includes(order?.status);
   if(!canReady()){const readyOption=status.querySelector('option[value="Pronto para entrega"]');if(readyOption)readyOption.disabled=true}
