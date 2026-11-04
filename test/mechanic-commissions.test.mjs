@@ -177,8 +177,8 @@ test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
   assert.match(pdf,/description:item\.description,brand:item\.brand,quantity:item\.quantity,value:item\.value,refused:item\.refused/);
   assert.doesNotMatch(pdf,/item\.supplier/);
   assert.match(pdf,/\[item\.description,item\.brand\]\.filter\(Boolean\)/);
-  assert.match(index,/pdf-order\.js\?v=20261017-1/);
-  assert.match(worker,/pdf-order\.js\?v=20261017-1/);
+  assert.match(index,/pdf-order\.js\?v=20261104-1/);
+  assert.match(worker,/pdf-order\.js\?v=20261104-1/);
 });
 
 test('contas a pagar possuem pesquisa, agrupamento, edição e pagamento parcial',async()=>{
@@ -424,7 +424,7 @@ test('campo Serviços a executar passa a se chamar Observação',async()=>{
   assert.match(pdf,/paragraph\('Observação',order\.services\)/);
   assert.doesNotMatch(pdf,/Serviços a executar/);
   assert.match(index,/order-workflow\.js\?v=20261103-1/);
-  assert.match(index,/pdf-order\.js\?v=20261017-1/);
+  assert.match(index,/pdf-order\.js\?v=20261104-1/);
 });
 
 test('proprietário altera o markup de todas as peças da O.S.',async()=>{
