@@ -152,7 +152,7 @@ test('ações do orçamento ficam juntas e o salvamento manual confirma os itens
   assert.doesNotMatch(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(access,/canSaveOrders/);
   assert.match(index,/budget-order\.js\?v=20261017-1/);
-  assert.match(index,/order-workflow\.js\?v=20261101-4/);
+  assert.match(index,/order-workflow\.js\?v=20261103-1/);
 
 });
 
@@ -373,7 +373,7 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(style,/#requestParts\{background:#f2c500/);
   assert.match(activity,/shareTextToWhatsApp/);
   assert.match(activity,/shareTextToWhatsApp[\s\S]*?setPackage\("com\.whatsapp"\)[\s\S]*?setPackage\("com\.whatsapp\.w4b"\)/);
-  assert.match(index,/order-workflow\.js\?v=20261101-4/);
+  assert.match(index,/order-workflow\.js\?v=20261103-1/);
   assert.match(index,/access-control\.js\?v=20261009-2/);
 
 });
@@ -423,7 +423,7 @@ test('campo Serviços a executar passa a se chamar Observação',async()=>{
   assert.match(workflow,/field&&field\.placeholder!==placeholder/);
   assert.match(pdf,/paragraph\('Observação',order\.services\)/);
   assert.doesNotMatch(pdf,/Serviços a executar/);
-  assert.match(index,/order-workflow\.js\?v=20261101-4/);
+  assert.match(index,/order-workflow\.js\?v=20261103-1/);
   assert.match(index,/pdf-order\.js\?v=20261017-1/);
 });
 
@@ -548,8 +548,8 @@ test('painel de solicitações de peças fica junto ao de orçamentos de serviç
   assert.match(workflow,/renderPartRequestNotification\(\);if\(partRequestsLoading\|\|/);
   assert.match(service,/id='serviceQuoteDashboardAlert'/);
   assert.match(style,/\.part-request-dashboard-alert\{/);
-  assert.match(index,/order-workflow\.js\?v=20261101-4/);
-  assert.match(worker,/order-workflow\.js\?v=20261101-4/);
+  assert.match(index,/order-workflow\.js\?v=20261103-1/);
+  assert.match(worker,/order-workflow\.js\?v=20261103-1/);
 
 });
 
@@ -567,7 +567,7 @@ test('solicitações de peças enviadas ficam recolhidas em Já enviadas e abrem
   assert.match(workflow,/archive\.querySelector\('\.part-request-list'\)\.append\(\.\.\.sentCards\)/);
   assert.match(workflow,/Reenviar para o fornecedor/);
   assert.match(style,/\.part-request-archive summary\{/);
-  assert.match(index,/order-workflow\.js\?v=20261101-4/);
+  assert.match(index,/order-workflow\.js\?v=20261103-1/);
 
 });
 
@@ -645,7 +645,7 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/Selecione o caixa em que o valor foi recebido/);
   assert.match(supabase,/forma_pagamento:paymentType/);
   assert.match(index,/admin\.js\?v=20261101-1/);
-  assert.match(worker,/supabase\.js\?v=20261101-4/);
+  assert.match(worker,/supabase\.js\?v=20261103-1/);
   assert.match(worker,/cortez-garage-v326-mobile-responsive/);
 });
 
