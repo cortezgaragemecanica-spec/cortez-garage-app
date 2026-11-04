@@ -11,7 +11,7 @@ const SHELL=[
   './src/main.js?v=20261101-3&w=27',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261103-1',
-  './src/pdf-order.js?v=20261017-1',
+  './src/pdf-order.js?v=20261104-1',
   './src/owner-diagnosis-observation.js?v=20261031-1',
   './src/order-workflow.js?v=20261103-1',
   './src/order-stock-links.js?v=20261008-1',
