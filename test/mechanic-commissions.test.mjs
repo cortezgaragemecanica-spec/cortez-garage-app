@@ -151,7 +151,7 @@ test('ações do orçamento ficam juntas e o salvamento manual confirma os itens
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.doesNotMatch(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(access,/canSaveOrders/);
-  assert.match(index,/budget-order\.js\?v=20261017-1/);
+  assert.match(index,/budget-order\.js\?v=20261103-1/);
   assert.match(index,/order-workflow\.js\?v=20261103-1/);
 
 });
@@ -168,8 +168,8 @@ test('compra direta ignora o estoque e peça física exige seleção',async()=>{
   assert.match(budget,/brand:tr\.querySelector/);
   assert.match(budget,/supplier:tr\.querySelector/);
   assert.match(style,/\.part-code-field\[hidden\],#partStockArea\[hidden\]/);
-  assert.match(index,/budget-order\.js\?v=20261017-1/);
-  assert.match(worker,/budget-order\.js\?v=20261017-1/);
+  assert.match(index,/budget-order\.js\?v=20261103-1/);
+  assert.match(worker,/budget-order\.js\?v=20261103-1/);
 });
 
 test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
@@ -437,8 +437,8 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
   assert.match(budget,/querySelector\('\[data-field="margin"\]'\)\.value=markup/);
   assert.match(budget,/autoSave\(\)/);
   assert.match(style,/\.budget-part-actions/);
-  assert.match(index,/budget-order\.js\?v=20261017-1/);
-  assert.match(worker,/budget-order\.js\?v=20261017-1/);
+  assert.match(index,/budget-order\.js\?v=20261103-1/);
+  assert.match(worker,/budget-order\.js\?v=20261103-1/);
 });
 
 test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',async()=>{
@@ -495,7 +495,7 @@ test('proprietário e Gustavo precificam a solicitação e enviam os serviços p
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(index,/budget-order\.js\?v=20261017-1/);
+  assert.match(index,/budget-order\.js\?v=20261103-1/);
   assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
   assert.match(worker,/boot\.js\?v=20261101-9/);
 
@@ -645,7 +645,7 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/Selecione o caixa em que o valor foi recebido/);
   assert.match(supabase,/forma_pagamento:paymentType/);
   assert.match(index,/admin\.js\?v=20261101-1/);
-  assert.match(worker,/supabase\.js\?v=20261103-1/);
+  assert.match(worker,/supabase\.js\?v=20261103-2/);
   assert.match(worker,/cortez-garage-v326-mobile-responsive/);
 });
 

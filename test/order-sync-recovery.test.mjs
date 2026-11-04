@@ -48,6 +48,6 @@ test('publicação invalida o cache dos módulos corrigidos',async()=>{
   const [index,worker]=await Promise.all([read('index.html'),read('public/sw.js')]);
   assert.match(index,/main\.js\?v=20261101-3/);
   assert.match(worker,/main\.js\?v=20261101-3&w=27/);
-  assert.match(worker,/supabase\.js\?v=20261103-1/);
+  assert.match(worker,/supabase\.js\?v=20261103-2/);
   assert.match(worker,/cortez-garage-v326-mobile-responsive/);
 });

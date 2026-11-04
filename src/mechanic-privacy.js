@@ -14,4 +14,11 @@ export const isOwnerEmail=(email=currentUserEmail())=>normalized(email)===OWNER_
 export const isPrivateMechanic=name=>normalized(name)===normalized(PRIVATE_MECHANIC);
 export const mechanicDisplayName=(name,email=currentUserEmail())=>isPrivateMechanic(name)&&!isOwnerEmail(email)?PRIVATE_MECHANIC_MASK:String(name||'');
 export const selectableMechanics=(names,email=currentUserEmail())=>isOwnerEmail(email)?[...names]:names.filter(name=>!isPrivateMechanic(name));
+export function serviceMechanicOptions(names,current='',email=currentUserEmail()){
+  const preferred=['tony','fabio','gustavo','cortez'];
+  return [...new Set([...selectableMechanics(names,email),current].filter(Boolean))].sort((a,b)=>{
+    const ai=preferred.indexOf(normalized(a)),bi=preferred.indexOf(normalized(b));
+    return (ai<0?preferred.length:ai)-(bi<0?preferred.length:bi);
+  });
+}
 export const agendaDisplayName=name=>isPrivateMechanic(name)?PRIVATE_AGENDA_LABEL:String(name||'');

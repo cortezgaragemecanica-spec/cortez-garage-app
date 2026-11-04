@@ -1,6 +1,6 @@
 import{acknowledgeServiceQuoteRequests,canAdministerRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261101-1';
 import{isServiceQuotePendingForViewer}from'./request-notification-state.js';
-import{canUseOrderRequestForms}from'./order-request-access.js?v=20261031-1';
+import{canUseOrderRequestForms}from'./order-request-access.js?v=20261103-1';
 
 const DB_KEY='cortez-garage-v1',OWNER='cortezgaragemecanica@gmail.com';
 const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;

@@ -1,5 +1,5 @@
 import{getCurrentUser,getManagedUser}from'./supabase.js?v=20261023-1';
-import{canUseOrderRequestForms}from'./order-request-access.js?v=20261031-1';
+import{canUseOrderRequestForms}from'./order-request-access.js?v=20261103-1';
 
 const requestAccess=()=>{const user=getCurrentUser();return canUseOrderRequestForms(user,getManagedUser(user.email))};
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));

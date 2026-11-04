@@ -5,7 +5,7 @@ const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036
 
 export function canUseOrderRequestForms(user={},managedUser={}){
   const email=String(user.email||'').trim().toLowerCase();
-  if(email===OWNER_EMAIL)return true;
+  if(email===OWNER_EMAIL||email==='cortezgaragemotorcycles@gmail.com')return true;
   if(AUTHORIZED_MECHANICS.has(normalize(email.split('@')[0])))return true;
   const identities=[user.name,managedUser.name,managedUser.agendaMechanic].map(normalize).filter(Boolean);
   return identities.some(identity=>identity.split(' ').some(name=>AUTHORIZED_MECHANICS.has(name)));

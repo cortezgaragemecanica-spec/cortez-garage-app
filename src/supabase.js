@@ -5,7 +5,7 @@ import{planStockUpsert}from'./stock-save-plan.js?v=20261008-1';
 import{planMechanicCommissionSettlements}from'./commission-settlement.js?v=20261003-2';
 import{repairBudgetAgainstOrderTotals,sameSavedBudget}from'./order-budget-consistency.js?v=20260928-1';
 import{normalizeCreditInstallments}from'./order-installments.js?v=20260928-1';
-import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261002-1';
+import{isPrivateMechanic}from'./mechanic-privacy.js?v=20261103-1';
 import{calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';
 import{calculateCardSettlement,cardInstallmentLabel}from'./card-fees.js?v=20261006-1';
 import{commissionWeekStart,mechanicCommissionWeekStart}from'./mechanic-saturday.js?v=20261003-2';
@@ -22,7 +22,7 @@ const DEFAULT_INACTIVE_MECHANICS=new Set();
 const USER_ACCESS_KEY='cortez-garage-user-access-v1';
 const USAGE_HEARTBEAT_MS=30000;
 const PARTNER_RATES_KEY='cortez-garage-partner-rates-v1';
-const GUSTAVO_EMAILS=new Set(['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com']);
+const GUSTAVO_EMAILS=new Set(['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com','cortezgaragemotorcycles@gmail.com']);
 const FABIO_EMAILS=new Set(['fabiomaier19850901@gmail.com']);
 const KAUA_EMAILS=new Set(['kaugg490@gmail.com','kauavinicius.cortez@gmail.com','kauavinicius.cortezz@gmail.com']);
 const RESTRICTED_SERVICE_EMAILS=new Set([...GUSTAVO_EMAILS,...FABIO_EMAILS,...KAUA_EMAILS]);
@@ -66,7 +66,7 @@ export const canManageLuizinhoNotes=()=>currentEmail()===OWNER_EMAIL||KAUA_EMAIL
 export function canManageServices(){return hasPermission('manageValues')}
 export function canAddOrderItems(){return canManageServices()||hasPermission('addOrderItems')}
 export function canSaveOrders(){return Boolean(getSession()?.access_token)&&hasPermission('editOrders')}
-const defaultMechanicForEmail=email=>GUSTAVO_EMAILS.has(email)?'Gustavo':FABIO_EMAILS.has(email)?'Fabio':'';
+const defaultMechanicForEmail=email=>email==='cortezgaragemotorcycles@gmail.com'?'':GUSTAVO_EMAILS.has(email)?'Gustavo':FABIO_EMAILS.has(email)?'Fabio':'';
 export function agendaMechanicForCurrentUser(){const email=currentEmail(),user=getManagedUser(email);if(user?.active===false)return'';return clean(user?.agendaMechanic)||defaultMechanicForEmail(email)}
 export async function readCurrentMechanicCommissions(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');return request('/rest/v1/rpc/comissoes_semana_mecanico',{token:session.access_token,method:'POST',body:{}})}
 export async function confirmCurrentMechanicCommissions(){const session=await refreshSession();if(!session?.access_token)throw new Error('Sessão expirada');return request('/rest/v1/rpc/conferir_comissoes_semana_mecanico',{token:session.access_token,method:'POST',body:{}})}
@@ -671,6 +671,7 @@ const ALL_USER_PERMISSIONS={accessApp:true,manageValues:true,addOrderItems:false
 const MANAGED_USER_DEFAULTS=[
   {name:'Cortez Garage',email:OWNER_EMAIL,active:true,agendaMechanic:'',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:true,closeOrders:true,createEntries:true,editOrders:true,viewFinance:true,viewPartnerCommissions:true}},
   {name:'Gustavo',email:'gust.cribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:false,closeOrders:true}},
+  {name:'Cortez Motorcycles',email:'cortezgaragemotorcycles@gmail.com',active:true,agendaMechanic:'',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:false,closeOrders:true,viewFinance:false,viewPartnerCommissions:false}},
   {name:'Gustavo',email:'gust.ribas@gmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:false,closeOrders:true}},
   {name:'Gustavo',email:'gust.ribas@hotmail.com',active:true,agendaMechanic:'Gustavo',permissions:{accessApp:true,manageValues:true,addOrderItems:true,viewDelivered:true,readyOrders:false,closeOrders:true}},
   {name:'Fabio',email:'fabiomaier19850901@gmail.com',active:true,agendaMechanic:'Fabio',permissions:{accessApp:true,manageValues:false,viewDelivered:false,readyOrders:false}},
