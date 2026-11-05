@@ -1,4 +1,5 @@
-import{acknowledgeServiceQuoteRequests,canAdministerRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261101-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{acknowledgeServiceQuoteRequests,canAdministerRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261105-1';
 import{isServiceQuotePendingForViewer}from'./request-notification-state.js';
 import{canUseOrderRequestForms}from'./order-request-access.js?v=20261103-1';
 

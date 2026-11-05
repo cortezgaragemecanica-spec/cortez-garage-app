@@ -1,4 +1,5 @@
-import{mechanicDisplayName}from'./mechanic-privacy.js?v=20261103-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{mechanicDisplayName}from'./mechanic-privacy.js?v=20261105-1';
 
 const DATABASE_KEY='cortez-garage-v1';
 const normalizePhone=value=>String(value||'').replace(/\D/g,'');

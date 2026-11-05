@@ -28,9 +28,11 @@ test('comissão pode ser liberada por serviço antes da entrega e paga com saíd
   assert.match(supabase,/export async function recordOrderCommissions/);
   assert.match(supabase,/serviceCommissionReference=\(order,index\)=>`comissao-os-\$\{order\.id\}-servico-\$\{index\+1\}`/);
   assert.match(supabase,/export async function payCommissions/);
-  assert.match(supabase,/Pagamento consolidado de comissões/);
-  assert.match(supabase,/pending\.reduce\(\(sum,row\)=>sum\+Number\(row\.valor\|\|0\),0\)/);
-  assert.match(supabase,/method:'PATCH'[\s\S]*status:'Realizado'/);
+  const sql=await read('supabase/setores-auto-eletrica.sql');
+  assert.match(supabase,/rpc\/pagar_comissoes_setor/);
+  assert.match(sql,/Pagamento consolidado de comissões/);
+  assert.match(sql,/sum\(valor\)/);
+  assert.match(sql,/update public\.%I set status=''Realizado''/);
   assert.match(admin,/Pagar comissões/);
   assert.match(admin,/Caixa utilizado/);
   assert.match(admin,/await payCommissions\(commissions\.map\(record=>record\.id\),account,reference\)/);
@@ -44,9 +46,12 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(admin,/Incluída no pagamento consolidado/);
   assert.match(admin,/partnerSettlementRecords\(button\.dataset\.person\).*'Comissões sócios'/);
   assert.match(admin,/if\(partner\)activePartner=partner;records=await readFinance\(\);popup\.remove\(\);renderArea\(returnArea\)/);
-  assert.match(supabase,/people\.length!==1.*Consolide separadamente as comissões de cada pessoa/);
-  assert.match(supabase,/os_id:null,referencia:paymentReference/);
-  assert.match(worker,/cortez-garage-v326-mobile-responsive/);
+  const sql=await read('supabase/setores-auto-eletrica.sql');
+  assert.match(sql,/count_selected<>1/);
+  assert.match(sql,/mesma pessoa e setor/);
+  assert.match(sql,/pg_advisory_xact_lock/);
+  assert.match(supabase,/p_setor:ACTIVE_SECTOR,p_ids:selected,p_caixa:paymentType/);
+  assert.match(worker,/cortez-garage-v327-sectors/);
 });
 
 test('pagamento de sócio relê e baixa todas as comissões pendentes em uma única saída',async()=>{
@@ -81,7 +86,7 @@ test('janela de comissões usa tabela ampla no computador e cartões no celular'
   assert.match(style,/\.commission-release-columns,.commission-service-row\{[^}]*grid-template-columns:/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.commission-service-row\{grid-template-columns:1fr 1fr/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(index,/order-workflow\.js\?v=20261103-1/);
+  assert.match(index,/order-workflow\.js\?v=20261105-1/);
 });
 
 test('entrega não duplica comissão antecipada nem reabre comissão já paga',async()=>{

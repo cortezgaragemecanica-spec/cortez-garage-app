@@ -124,7 +124,7 @@ test('ordens entregues são separadas por semana',async()=>{
   assert.match(sql,/numero in \(3, 5, 7, 8, 13, 20, 24, 26, 27\)/);
   assert.match(sql,/set entregue_em = data_entrada::date/);
   assert.match(style,/\.delivered-week-head/);
-  assert.match(index,/main\.js\?v=20261101-3/);
+  assert.match(index,/main\.js\?v=20261105-1/);
 });
 
 test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',async()=>{
@@ -135,7 +135,7 @@ test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',
   assert.doesNotMatch(main,/id="photos"/);
   assert.doesNotMatch(main,/Checklist e fotos/);
   assert.doesNotMatch(main,/compressImage/);
-  assert.match(index,/main\.js\?v=20261101-3/);
+  assert.match(index,/main\.js\?v=20261105-1/);
 });
 
 test('ações do orçamento ficam juntas e o salvamento manual confirma os itens',async()=>{
@@ -151,8 +151,8 @@ test('ações do orçamento ficam juntas e o salvamento manual confirma os itens
   assert.match(workflow,/Veículo pronto para entrega/);
   assert.doesNotMatch(access,/if\(save&&!owner\)save\.remove\(\)/);
   assert.match(access,/canSaveOrders/);
-  assert.match(index,/budget-order\.js\?v=20261103-1/);
-  assert.match(index,/order-workflow\.js\?v=20261103-1/);
+  assert.match(index,/budget-order\.js\?v=20261105-1/);
+  assert.match(index,/order-workflow\.js\?v=20261105-1/);
 
 });
 
@@ -168,8 +168,8 @@ test('compra direta ignora o estoque e peça física exige seleção',async()=>{
   assert.match(budget,/brand:tr\.querySelector/);
   assert.match(budget,/supplier:tr\.querySelector/);
   assert.match(style,/\.part-code-field\[hidden\],#partStockArea\[hidden\]/);
-  assert.match(index,/budget-order\.js\?v=20261103-1/);
-  assert.match(worker,/budget-order\.js\?v=20261103-1/);
+  assert.match(index,/budget-order\.js\?v=20261105-1/);
+  assert.match(worker,/budget-order\.js\?v=20261105-1/);
 });
 
 test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
@@ -177,8 +177,8 @@ test('PDF da O.S. mostra a marca da peça sem expor o fornecedor',async()=>{
   assert.match(pdf,/description:item\.description,brand:item\.brand,quantity:item\.quantity,value:item\.value,refused:item\.refused/);
   assert.doesNotMatch(pdf,/item\.supplier/);
   assert.match(pdf,/\[item\.description,item\.brand\]\.filter\(Boolean\)/);
-  assert.match(index,/pdf-order\.js\?v=20261104-1/);
-  assert.match(worker,/pdf-order\.js\?v=20261104-1/);
+  assert.match(index,/pdf-order\.js\?v=20261105-1/);
+  assert.match(worker,/pdf-order\.js\?v=20261105-1/);
 });
 
 test('contas a pagar possuem pesquisa, agrupamento, edição e pagamento parcial',async()=>{
@@ -191,7 +191,7 @@ test('contas a pagar possuem pesquisa, agrupamento, edição e pagamento parcial
   assert.match(supabase,/status:remaining<=\.01\?'Realizado':'Pendente'/);
   assert.match(supabase,/pagamento-conta-\$\{row\.id\}-\$\{crypto\.randomUUID\(\)\}/);
   assert.match(style,/\.payable-period-group\[hidden\]/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -201,7 +201,7 @@ test('contas pagas são arquivadas e a pesquisa soma apenas saldos em aberto',as
   assert.match(admin,/showPayableArchive\?archived:open/);
   assert.match(admin,/if\(row\.dataset\.payableOpen===['"]true['"]\)openTotal\+=Number/);
   assert.match(admin,/id="payableSearchTotal"/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -211,7 +211,7 @@ test('contas a pagar permitem selecionar a semana e mostram o total pendente do 
   assert.match(admin,/selectedPayableWeek/);
   assert.match(admin,/payablePeriodKey\(record\.dueDate,['"]week['"]\)===selectedPayableWeek/);
   assert.match(admin,/id="payableWeekTotal"/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -222,7 +222,7 @@ test('saúde da empresa detalha cada compromisso previsto ao clicar',async()=>{
   assert.match(admin,/function openCompanyCommitments/);
   assert.match(admin,/wireCompanyHealth\(\)/);
   assert.match(style,/\.company-health-commitments/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -232,7 +232,7 @@ test('cada separação semanal ou mensal de contas mostra o total do período',a
   assert.match(admin,/showPayableArchive\?['"]Total pago['"]:['"]Total em aberto['"]/);
   assert.match(admin,/payablePeriod===['"]week['"]\?['"]Semana['"]:['"]Mês['"]/);
   assert.match(style,/\.payable-period-heading strong/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -243,7 +243,7 @@ test('cada compromisso da saúde abre a lista dos registros que formam o total',
   assert.match(admin,/function openCompanyCommitmentList/);
   assert.match(admin,/data-commitment=/);
   assert.match(style,/\.company-commitment-open/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -255,7 +255,7 @@ test('plano de custos abre os lançamentos registrados por categoria',async()=>{
   assert.match(admin,/expenseKind\(record\.description\)===category/);
   assert.match(admin,/openCostPlanDetails\(row\.dataset\.costCategory\)/);
   assert.match(style,/\.cost-plan-detail-popup/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -266,7 +266,7 @@ test('plano de custos permite informar e salvar valores já pagos',async()=>{
   assert.match(admin,/paid:Number\(row\.querySelector\('\.cost-plan-paid'\)\.value\)\|\|0/);
   assert.match(admin,/não cria uma nova saída no caixa/);
   assert.match(supabase,/paid:item\?\.paid===null\|\|item\?\.paid===undefined\?null/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
 
 });
 
@@ -275,7 +275,7 @@ test('ano e cor são obrigatórios na nova entrada',async()=>{
   assert.match(main,/function requireVehicleYearAndColor/);
   assert.match(main,/\['year','Ano \*'\],\['color','Cor \*'\]/);
   assert.match(main,/input\.required=true/);
-  assert.match(index,/main\.js\?v=20261101-3/);
+  assert.match(index,/main\.js\?v=20261105-1/);
 
 });
 
@@ -286,7 +286,7 @@ test('telefone cadastrado abre seleção entre veículo existente e novo veícul
   for(const label of ['CLIENTE LOCALIZADO','Incluir este veículo','Incluir novo veículo','Nenhum veículo cadastrado para este cliente.'])assert.ok(main.includes(label));
   assert.match(main,/clientVehiclePopup\(client,input\)/);
   assert.match(style,/\.entry-client-vehicles/);
-  assert.match(index,/main\.js\?v=20261101-3/);
+  assert.match(index,/main\.js\?v=20261105-1/);
 
 });
 
@@ -298,7 +298,7 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   assert.match(main,/peopleSearch=e\.target\.value;peoplePage=1;render\(\)/);
   assert.match(main,/paginate\(filtered,peoplePage,30\)/);
   assert.match(style,/\.people-toolbar/);
-  assert.match(index,/main\.js\?v=20261101-3/);
+  assert.match(index,/main\.js\?v=20261105-1/);
 
 });
 
@@ -330,8 +330,8 @@ test('nova entrada gera comprovante em PDF e encaminha para o WhatsApp do client
   assert.match(style,/\.entry-finish-actions/);
   assert.match(receipt,/id='savedEntryReceipt'/);
   assert.match(receipt,/const visibleOrder=/);
-  assert.match(index,/entry-receipt\.js\?v=20260911-2/);
-  assert.match(worker,/entry-receipt\.js\?v=20260911-2/);
+  assert.match(index,/entry-receipt\.js\?v=20261105-1/);
+  assert.match(worker,/entry-receipt\.js\?v=20261105-1/);
 });
 
 test('entrada feita por usuário que não é proprietário abre o PDF e o WhatsApp para o grupo',async()=>{
@@ -373,7 +373,7 @@ test('O.S. recolhe checklist e registra solicitações de peças com aviso ao pr
   assert.match(style,/#requestParts\{background:#f2c500/);
   assert.match(activity,/shareTextToWhatsApp/);
   assert.match(activity,/shareTextToWhatsApp[\s\S]*?setPackage\("com\.whatsapp"\)[\s\S]*?setPackage\("com\.whatsapp\.w4b"\)/);
-  assert.match(index,/order-workflow\.js\?v=20261103-1/);
+  assert.match(index,/order-workflow\.js\?v=20261105-1/);
   assert.match(index,/access-control\.js\?v=20261009-2/);
 
 });
@@ -391,7 +391,7 @@ test('APK recupera falha de carregamento e não bloqueia a abertura com permiss�
   assert.match(activity,/@JavascriptInterface public void requestNotificationPermission/);
   assert.match(activity,/requestCode == NOTIFICATION_REQUEST/);
   assert.match(agenda,/CortezAndroid\?\.requestNotificationPermission/);
-  assert.match(index,/agenda-enhancements\.js\?v=20261003-2/);
+  assert.match(index,/agenda-enhancements\.js\?v=20261105-1/);
   assert.match(gradle,/versionCode 15/);
   assert.match(gradle,/versionName '1\.0\.15'/);
   assert.match(workflow,/android-v1\.0\.15/);
@@ -406,7 +406,7 @@ test('adiantamento e laudo seguem exclusivos, enquanto fechamento usa permissão
   assert.match(technical,/if\(!owner\(\)\)\{document\.querySelector\('#openTechnicalReport'\)\?\.remove\(\)/);
   assert.match(activity,/modal\.querySelector\('\.part-request-editor,\.part-request-list'\)/);
   assert.match(activity,/webView\.evaluateJavascript\(closePartRequest/);
-  assert.match(index,/technical-report\.js\?v=20260914-1/);
+  assert.match(index,/technical-report\.js\?v=20261105-1/);
 });
 
 test('solicitações de peças e serviços usam a liberação dos mecânicos autorizados',async()=>{
@@ -423,8 +423,8 @@ test('campo Serviços a executar passa a se chamar Observação',async()=>{
   assert.match(workflow,/field&&field\.placeholder!==placeholder/);
   assert.match(pdf,/paragraph\('Observação',order\.services\)/);
   assert.doesNotMatch(pdf,/Serviços a executar/);
-  assert.match(index,/order-workflow\.js\?v=20261103-1/);
-  assert.match(index,/pdf-order\.js\?v=20261104-1/);
+  assert.match(index,/order-workflow\.js\?v=20261105-1/);
+  assert.match(index,/pdf-order\.js\?v=20261105-1/);
 });
 
 test('proprietário altera o markup de todas as peças da O.S.',async()=>{
@@ -437,8 +437,8 @@ test('proprietário altera o markup de todas as peças da O.S.',async()=>{
   assert.match(budget,/querySelector\('\[data-field="margin"\]'\)\.value=markup/);
   assert.match(budget,/autoSave\(\)/);
   assert.match(style,/\.budget-part-actions/);
-  assert.match(index,/budget-order\.js\?v=20261103-1/);
-  assert.match(worker,/budget-order\.js\?v=20261103-1/);
+  assert.match(index,/budget-order\.js\?v=20261105-1/);
+  assert.match(worker,/budget-order\.js\?v=20261105-1/);
 });
 
 test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',async()=>{
@@ -454,8 +454,8 @@ test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',asy
   assert.match(supabase,/const editableRows=insertOnly\?\[\]/);
   assert.match(supabase,/patchOrderRow\(token,source\|\|\{id:remote\.id,number:row\.numero\},remote,row/);
   assert.doesNotMatch(supabase,/upsert\(token,'ordens_servico',rows,'numero'\)/);
-  assert.match(index,/main\.js\?v=20261101-3/);
-  assert.match(worker,/main\.js\?v=20261101-3&w=27/);
+  assert.match(index,/main\.js\?v=20261105-1/);
+  assert.match(worker,/main\.js\?v=20261105-1/);
 });
 
 test('mecânico solicita orçamento de serviços e proprietário vê a tabela',async()=>{
@@ -472,8 +472,8 @@ test('mecânico solicita orçamento de serviços e proprietário vê a tabela',a
   assert.match(supabase,/entidade:'solicitacao_orcamento_servicos'/);
   assert.match(supabase,/export async function readServiceQuoteRequests/);
   assert.match(style,/#requestServiceQuote/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
-  assert.match(worker,/service-quote-requests\.js\?v=20261031-2/);
+  assert.match(index,/service-quote-requests\.js\?v=20261105-1/);
+  assert.match(worker,/service-quote-requests\.js\?v=20261105-1/);
 });
 
 test('proprietário e Gustavo precificam a solicitação e enviam os serviços para a O.S. sem duplicar',async()=>{
@@ -495,9 +495,9 @@ test('proprietário e Gustavo precificam a solicitação e enviam os serviços p
   assert.match(budget,/cortez:service-quote-imported/);
   assert.match(style,/\.service-quote-pricing-row/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(index,/budget-order\.js\?v=20261103-1/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
-  assert.match(worker,/boot\.js\?v=20261101-9/);
+  assert.match(index,/budget-order\.js\?v=20261105-1/);
+  assert.match(index,/service-quote-requests\.js\?v=20261105-1/);
+  assert.match(worker,/boot\.js\?v=20261105-1/);
 
 });
 
@@ -511,7 +511,7 @@ test('solicitações de serviços ficam no histórico da O.S. fora do PDF e avis
   assert.match(service,/menu\.insertAdjacentElement\('afterend',panel\)/);
   assert.doesNotMatch(pdf,/serviceQuoteHistory|solicitacao_orcamento_servicos/);
   assert.match(style,/@media print\{#serviceQuoteHistory/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
+  assert.match(index,/service-quote-requests\.js\?v=20261105-1/);
 });
 
 test('botão de solicitar orçamento de serviços aparece em azul',async()=>{
@@ -533,8 +533,8 @@ test('proprietário e Gustavo administram solicitações de orçamento de servi�
   assert.match(supabase,/if\(!canAdministerRequests\(\)\)throw new Error\('Seu usuário não pode excluir/);
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
-  assert.match(index,/service-quote-requests\.js\?v=20261031-2/);
-  assert.match(worker,/boot\.js\?v=20261101-9/);
+  assert.match(index,/service-quote-requests\.js\?v=20261105-1/);
+  assert.match(worker,/boot\.js\?v=20261105-1/);
 
 });
 
@@ -548,8 +548,8 @@ test('painel de solicitações de peças fica junto ao de orçamentos de serviç
   assert.match(workflow,/renderPartRequestNotification\(\);if\(partRequestsLoading\|\|/);
   assert.match(service,/id='serviceQuoteDashboardAlert'/);
   assert.match(style,/\.part-request-dashboard-alert\{/);
-  assert.match(index,/order-workflow\.js\?v=20261103-1/);
-  assert.match(worker,/order-workflow\.js\?v=20261103-1/);
+  assert.match(index,/order-workflow\.js\?v=20261105-1/);
+  assert.match(worker,/order-workflow\.js\?v=20261105-1/);
 
 });
 
@@ -567,7 +567,7 @@ test('solicitações de peças enviadas ficam recolhidas em Já enviadas e abrem
   assert.match(workflow,/archive\.querySelector\('\.part-request-list'\)\.append\(\.\.\.sentCards\)/);
   assert.match(workflow,/Reenviar para o fornecedor/);
   assert.match(style,/\.part-request-archive summary\{/);
-  assert.match(index,/order-workflow\.js\?v=20261103-1/);
+  assert.match(index,/order-workflow\.js\?v=20261105-1/);
 
 });
 
@@ -595,7 +595,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(admin,/allocation\*rates\.Fabiano/);
   assert.match(admin,/allocation\*rates\.Marcelino/);
   assert.match(admin,/Object\.keys\(partnerRateWeeks\).*item<=start/);
-  assert.match(admin,/PARTNER_DISPLAY_RATES=\{Fabiano:\.25,Marcelino:\.2\}/);
+  assert.match(admin,/PARTNER_DISPLAY_RATES=ELECTRICAL_SECTOR\?\{Fabiano:\.45\}:\{Fabiano:\.25,Marcelino:\.2\}/);
   assert.match(admin,/readPartnerCommissionRates\(\)/);
   assert.match(reports,/Object\.keys\(partnerRateWeeks\).*item<=range\.start/);
   assert.match(reports,/Math\.max\(0,profit\)\*rates\.Marcelino/);
@@ -607,9 +607,9 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/partnerCommissionRatesByWeek:weeks/);
   assert.match(supabase,/weekStart!==partnerCommissionWeekStart\(\)/);
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
-  assert.match(index,/reports\.js\?v=20260918-1/);
-  assert.match(worker,/boot\.js\?v=20261101-9/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
+  assert.match(index,/reports\.js\?v=20261105-1/);
+  assert.match(worker,/boot\.js\?v=20261105-1/);
 
 });
 
@@ -644,9 +644,9 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/settleReceivable\(id,paymentType,amount\)/);
   assert.match(supabase,/Selecione o caixa em que o valor foi recebido/);
   assert.match(supabase,/forma_pagamento:paymentType/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
-  assert.match(worker,/supabase\.js\?v=20261103-2/);
-  assert.match(worker,/cortez-garage-v326-mobile-responsive/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
+  assert.match(worker,/supabase\.js\?v=20261105-1/);
+  assert.match(worker,/cortez-garage-v327-sectors/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -672,8 +672,8 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/width:min\(1180px/);
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
-  assert.match(worker,/cortez-garage-v326-mobile-responsive/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
+  assert.match(worker,/cortez-garage-v327-sectors/);
 });
 
 

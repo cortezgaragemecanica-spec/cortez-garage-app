@@ -1,4 +1,5 @@
-import{getCurrentUser,saveTechnicalReport}from'./supabase.js';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{getCurrentUser,saveTechnicalReport}from'./supabase.js?v=20261105-1';
 
 const DB_KEY='cortez-garage-v1';
 const OWNER='cortezgaragemecanica@gmail.com';

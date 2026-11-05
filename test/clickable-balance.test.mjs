@@ -23,7 +23,7 @@ test('detalhamento apresenta todos os componentes da fórmula',()=>{
 });
 
 test('contas a pagar vencidas e do mês vigente entram no balanço',()=>{
-  const start=admin.indexOf('function payableForBalance('),end=admin.indexOf('function totals()',start),context=vm.createContext({localDateOnly:value=>String(value).slice(0,10),Date});
+  const start=admin.indexOf('function payableForBalance('),end=admin.indexOf('function totals()',start),context=vm.createContext({ELECTRICAL_SECTOR:false,ACTIVE_SECTOR:'mecanica',localDateOnly:value=>String(value).slice(0,10),Date});
   const payable=vm.runInContext(`${admin.slice(start,end)};payableForBalance`,context),record=dueDate=>({category:'Conta a pagar',status:'Pendente',dueDate});
   assert.equal(payable(record('2026-09-01'),'2026-10-24'),true);
   assert.equal(payable(record('2026-10-31'),'2026-10-24'),true);
@@ -39,10 +39,10 @@ test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
 });
 
 test('publicação invalida os caches do módulo e do estilo',()=>{
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(worker,/cortez-garage-v326-mobile-responsive/);
-  assert.match(worker,/admin\.js\?v=20261101-1&w=50/);
+  assert.match(worker,/cortez-garage-v327-sectors/);
+  assert.match(worker,/admin\.js\?v=20261105-1/);
   assert.match(worker,/style\.css\?v=20261031-6&w=26/);
 });
 

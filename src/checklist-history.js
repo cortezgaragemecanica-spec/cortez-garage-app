@@ -1,3 +1,4 @@
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
 const DATABASE_KEY='cortez-garage-v1';
 
 const normalizePlate=value=>String(value||'').replace(/[^a-z0-9]/gi,'').toUpperCase();

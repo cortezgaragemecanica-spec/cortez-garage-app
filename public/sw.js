@@ -1,49 +1,52 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v326-mobile-responsive';
+const CACHE='cortez-garage-v327-sectors';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
+  './src/sector-context.js?v=20261105-1',
+  './src/sector-switcher.js?v=20261105-1',
+  './src/sector.css?v=20261105-1',
   './',
   './index.html',
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261101-9',
-  './src/main.js?v=20261101-3&w=27',
+  './src/boot.js?v=20261105-1',
+  './src/main.js?v=20261105-1',
   './src/access-control.js?v=20261009-2',
-  './src/budget-order.js?v=20261103-1',
-  './src/pdf-order.js?v=20261104-1',
+  './src/budget-order.js?v=20261105-1',
+  './src/pdf-order.js?v=20261105-1',
   './src/owner-diagnosis-observation.js?v=20261031-1',
-  './src/order-workflow.js?v=20261103-1',
+  './src/order-workflow.js?v=20261105-1',
   './src/order-stock-links.js?v=20261008-1',
-  './src/order-status.js?v=20261009-3',
-  './src/delete-order.js?v=20260905-1',
-  './src/entry-receipt.js?v=20260911-2',
-  './src/closed-order-receipt.js?v=20261006-1',
+  './src/order-status.js?v=20261105-1',
+  './src/delete-order.js?v=20261105-1',
+  './src/entry-receipt.js?v=20261105-1',
+  './src/closed-order-receipt.js?v=20261105-1',
   './src/dialog-accessibility.js?v=20260924-1',
   './src/order-layout.js?v=20261017-1',
   './src/vehicle-table.js?v=20260924-3',
-  './src/checklist-history.js?v=20260924-1',
-  './src/shopping.js?v=20261031-1',
+  './src/checklist-history.js?v=20261105-1',
+  './src/shopping.js?v=20261105-1',
   './src/shopping-checklist-data.js?v=20261023-8',
-  './src/stock.js?v=20261008-1&w=4',
-  './src/admin.js?v=20261101-1&w=50',
+  './src/stock.js?v=20261105-1',
+  './src/admin.js?v=20261105-1',
   './src/luizinho-returns.js?v=20261009-1',
-  './src/reports.js?v=20260918-1&w=5',
-  './src/agenda.js?v=20261003-2',
-  './src/agenda-enhancements.js?v=20261003-2',
-  './src/service-quote-requests.js?v=20261031-2',
-  './src/order-review-requests.js?v=20261009-2',
-  './src/technical-report.js?v=20260914-1',
+  './src/reports.js?v=20261105-1',
+  './src/agenda.js?v=20261105-1',
+  './src/agenda-enhancements.js?v=20261105-1',
+  './src/service-quote-requests.js?v=20261105-1',
+  './src/order-review-requests.js?v=20261105-1',
+  './src/technical-report.js?v=20261105-1',
   './src/mechanic-commissions.js?v=20261003-2',
   './src/help.js?v=20261031-2',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261103-2',
+  './src/supabase.js?v=20261105-1',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/financial-recovery.js?v=20261020-2',
   './src/mechanic-saturday.js?v=20261003-2',
-  './src/mechanic-privacy.js?v=20261103-1',
+  './src/mechanic-privacy.js?v=20261105-1',
   './manifest.webmanifest',
   './official-logo.png',
   './icons/icon-192.png',
@@ -53,7 +56,7 @@ const CORE=SHELL.filter(path=>[
   './',
   './index.html',
   './src/style.css?v=20261031-6&w=26',
-  './src/boot.js?v=20261101-9',
+  './src/boot.js?v=20261105-1',
   './official-logo.png',
   './icons/icon-192.png'
 ].includes(path));
@@ -69,7 +72,8 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
 })()));
 
 self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET'||!new URL(event.request.url).pathname.startsWith(ROOT))return;
+  const url=new URL(event.request.url);
+  if(event.request.method!=='GET'||url.origin!==self.location.origin||!url.pathname.startsWith(ROOT))return;
   event.respondWith(fetch(event.request).then(response=>{
     if(response.ok)caches.open(CACHE).then(cache=>cache.put(event.request,response.clone()));
     return response;

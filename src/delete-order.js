@@ -1,5 +1,6 @@
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
 const DB_KEY='cortez-garage-v1';
-import{deleteOrder,hasPermission}from'./supabase.js?v=20261017-1';
+import{deleteOrder,hasPermission}from'./supabase.js?v=20261105-1';
 
 const readJson=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')||fallback}catch{return fallback}};
 
