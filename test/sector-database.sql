@@ -1,5 +1,12 @@
 -- Append to the migration before COMMIT, and terminate the combined script
 -- with ROLLBACK. These assertions never persist test records.
+do $tests$
+declare item record;
+begin
+ for item in select * from (values ('BB','Banco do Brasil'),('Banco do Brasil','Banco do Brasil'),('ML','Mercado Livre'),('Cartão de crédito','Mercado Livre'),('cartao debito','Mercado Livre'),('Pix','Dinheiro'),('Dinheiro','Dinheiro'),(null,'Dinheiro'),('Sem movimentação de caixa',null),('Transferido para contas a pagar',null)) cases(payment,account) loop
+  if cortez_ae_private.caixa_lancamento(item.payment) is distinct from item.account then raise exception 'Caixa legado incorreto: %',item.payment; end if;
+ end loop;
+end $tests$;
 create temp table sector_existing_snapshot as select 'ordens_servico' as relation,md5(coalesce(string_agg(to_jsonb(t)::text,'' order by id),'')) as fingerprint from public.ordens_servico t
 union all select 'clientes',md5(coalesce(string_agg(to_jsonb(t)::text,'' order by id),'')) from public.clientes t
 union all select 'veiculos',md5(coalesce(string_agg(to_jsonb(t)::text,'' order by id),'')) from public.veiculos t

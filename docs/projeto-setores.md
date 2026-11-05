@@ -31,6 +31,8 @@ Para testar antes de instalar, substitua o `commit` final pelo conteúdo de `tes
 
 Execute `node --test` e `node scripts/build.mjs` antes de publicar. A suíte inclui isolamento do cache, roteamento de todas as relações operacionais, tentativa de selecionar o setor por URL e regras distintas do acerto de cada setor.
 
+`supabase/setores-caixas-legados.sql` é a correção incremental do consolidado para instalações existentes. Usa o mesmo reconhecimento de caixas do painel atual (BB, ML, cartões e pagamentos antigos), excluindo baixas sem movimentação. Não altera os lançamentos originais.
+
 ## Limites explícitos
 
 Não existe migração automática de O.S. antigas para a Auto elétrica nem divisão automática de uma O.S. entre setores. O consolidado é exclusivo do proprietário. A Mecânica mantém o histórico anterior; identificar quais lançamentos históricos pertencem à elétrica exige conferência antes de qualquer transferência contábil.
