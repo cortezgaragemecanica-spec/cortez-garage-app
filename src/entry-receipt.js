@@ -1,6 +1,6 @@
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{getCurrentUser}from'./supabase.js?v=20261105-2';
+import{getCurrentUser}from'./supabase.js?v=20261105-3';
 
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
 const COMPANY={name:'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Brasil, 5452 — Bamerindus — Itapoá/SC',phone:'(47) 99124-7442',cnpj:'57.757.919/0001-41'};

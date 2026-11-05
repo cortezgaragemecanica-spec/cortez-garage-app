@@ -1,7 +1,7 @@
 import{actorAcrossSectors,rememberSector,routeSector,responseTable}from'./sector-routing.js?v=20261105-2';
 import{sectorRequestPath}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261105-2';
+import{refreshSession,getCurrentUser,getCachedMechanics}from'./supabase.js?v=20261105-3';
 import{agendaDisplayName}from'./mechanic-privacy.js?v=20261105-1';
 import{mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';
 const API='https://pqldixrfvmkwkwbbysyl.supabase.co',KEY='sb_publishable_ZKLf-NFlDWY_kK4KWIW3bw_YZvJkfbe',OWNER='cortezgaragemecanica@gmail.com';

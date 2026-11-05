@@ -1,7 +1,7 @@
 import{itemSector}from'./sector-order-data.js?v=20261105-2';
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261105-2';
+import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261105-3';
 import{mechanicDisplayName,selectableMechanics,serviceMechanicOptions}from'./mechanic-privacy.js?v=20261105-1';
 import{NEW_ORDER_SURCHARGE_RATE,calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';
 

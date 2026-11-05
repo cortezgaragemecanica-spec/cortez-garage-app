@@ -1,6 +1,6 @@
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{acknowledgeServiceQuoteRequests,canAdministerRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261105-2';
+import{acknowledgeServiceQuoteRequests,canAdministerRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261105-3';
 import{isServiceQuotePendingForViewer}from'./request-notification-state.js';
 import{canUseOrderRequestForms}from'./order-request-access.js?v=20261103-1';
 

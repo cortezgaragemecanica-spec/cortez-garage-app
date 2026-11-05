@@ -1,5 +1,5 @@
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{getCurrentUser}from'./supabase.js?v=20261105-2';
+import{getCurrentUser}from'./supabase.js?v=20261105-3';
 
 const OWNER='cortezgaragemecanica@gmail.com';
 const GUSTAVO_EMAILS=new Set(['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com']);
