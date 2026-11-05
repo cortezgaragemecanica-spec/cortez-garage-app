@@ -1,7 +1,8 @@
-import{canManagePurchaseChecklist,createOrderPurchasePayable,excludeOrderPurchaseChecklistItem,hasPermission,isKauaUser,readOrderPurchaseChecklists,readOrderPurchasePayables,updateOrderPurchaseChecklistItem}from'./supabase.js?v=20261101-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{canManagePurchaseChecklist,createOrderPurchasePayable,excludeOrderPurchaseChecklistItem,hasPermission,isKauaUser,readOrderPurchaseChecklists,readOrderPurchasePayables,updateOrderPurchaseChecklistItem}from'./supabase.js?v=20261105-1';
 import{purchasedItem,shoppingGroups}from'./shopping-checklist-data.js?v=20261023-8';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
-import{exportReportPdf}from'./report-pdf-export.js?v=20260904-1';
+import{exportReportPdf}from'./report-pdf-export.js?v=20261105-1';
 
 const DB_KEY='cortez-garage-v1';
 let checklists=[],purchasePayables=[],state='idle',message='',search='',filter='pending',saveQueue=Promise.resolve();

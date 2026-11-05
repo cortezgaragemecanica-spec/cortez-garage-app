@@ -1,3 +1,4 @@
+import{SECTOR_TITLE}from'./sector-context.js?v=20261105-1';
 const WIDTH=1240,HEIGHT=1754,MARGIN=64,CONTENT=WIDTH-MARGIN*2;
 const text=value=>String(value??'').replace(/\s+/g,' ').trim();
 const safeName=value=>text(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9_-]+/gi,'-').replace(/^-+|-+$/g,'')||'Relatorio';
@@ -39,7 +40,7 @@ function reportCanvases(container,title){
 }
 
 export async function exportReportPdf(container,title,{print=false}={}){
-  if(!container)throw new Error('Relatório não encontrado.');
+  if(!container)throw new Error('Relatório não encontrado.');title=`${title} · ${SECTOR_TITLE}`;
   if(print&&!window.CortezAndroid?.savePdf){window.print();return}
   const blob=canvasesToPdf(reportCanvases(container,title)),name=`Cortez-Garage-${safeName(title)}.pdf`;
   if(window.CortezAndroid?.savePdf)return window.CortezAndroid.savePdf(await blobBase64(blob),name);

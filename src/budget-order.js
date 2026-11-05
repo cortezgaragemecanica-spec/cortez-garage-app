@@ -1,5 +1,6 @@
-import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261017-1';
-import{mechanicDisplayName,selectableMechanics,serviceMechanicOptions}from'./mechanic-privacy.js?v=20261103-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{saveOrderValues,getCachedMechanics,readStock,saveStockItems,getCurrentUser,reassignDeliveredServiceMechanic,canSaveOrders as canManageServices,canAddOrderItems,updateOrderStatus}from'./supabase.js?v=20261105-1';
+import{mechanicDisplayName,selectableMechanics,serviceMechanicOptions}from'./mechanic-privacy.js?v=20261105-1';
 import{NEW_ORDER_SURCHARGE_RATE,calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';
 
 const DB_KEY='cortez-garage-v1';

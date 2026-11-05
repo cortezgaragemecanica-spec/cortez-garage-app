@@ -18,8 +18,7 @@ test('acerto semanal é exclusivo do proprietário e substitui o cálculo autom�
   assert.match(admin,/Total recebido/);
   assert.doesNotMatch(admin,/partner-settlement-table/);
   assert.match(admin,/data-launch-partner="\$\{partner\}"/);
-  assert.match(admin,/launchCard\('Fabiano'\)/);
-  assert.match(admin,/launchCard\('Marcelino'\)/);
+  assert.match(admin,/PARTNER_SETTLEMENT_PARTNERS\.map\(launchCard\)/);
   assert.match(admin,/data-cancel-partner="\$\{partner\}"/);
   assert.match(admin,/cancelWeeklyPartnerSettlement/);
   assert.match(admin,/Comissões já pagas não serão alteradas/);
@@ -50,9 +49,9 @@ test('acerto semanal usa cartões fluidos no desktop sem tabela horizontal corta
   assert.match(style,/\.settlement-partner-result\{[^}]*display:grid/);
   assert.match(style,/@media\(max-width:1180px\)\{\.partner-settlement-order footer\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.partner-settlement-breakdown\{grid-template-columns:1fr/);
-  assert.match(index,/admin\.js\?v=20261101-1/);
+  assert.match(index,/admin\.js\?v=20261105-1/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(worker,/cortez-garage-v326-mobile-responsive/);
+  assert.match(worker,/cortez-garage-v327-sectors/);
 });
 
 test('PDF do acerto semanal usa lista própria com fundo branco',async()=>{
@@ -116,7 +115,7 @@ test('cancelamento do acerto remove somente comissões pendentes da semana vigen
 
 test('acerto é arquivado quando os dois sócios foram lançados e pode ser consultado',async()=>{
   const[admin,style]=await Promise.all(['src/admin.js','src/style.css'].map(read));
-  assert.match(admin,/const PARTNER_SETTLEMENT_PARTNERS=\['Fabiano','Marcelino'\]/);
+  assert.match(admin,/const PARTNER_SETTLEMENT_PARTNERS=ELECTRICAL_SECTOR\?\['Fabiano'\]:\['Fabiano','Marcelino'\]/);
   assert.match(admin,/partnerSettlementWeekArchived=weekStart=>PARTNER_SETTLEMENT_PARTNERS\.every/);
   assert.match(admin,/partnerSettlementWeekRecords\(weekStart\)\.some\(record=>record\.mechanic===partner\)/);
   assert.match(admin,/if\(partnerSettlementWeekArchived\(week\.start\)\)return partnerSettlementArchivedHtml\(week\)/);

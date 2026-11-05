@@ -1,35 +1,36 @@
-# Separação Mecânica / Auto elétrica
+# Mecânica e Auto elétrica
 
-## Regras aprovadas
+## Uso
 
-- Proprietário responsável pelos dois setores e único com visão consolidada.
-- Caixas independentes por setor e conta de recebimento.
-- Marcelino não acessa dados, totais, comissões, arquivos nem relatórios da Auto elétrica.
-- Auto elétrica: Fabiano recebe 45% da base líquida do acerto semanal; Marcelino recebe zero.
-- Mecânica mantém percentuais atuais.
-- Pagamento de mecânicos consolida por beneficiário **e setor**, com baixa atômica das comissões e saída no caixa respectivo.
-- O.S. mista: itens explicitamente classificados e único PDF do cliente. A visão da Mecânica não pode conter o total da Auto elétrica.
-- Registros históricos continuam sem classificação. Nenhum rateio ou transferência automática de saldos antigos.
-- Despesas compartilhadas terão rateio explícito, preservando centavos.
+O proprietário troca de setor pelo seletor na lateral ou pelo nome do setor no cabeçalho. A troca recarrega a página; salve o formulário aberto antes de trocar. Cada página fica vinculada a um setor durante toda a sua vida, inclusive com duas abas abertas simultaneamente.
 
-## Implementação inicial
+As mesmas telas de O.S., clientes, veículos, compras, estoque, agenda, caixa, contas, comissões e relatórios trabalham no setor selecionado. A Auto elétrica começa vazia e possui numeração própria. Para serviços dos dois setores, use uma O.S. em cada setor; não há documento misto nesta implementação.
 
-`src/business-sectors.js` contém regras independentes para classificação, divisão dos valores de O.S. mista, rateio em centavos, comissão exclusiva de Fabiano, consolidação de pagamento por setor e cálculo de saldos separados. Os testes cobrem essas regras.
+Em **Caixas dos setores**, o proprietário consulta os três caixas de cada setor e o consolidado. Pode registrar uma transferência ou ratear uma despesa. Transferências geram saída e entrada correspondentes, sem mudar o saldo consolidado. O rateio cria contas a pagar e preserva todos os centavos; só movimenta caixa quando essas contas forem pagas.
 
-Este módulo ainda não está conectado à aplicação publicada. Não altera os saldos existentes.
+## Comissões
 
-## Pendências obrigatórias antes de ativar
+- Auto elétrica: exclusivamente Fabiano, 45% da base líquida do acerto semanal, após os custos, a reserva e a recuperação financeira configuradas naquele setor. A regra abrange peças e mão de obra e é protegida também no banco. Marcelino não recebe comissão da Auto elétrica.
+- Mecânica: conserva as regras e os percentuais atuais.
+- Pagar comissões gera uma saída consolidada por pessoa no caixa do setor aberto. A saída e as baixas acontecem na mesma transação. Repetir o pagamento dos mesmos registros não gera nova saída.
+- Custos fixos da Auto elétrica começam em zero, para configuração explícita. Os custos e saldos da Mecânica não são copiados automaticamente.
 
-1. Criar armazenamento normalizado para projeções setoriais das O.S. mistas, seus itens e lançamentos, sem expor o documento integral a Marcelino.
-2. Aplicar restrições SELECT/INSERT/UPDATE em todas as tabelas envolvidas, inclusive agenda, estoque e compras; auditar rotinas SECURITY DEFINER.
-3. Separar dados sensíveis atualmente guardados em JSON na tabela sincronizacao. Uma política somente em ordens_servico não impede vazamento por configurações, histórico ou relatórios.
-4. Implementar gravação atômica de pagamentos, recebimentos mistos, transferências e estornos por setor. A função atual payCommissions gera uma saída única com os_id nulo e não identifica setor.
-5. Incorporar setor na criação, edição, sincronização, cache por usuário, PDF e filtros. Remover do cache de Marcelino qualquer conteúdo elétrico anterior após confirmação da persistência remota.
-6. Conectar o acerto semanal ao cálculo de 45% da Auto elétrica e proteger essa regra também no banco, sem aceitar comissão de Marcelino enviada pelo cliente.
-7. Incorporar seleção de setor nos caixas, contas e despesas compartilhadas. Totais do usuário devem ser calculados somente com seus setores autorizados.
-8. Validar por usuários reais de teste: Marcelino, proprietário e operacional; testar API direta, O.S. mista, PDF, baixa por setor, estorno, duplicidade e concorrência.
-9. Somente após validação, publicar e ativar a seleção dos novos setores.
+## Isolamento
 
-## Compatibilidade
+`src/sector-context.js` fixa o contexto da página, separa os caches e redireciona as operações. Sessão e identificação do dispositivo são compartilhadas; O.S., estoque, configurações, rascunhos e pendências locais são separados. A integração antiga com a planilha fica indisponível na Auto elétrica.
 
-Não inferir setor pelo nome do mecânico, fornecedor ou descrição. A mesma pessoa pode trabalhar nos dois setores. Não marcar toda a base antiga como Mecânica, nem transformar o saldo atual em saldo inicial dos novos caixas sem classificação conferida.
+`supabase/setores-auto-eletrica.sql` cria novas tabelas `ae_*`, sem copiar registros. Cada tabela exige o proprietário por RLS. As rotinas operacionais são copiadas para um schema privado, com referências redirecionadas às tabelas novas; as entradas públicas de API verificam novamente o proprietário. Os demais usuários, inclusive Marcelino, não recebem dados elétricos nem por consulta direta à API. As tabelas e rotinas originais permanecem preservadas.
+
+Backups novos identificam seu setor e não podem ser restaurados no outro. Backups antigos são reconhecidos como pertencentes à área histórica/Mecânica. Os dados anteriores permanecem na área original, sem classificação ou redistribuição automática de saldos.
+
+## Instalação e validação
+
+A migração é aditiva, transacional e recusa reinstalação sobre um setor já existente. Não execute novamente sobre produção; futuras mudanças precisam de migração incremental. As rotinas privadas representam as versões operacionais instaladas no momento da migração. Ao atualizar uma rotina de O.S., atualize também sua versão elétrica com revisão e testes.
+
+Para testar antes de instalar, substitua o `commit` final pelo conteúdo de `test/sector-database.sql` seguido de `rollback`. O teste exercita persistência, textos longos, reconsulta, UPDATE da mesma O.S., status, estoque sem baixa duplicada, comissão de 45%, pagamento atômico, pagamentos de mecânicos por setor, transferências, rateio e negação de acesso a outro usuário. Compara também as impressões digitais dos registros antigos. Todos os dados de teste são revertidos.
+
+Execute `node --test` e `node scripts/build.mjs` antes de publicar. A suíte inclui isolamento do cache, roteamento de todas as relações operacionais, tentativa de selecionar o setor por URL e regras distintas do acerto de cada setor.
+
+## Limites explícitos
+
+Não existe migração automática de O.S. antigas para a Auto elétrica nem divisão automática de uma O.S. entre setores. O consolidado é exclusivo do proprietário. A Mecânica mantém o histórico anterior; identificar quais lançamentos históricos pertencem à elétrica exige conferência antes de qualquer transferência contábil.

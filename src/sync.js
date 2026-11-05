@@ -1,12 +1,14 @@
+import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
 const CONFIG_KEY='cortez-garage-sync-v1';
 export const DEFAULT_SYNC_URL='https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec';
 
-export function getSyncConfig(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'null')}catch{return null}}
+export function getSyncConfig(){if(ELECTRICAL_SECTOR)return null;try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'null')}catch{return null}}
 export function setSyncConfig(config){localStorage.setItem(CONFIG_KEY,JSON.stringify(config))}
 export function clearSyncConfig(){localStorage.removeItem(CONFIG_KEY)}
 
 async function callMirror(action,data,config=getSyncConfig()){
-  if(!config?.url||!config?.token)throw new Error('Sincronização não configurada');
+  if(ELECTRICAL_SECTOR)throw new Error('A Auto elétrica sincroniza exclusivamente com seu banco separado.');if(!config?.url||!config?.token)throw new Error('Sincronização não configurada');
   let payload,lastError;
   for(let attempt=0;attempt<3;attempt++){
     try{

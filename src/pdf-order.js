@@ -1,9 +1,11 @@
+import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
 import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js?v=20261008-1';
 import {calculateOrderTotals} from './order-surcharge.js?v=20261017-1';
 
 const DB_KEY='cortez-garage-v1';
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
-const COMPANY={name:'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Brasil, 5452 — Bamerindus — Itapoá/SC',phone:'(47) 99124-7442',cnpj:'57.757.919/0001-41'};
+const COMPANY={name:ELECTRICAL_SECTOR?'Cortez Garage · Auto elétrica':'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Brasil, 5452 — Bamerindus — Itapoá/SC',phone:'(47) 99124-7442',cnpj:'57.757.919/0001-41'};
 const readDb=()=>{try{return JSON.parse(localStorage.getItem(DB_KEY)||'null')}catch{return null}};
 const plain=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,' ');
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});

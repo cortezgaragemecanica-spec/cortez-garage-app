@@ -1,4 +1,5 @@
-import{getCurrentUser}from'./supabase.js?v=20261017-1&w=5';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{getCurrentUser}from'./supabase.js?v=20261105-1';
 import{closedOrderReceiptData}from'./closed-order-receipt-data.js?v=20261006-1';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1',LOGO_URL=new URL('../official-logo.png',import.meta.url).href;

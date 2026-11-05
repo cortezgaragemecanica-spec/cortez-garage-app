@@ -6,7 +6,7 @@ const source=await readFile(new URL('../src/admin.js',import.meta.url),'utf8');
 const code=source.slice(source.indexOf('const EXPENSE_RULES='),source.indexOf('function openCostPlanDetails('));
 const payment=(amount=250,extra={})=>({category:'Fluxo de caixa',status:'Realizado',kind:'Saída',description:'Pagamento conta de luz',dueDate:'2026-09-10',amount,...extra});
 function row(records,paid){
- const context=vm.createContext({records,costPlans:paid===undefined?[]:[{month:'2026-09',category:'Luz',planned:250,paid}],activeCostMonth:'2026-09'});
+ const context=vm.createContext({ELECTRICAL_SECTOR:false,ACTIVE_SECTOR:'mecanica',records,costPlans:paid===undefined?[]:[{month:'2026-09',category:'Luz',planned:250,paid}],activeCostMonth:'2026-09'});
  return vm.runInContext(code+`;({row:costPlanRows().find(item=>item.category==='Luz'),entries:costPlanEntries('Luz')})`,context);
 }
 test('luz identificada abate o plano mesmo com zero salvo',()=>{

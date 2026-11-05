@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const source=await readFile(new URL('../src/admin.js',import.meta.url),'utf8');
 const functionSource=source.slice(source.indexOf('function commitmentWindowEnd('),source.indexOf('function companyHealth('));
 function remaining(records,paid=0,extra=[],value='2026-09-25',month='2026-09'){
-  const localDateOnly=input=>{if(!(input instanceof Date))return String(input).slice(0,10);const year=input.getFullYear(),month=String(input.getMonth()+1).padStart(2,'0'),day=String(input.getDate()).padStart(2,'0');return`${year}-${month}-${day}`},context=vm.createContext({records,Date,localDateOnly,FIRST_HALF_FIXED_COSTS:new Set(['Advogado','Contador','Impostos','Luz','Água','Funcionário fixo','Ferramentas']),costPlanRows:()=>[{category:'Aluguel',difference:4000-paid},...extra],expenseKind:description=>/aluguel/i.test(description)?'Aluguel':''});
+  const localDateOnly=input=>{if(!(input instanceof Date))return String(input).slice(0,10);const year=input.getFullYear(),month=String(input.getMonth()+1).padStart(2,'0'),day=String(input.getDate()).padStart(2,'0');return`${year}-${month}-${day}`},context=vm.createContext({ELECTRICAL_SECTOR:false,ACTIVE_SECTOR:'mecanica',records,Date,localDateOnly,FIRST_HALF_FIXED_COSTS:new Set(['Advogado','Contador','Impostos','Luz','Água','Funcionário fixo','Ferramentas']),costPlanRows:()=>[{category:'Aluguel',difference:4000-paid},...extra],expenseKind:description=>/aluguel/i.test(description)?'Aluguel':''});
   return vm.runInContext(functionSource+`remainingFixedCommitments("${month}","${value}")`,context);
 }
 const rent=(amount=4000,dueDate='2026-09-10')=>({category:'Conta a pagar',status:'Pendente',description:'Aluguel da oficina',amount,dueDate});
@@ -51,7 +51,7 @@ test('custos fixos são separados nas quinzenas definidas',()=>{
 });
 
 test('compromissos incluem vencidas e contas até quarta-feira da semana seguinte',()=>{
-  const localDateOnly=input=>{if(!(input instanceof Date))return String(input).slice(0,10);return`${input.getFullYear()}-${String(input.getMonth()+1).padStart(2,'0')}-${String(input.getDate()).padStart(2,'0')}`},context=vm.createContext({Date,localDateOnly}),payable=vm.runInContext(functionSource+';payableForCommitments',context),record=dueDate=>({category:'Conta a pagar',status:'Pendente',dueDate});
+  const localDateOnly=input=>{if(!(input instanceof Date))return String(input).slice(0,10);return`${input.getFullYear()}-${String(input.getMonth()+1).padStart(2,'0')}-${String(input.getDate()).padStart(2,'0')}`},context=vm.createContext({ELECTRICAL_SECTOR:false,ACTIVE_SECTOR:'mecanica',Date,localDateOnly}),payable=vm.runInContext(functionSource+';payableForCommitments',context),record=dueDate=>({category:'Conta a pagar',status:'Pendente',dueDate});
   assert.equal(payable(record('2026-10-01'),'2026-10-30'),true);
   assert.equal(payable(record('2026-11-04'),'2026-10-30'),true);
   assert.equal(payable(record('2026-11-05'),'2026-10-30'),false);

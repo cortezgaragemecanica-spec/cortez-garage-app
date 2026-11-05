@@ -1,4 +1,4 @@
-import{getSyncConfig}from'./sync.js';
+import{getSyncConfig}from'./sync.js?v=20261105-1';
 let recorder,chunks=[],stream,recordTimer;
 const $=s=>document.querySelector(s);
 function blobToData(blob){return new Promise((resolve,reject)=>{const reader=new FileReader;reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)})}
