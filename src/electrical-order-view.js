@@ -7,7 +7,6 @@ const ELECTRICAL_TAGS = [
   ['Polos', /\b(?:um|dois|1|2) polos?\b/],
   ['Pingo', /\bpingos?\b/],
   ['Fusível', /\bfusiv(?:el|eis)\b/],
-  ['Terminal', /\btermina(?:l|is)\b/],
   ['Motor de arranque', /\bmotor (?:de arranque|de partida)\b/],
   ['Alternador', /\balternador(?:es)?\b/],
   ['Regulador de voltagem', /\bregulador de (?:voltagem|tensao)\b/],

@@ -124,7 +124,7 @@ test('ordens entregues são separadas por semana',async()=>{
   assert.match(sql,/numero in \(3, 5, 7, 8, 13, 20, 24, 26, 27\)/);
   assert.match(sql,/set entregue_em = data_entrada::date/);
   assert.match(style,/\.delivered-week-head/);
-  assert.match(index,/main\.js\?v=20261105-4/);
+  assert.match(index,/main\.js\?v=20261105-5/);
 });
 
 test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',async()=>{
@@ -135,7 +135,7 @@ test('nova entrada não pede fotos e vincula o mecânico ao usuário conectado',
   assert.doesNotMatch(main,/id="photos"/);
   assert.doesNotMatch(main,/Checklist e fotos/);
   assert.doesNotMatch(main,/compressImage/);
-  assert.match(index,/main\.js\?v=20261105-4/);
+  assert.match(index,/main\.js\?v=20261105-5/);
 });
 
 test('ações do orçamento ficam juntas e o salvamento manual confirma os itens',async()=>{
@@ -275,7 +275,7 @@ test('ano e cor são obrigatórios na nova entrada',async()=>{
   assert.match(main,/function requireVehicleYearAndColor/);
   assert.match(main,/\['year','Ano \*'\],\['color','Cor \*'\]/);
   assert.match(main,/input\.required=true/);
-  assert.match(index,/main\.js\?v=20261105-4/);
+  assert.match(index,/main\.js\?v=20261105-5/);
 
 });
 
@@ -286,7 +286,7 @@ test('telefone cadastrado abre seleção entre veículo existente e novo veícul
   for(const label of ['CLIENTE LOCALIZADO','Incluir este veículo','Incluir novo veículo','Nenhum veículo cadastrado para este cliente.'])assert.ok(main.includes(label));
   assert.match(main,/clientVehiclePopup\(client,input\)/);
   assert.match(style,/\.entry-client-vehicles/);
-  assert.match(index,/main\.js\?v=20261105-4/);
+  assert.match(index,/main\.js\?v=20261105-5/);
 
 });
 
@@ -298,7 +298,7 @@ test('clientes e veículos possuem pesquisa imediata pelos campos solicitados',a
   assert.match(main,/peopleSearch=e\.target\.value;peoplePage=1;render\(\)/);
   assert.match(main,/paginate\(filtered,peoplePage,30\)/);
   assert.match(style,/\.people-toolbar/);
-  assert.match(index,/main\.js\?v=20261105-4/);
+  assert.match(index,/main\.js\?v=20261105-5/);
 
 });
 
@@ -454,8 +454,8 @@ test('painel inicial mostra O.S. abertas modificadas sem regravar as demais',asy
   assert.match(supabase,/const editableRows=insertOnly\?\[\]/);
   assert.match(supabase,/patchOrderRow\(token,source\|\|\{id:remote\.id,number:row\.numero\},remote,row/);
   assert.doesNotMatch(supabase,/upsert\(token,'ordens_servico',rows,'numero'\)/);
-  assert.match(index,/main\.js\?v=20261105-4/);
-  assert.match(worker,/main\.js\?v=20261105-4/);
+  assert.match(index,/main\.js\?v=20261105-5/);
+  assert.match(worker,/main\.js\?v=20261105-5/);
 });
 
 test('mecânico solicita orçamento de serviços e proprietário vê a tabela',async()=>{
@@ -497,7 +497,7 @@ test('proprietário e Gustavo precificam a solicitação e enviam os serviços p
   assert.match(index,/style\.css\?v=20261031-6/);
   assert.match(index,/budget-order\.js\?v=20261105-2/);
   assert.match(index,/service-quote-requests\.js\?v=20261105-2/);
-  assert.match(worker,/boot\.js\?v=20261105-4/);
+  assert.match(worker,/boot\.js\?v=20261105-5/);
 
 });
 
@@ -534,7 +534,7 @@ test('proprietário e Gustavo administram solicitações de orçamento de servi�
   assert.match(supabase,/entidade=eq\.solicitacao_orcamento_servicos&registro_id=eq/);
   assert.match(supabase,/method:'DELETE',prefer:'return=representation'/);
   assert.match(index,/service-quote-requests\.js\?v=20261105-2/);
-  assert.match(worker,/boot\.js\?v=20261105-4/);
+  assert.match(worker,/boot\.js\?v=20261105-5/);
 
 });
 
@@ -609,7 +609,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
   assert.match(index,/admin\.js\?v=20261105-3/);
   assert.match(index,/reports\.js\?v=20261105-2/);
-  assert.match(worker,/boot\.js\?v=20261105-4/);
+  assert.match(worker,/boot\.js\?v=20261105-5/);
 
 });
 
@@ -646,7 +646,7 @@ test('baixa de conta a receber pergunta valor e caixa e registra a entrada escol
   assert.match(supabase,/forma_pagamento:paymentType/);
   assert.match(index,/admin\.js\?v=20261105-3/);
   assert.match(worker,/supabase\.js\?v=20261105-3/);
-  assert.match(worker,/cortez-garage-v330-tags-eletrica/);
+  assert.match(worker,/cortez-garage-v331-tema-eletrica/);
 });
 
 test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas',async()=>{
@@ -673,7 +673,7 @@ test('painel soma comissões e abre janela ampla com totais e tabelas detalhadas
   assert.match(style,/\.commission-summary-card b/);
   assert.match(index,/style\.css\?v=20261031-6/);
   assert.match(index,/admin\.js\?v=20261105-3/);
-  assert.match(worker,/cortez-garage-v330-tags-eletrica/);
+  assert.match(worker,/cortez-garage-v331-tema-eletrica/);
 });
 
 
