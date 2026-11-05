@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v329-piso-gustavo';
+const CACHE='cortez-garage-v330-tags-eletrica';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './src/sector-context.js?v=20261105-2',
@@ -10,8 +10,11 @@ const SHELL=[
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261105-3',
-  './src/main.js?v=20261105-2',
+  './src/boot.js?v=20261105-4',
+  './src/main.js?v=20261105-4',
+  './src/electrical-order-view.js?v=20261105-4',
+  './src/sector-order-data.js?v=20261105-2',
+  './src/business-sectors.js',
   './src/access-control.js?v=20261009-2',
   './src/budget-order.js?v=20261105-2',
   './src/pdf-order.js?v=20261105-2',
@@ -56,7 +59,7 @@ const CORE=SHELL.filter(path=>[
   './',
   './index.html',
   './src/style.css?v=20261031-6&w=26',
-  './src/boot.js?v=20261105-3',
+  './src/boot.js?v=20261105-4',
   './official-logo.png',
   './icons/icon-192.png'
 ].includes(path));
