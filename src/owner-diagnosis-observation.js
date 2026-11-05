@@ -1,4 +1,4 @@
-import{getCurrentUser,getManagedUser}from'./supabase.js?v=20261105-2';
+import{getCurrentUser,getManagedUser}from'./supabase.js?v=20261105-3';
 import{canUseOrderRequestForms}from'./order-request-access.js?v=20261103-1';
 
 const requestAccess=()=>{const user=getCurrentUser();return canUseOrderRequestForms(user,getManagedUser(user.email))};

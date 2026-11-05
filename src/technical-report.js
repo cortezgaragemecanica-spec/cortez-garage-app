@@ -1,6 +1,6 @@
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{getCurrentUser,saveTechnicalReport}from'./supabase.js?v=20261105-2';
+import{getCurrentUser,saveTechnicalReport}from'./supabase.js?v=20261105-3';
 
 const DB_KEY='cortez-garage-v1';
 const OWNER='cortezgaragemecanica@gmail.com';
