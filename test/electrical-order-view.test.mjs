@@ -5,7 +5,7 @@ import { electricalTags, electricalOrderView } from '../src/electrical-order-vie
 test('identifica tags elétricas com acentos, plurais e limites de palavra', () => {
   assert.deepEqual(electricalTags('Lâmpadas H7, fusíveis e porta-escovas'), ['Lâmpada', 'H7', 'Fusível', 'Porta-escovas']);
   assert.deepEqual(electricalTags('Sensor de ABS, boia do tanque, relé'), ['Sensor de ABS', 'Boia do tanque', 'Relé']);
-  assert.deepEqual(electricalTags('Filtro e pastilha H70'), []);
+  assert.deepEqual(electricalTags('Terminal, terminais, filtro e pastilha H70'), []);
 });
 
 test('a visão elétrica exclui ordens sem itens e mostra só os valores elétricos da ordem mista', () => {

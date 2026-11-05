@@ -1,4 +1,4 @@
-import{electricalOrderView}from'./electrical-order-view.js?v=20261105-4';
+import{electricalOrderView}from'./electrical-order-view.js?v=20261105-5';
 const sectorLabel=order=>order.sector==='mista'?'Mecânica + Auto elétrica':order.sector==='auto_eletrica'?'Auto elétrica':'Mecânica';
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{ACTIVE_SECTOR,ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-2';
