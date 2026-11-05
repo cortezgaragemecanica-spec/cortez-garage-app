@@ -32,7 +32,20 @@ export function electricalTags(description) {
   return ELECTRICAL_TAGS.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
 }
 
+const ELECTRICAL_START_DATE = '2026-11-05';
+const shopDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Sao_Paulo' });
+
+function closedBeforeElectricalStart(order) {
+  if (order.status !== 'Entregue' && order.status !== 'Recusado') return false;
+  const reference = order.status === 'Entregue' && order.deliveredAt ? order.deliveredAt : order.created;
+  if (!reference) return true;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(reference)) return reference < ELECTRICAL_START_DATE;
+  const date = new Date(reference);
+  return !Number.isFinite(date.getTime()) || shopDate.format(date) < ELECTRICAL_START_DATE;
+}
+
 export function electricalOrderView(order) {
+  if (closedBeforeElectricalStart(order)) return null;
   const budget = order.budget || {};
   const classify = item => {
     const tags = electricalTags(item.description);
