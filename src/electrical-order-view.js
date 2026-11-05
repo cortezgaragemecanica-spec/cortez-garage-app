@@ -27,8 +27,12 @@ const ELECTRICAL_TAGS = [
   ['Elétrica', /\b(?:eletric[ao]s?|curto circuito|aterramento|conectores?|conector|solenoides?)\b/],
 ];
 
+const normalizeDescription = description => String(description ?? '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const steeringTerminal = /\btermina(?:l|is) (?:d[ae] )?direcao\b/;
+
 export function electricalTags(description) {
-  const text = String(description ?? '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const text = normalizeDescription(description);
+  if (steeringTerminal.test(text)) return [];
   return ELECTRICAL_TAGS.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
 }
 
@@ -48,6 +52,7 @@ export function electricalOrderView(order) {
   if (closedBeforeElectricalStart(order)) return null;
   const budget = order.budget || {};
   const classify = item => {
+    if (steeringTerminal.test(normalizeDescription(item.description))) return { ...item, tags: [], sector: 'mecanica' };
     const tags = electricalTags(item.description);
     const electrical = item.sector === 'auto_eletrica' || (!item.stockId && tags.length > 0) ||
       (!item.sector && (order.sourceSector === 'auto_eletrica' || order.sector === 'auto_eletrica'));

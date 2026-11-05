@@ -36,3 +36,13 @@ test('Auto elétrica oculta o histórico encerrado e preserva o trabalho antigo 
   assert.ok(electricalOrderView({ ...order, status: 'Entregue', deliveredAt: '2026-11-05T03:00:00Z' }));
   assert.ok(electricalOrderView({ ...order, status: 'Recusado', created: '2026-11-05' }));
 });
+
+test('terminal de direção fica na Mecânica mesmo com classificação elétrica antiga', () => {
+  const steering = { description: 'Terminais da direção elétrica', value: 80, sector: 'auto_eletrica' };
+  const order = { sourceSector: 'auto_eletrica', total: 100, budget: { parts: [steering] } };
+  assert.equal(electricalOrderView(order), null);
+  order.budget.parts.push({ description: 'Lâmpada H4', value: 20 });
+  const view = electricalOrderView(order);
+  assert.equal(view.total, 20);
+  assert.deepEqual(view.budget.parts.map(item => item.description), ['Lâmpada H4']);
+});
