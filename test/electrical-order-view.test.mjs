@@ -22,3 +22,17 @@ test('a visão elétrica exclui ordens sem itens e mostra só os valores elétri
   assert.equal(electricalOrderView({ ...order, budget: { parts: [mechanical] } }), null);
   assert.equal(electricalOrderView({ ...order, budget: { parts: [{ ...electrical, refused: true }] } }), null);
 });
+
+test('Auto elétrica oculta o histórico encerrado e preserva o trabalho antigo em aberto', () => {
+  const order = {
+    created: '2026-11-04T12:00:00-03:00',
+    total: 100,
+    budget: { parts: [{ description: 'Alternador', value: 100 }], services: [] },
+  };
+  assert.equal(electricalOrderView({ ...order, status: 'Entregue', deliveredAt: '2026-11-05T02:59:00Z' }), null);
+  assert.equal(electricalOrderView({ ...order, status: 'Recusado' }), null);
+  assert.ok(electricalOrderView({ ...order, status: 'Em andamento' }));
+  assert.ok(electricalOrderView({ ...order, status: 'Aguardando aprovação' }));
+  assert.ok(electricalOrderView({ ...order, status: 'Entregue', deliveredAt: '2026-11-05T03:00:00Z' }));
+  assert.ok(electricalOrderView({ ...order, status: 'Recusado', created: '2026-11-05' }));
+});
