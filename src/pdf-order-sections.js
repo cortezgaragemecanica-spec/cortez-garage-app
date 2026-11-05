@@ -8,7 +8,8 @@ export function servicePdfSection(order,formatMoney,priceMultiplier=1){
   const budgetOnly=!isExecutionPdf(order);
   const services=order.budget?.services||[];
   const rows=services.map(item=>{
-    const description=`${item.refused?'RECUSADO — ':''}${item.description||'—'}`;
+    const sector=order.sectorMaster||order.sector==='mista'?` · ${item.sector==='auto_eletrica'?'Auto elétrica':'Mecânica'}`:'';
+    const description=`${item.refused?'RECUSADO — ':''}${item.description||'—'}${sector}`;
     const value=item.refused?'R$ 0,00':formatMoney(Number(item.value||0)*priceMultiplier);
     return budgetOnly?[description,value]:[description,mechanicDisplayName(item.mechanic||order.mechanic)||'—',value];
   });

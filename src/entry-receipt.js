@@ -1,5 +1,6 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{getCurrentUser}from'./supabase.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{getCurrentUser}from'./supabase.js?v=20261105-2';
 
 const LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
 const COMPANY={name:'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Brasil, 5452 — Bamerindus — Itapoá/SC',phone:'(47) 99124-7442',cnpj:'57.757.919/0001-41'};
@@ -14,7 +15,7 @@ const phoneDigits=value=>{let digits=String(value||'').replace(/\D/g,'');if((dig
 const defaultMessage=order=>`Olá, ${order.client?.name||'cliente'}. Segue o comprovante de entrada do veículo ${order.vehicle?.model||''} ${order.vehicle?.plate?`(${order.vehicle.plate})`:''}, O.S. #${order.number}.`;
 const groupMessage=order=>`Nova entrada registrada: O.S. #${order.number} · ${order.client?.name||'Cliente'} · ${order.vehicle?.model||'Veículo'} · ${order.vehicle?.plate||'Sem placa'}. Segue o comprovante de entrada em PDF.`;
 const readDb=()=>{try{return JSON.parse(localStorage.getItem('cortez-garage-v1')||'null')}catch{return null}};
-const visibleOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();return readDb()?.orders?.find(order=>String(order.number)===number)};
+const visibleOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();return readDb()?.orders?.find(order=>matchesDisplayedOrder(order,number))};
 function openWhatsAppMessage(order,message){const phone=phoneDigits(order.client?.phone);if(!phone)return alert('O cliente não possui um telefone válido cadastrado.');const link=document.createElement('a');link.href=`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;link.target='_blank';link.rel='noopener';document.body.append(link);link.click();link.remove()}
 
 function drawReceipt(order,logo){

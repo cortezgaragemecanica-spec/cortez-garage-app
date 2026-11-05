@@ -1,5 +1,6 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{getCurrentUser,saveTechnicalReport}from'./supabase.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{getCurrentUser,saveTechnicalReport}from'./supabase.js?v=20261105-2';
 
 const DB_KEY='cortez-garage-v1';
 const OWNER='cortezgaragemecanica@gmail.com';
@@ -9,7 +10,7 @@ const COMPANY={name:'Cortez Garage Mecânica e Auto Elétrica',address:'Av. Bras
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,' ');
 const readDb=()=>{try{return JSON.parse(localStorage.getItem(DB_KEY)||'null')}catch{return null}};
-const currentOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();return readDb()?.orders?.find(order=>String(order.number)===number)};
+const currentOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();return readDb()?.orders?.find(order=>matchesDisplayedOrder(order,number))};
 const checklistHtml=order=>(order.checklist||[]).map(item=>`<div class="technical-check ${item.ok?'ok':''}"><b>${item.ok?'✓':'—'} ${esc(item.label)}</b>${item.subitems?.length?`<small>${item.subitems.map(esc).join(' · ')}</small>`:item.description?`<small>${esc(item.description)}</small>`:''}</div>`).join('')||'<p>Nenhum item registrado.</p>';
 
 function updateLocal(order,report){const db=readDb(),saved=db?.orders?.find(item=>item.id===order.id);if(saved){saved.technicalReport=report;localStorage.setItem(DB_KEY,JSON.stringify(db));document.dispatchEvent(new CustomEvent('cortez:database-updated',{detail:db}))}order.technicalReport=report}
@@ -34,6 +35,6 @@ function previewTechnicalPdf(canvases,blob,fileName){document.querySelector('.te
 async function generateTechnicalPdf(order,button){if(!order.technicalReport)return alert('Clique em Criar laudo técnico e salve o laudo antes de gerar o PDF.');const original=button.textContent;button.disabled=true;button.textContent='Gerando prévia…';try{const canvases=await drawTechnicalReport(order),blob=canvasesToPdf(canvases),fileName=`Cortez-Garage-Laudo-Tecnico-OS-${plain(order.number)}-${plain(order.vehicle?.plate||'sem-placa')}.pdf`;previewTechnicalPdf(canvases,blob,fileName)}catch(error){alert(`Não foi possível gerar o PDF.\n\n${error.message}`)}finally{button.disabled=false;button.textContent=original}}
 
 function openTab(order){if(owner()&&order)tabShell(order,false)}
-function decorate(){if(!owner()){document.querySelector('#openTechnicalReport')?.remove();document.querySelectorAll('.technical-history-link').forEach(button=>button.remove());closeTab();return}const actions=document.querySelector('.os-head>div:last-child');if(actions&&!document.querySelector('#openTechnicalReport')){const button=document.createElement('button');button.id='openTechnicalReport';button.type='button';button.className='secondary';button.textContent='Emitir laudo técnico';button.onclick=()=>openTab(currentOrder());actions.insertBefore(button,document.querySelector('#print'))}document.querySelectorAll('.vehicle-history article').forEach(article=>{if(article.querySelector('.technical-history-link'))return;const number=article.querySelector('header b')?.textContent.match(/#(.+)/)?.[1]?.trim(),order=readDb()?.orders?.find(item=>String(item.number)===number);if(!order?.technicalReport)return;const button=document.createElement('button');button.type='button';button.className='secondary technical-history-link';button.textContent='Laudo técnico salvo';button.onclick=event=>{event.stopPropagation();openTab(order)};article.append(button)})}
+function decorate(){if(!owner()){document.querySelector('#openTechnicalReport')?.remove();document.querySelectorAll('.technical-history-link').forEach(button=>button.remove());closeTab();return}const actions=document.querySelector('.os-head>div:last-child');if(actions&&!document.querySelector('#openTechnicalReport')){const button=document.createElement('button');button.id='openTechnicalReport';button.type='button';button.className='secondary';button.textContent='Emitir laudo técnico';button.onclick=()=>openTab(currentOrder());actions.insertBefore(button,document.querySelector('#print'))}document.querySelectorAll('.vehicle-history article').forEach(article=>{if(article.querySelector('.technical-history-link'))return;const number=article.querySelector('header b')?.textContent.match(/#(.+)/)?.[1]?.trim(),order=readDb()?.orders?.find(item=>matchesDisplayedOrder(item,number));if(!order?.technicalReport)return;const button=document.createElement('button');button.type='button';button.className='secondary technical-history-link';button.textContent='Laudo técnico salvo';button.onclick=event=>{event.stopPropagation();openTab(order)};article.append(button)})}
 new MutationObserver(decorate).observe(document.querySelector('#app'),{childList:true,subtree:true});
 decorate();

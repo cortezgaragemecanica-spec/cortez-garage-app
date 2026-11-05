@@ -1,10 +1,12 @@
-import{ACTIVE_SECTOR,ELECTRICAL_SECTOR,SECTOR_TITLE,SECTOR_OWNER}from'./sector-context.js?v=20261105-1';
-import{getCurrentUser,readSectorCashOverview,transferSectorCash,allocateSectorExpense}from'./supabase.js?v=20261105-1';
+import{ACTIVE_SECTOR,ELECTRICAL_SECTOR,SECTOR_TITLE,SECTOR_OWNER,maySwitchSector,isSectorOperator}from'./sector-context.js?v=20261105-2';
+import{getCurrentUser,getManagedUser,readSectorCashOverview,transferSectorCash,allocateSectorExpense}from'./supabase.js?v=20261105-2';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const accounts=['Banco do Brasil','Mercado Livre','Dinheiro'];
 const owner=()=>getCurrentUser().email.toLowerCase()===SECTOR_OWNER;
+const maySwitch=()=>maySwitchSector(getCurrentUser().email,getManagedUser());
 function switchSector(value){
+ if(!maySwitch())return;
  if(value===ACTIVE_SECTOR)return;
  if(!confirm('Trocar de setor? Salve as alterações abertas antes de continuar.'))return;
  const url=new URL(location.href);url.searchParams.set('sector',value);location.assign(url.href);
@@ -13,14 +15,22 @@ function install(){
  if(!document.querySelector('aside nav'))return;
  document.documentElement.dataset.sector=ACTIVE_SECTOR;
  document.title=`Cortez Garage · ${SECTOR_TITLE}`;
+ const content=document.querySelector('#content');
+ if(content&&!document.querySelector('.sector-operation-banner')){
+  const banner=document.createElement('section');banner.className='sector-operation-banner';
+  const title=document.createElement('strong');title.textContent='Mecânica é o setor principal';banner.append(title);
+  const note=document.createElement('small');note.textContent=isSectorOperator(getCurrentUser().email,getManagedUser())?'O.S., agenda e trabalho dos dois setores na mesma visão.':'Área da Mecânica';banner.append(note);
+  if(maySwitch()){for(const[value,label]of [['mecanica','Mecânica · Principal'],['auto_eletrica','Auto elétrica']]){const button=document.createElement('button');button.type='button';button.className=value===ACTIVE_SECTOR?'primary':'secondary';button.textContent=label;button.setAttribute('aria-pressed',String(value===ACTIVE_SECTOR));button.onclick=()=>switchSector(value);banner.append(button)}}
+  content.before(banner);
+ }
  let bar=document.querySelector('#sectorContext');
  if(!bar){bar=document.createElement('section');bar.id='sectorContext';bar.className='sector-context';document.querySelector('aside nav').before(bar);
   const name=document.createElement('strong');name.textContent=SECTOR_TITLE;bar.append(name);
-  if(owner()){
+  if(maySwitch()){
    const select=document.createElement('select');select.setAttribute('aria-label','Setor da oficina');
    for(const [value,label]of [['mecanica','Mecânica'],['auto_eletrica','Auto elétrica']]){const option=new Option(label,value,value===ACTIVE_SECTOR,value===ACTIVE_SECTOR);select.append(option)}
    select.onchange=()=>{switchSector(select.value);select.value=ACTIVE_SECTOR};bar.append(select);
-   const overview=document.createElement('button');overview.className='secondary';overview.textContent='Caixas dos setores';overview.onclick=openOverview;bar.append(overview);
+   if(owner()){const overview=document.createElement('button');overview.className='secondary';overview.textContent='Caixas dos setores';overview.onclick=openOverview;bar.append(overview)}
   }
  }
  const header=document.querySelector('header .sector-indicator');
@@ -59,3 +69,4 @@ function operationForm(popup,type){
  };
 }
 onUiUpdated(install);
+addEventListener('cortez:user-access-updated',()=>{document.querySelector('.sector-operation-banner')?.remove();document.querySelector('#sectorContext')?.remove();install()});

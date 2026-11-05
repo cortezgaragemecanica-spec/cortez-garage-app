@@ -1,5 +1,6 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{reverseDeliveredOrder,cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{reverseDeliveredOrder,cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261105-2';
 import{calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';
 import{resolveOrderStockLinks}from'./order-stock-links.js?v=20261008-1';
 import{createInstallmentPlan,suggestedInstallmentDates}from'./order-installments.js?v=20260928-1';
@@ -13,7 +14,7 @@ const canReady=()=>hasPermission('readyOrders');
 const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-const currentOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(item=>String(item.number)===number)}catch{return null}};
+const currentOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(item=>matchesDisplayedOrder(item,number))}catch{return null}};
 const saveLocalOrder=order=>{const database=JSON.parse(localStorage.getItem(DB_KEY)||'{}'),index=(database.orders||[]).findIndex(item=>item.id===order.id);if(index>=0)database.orders[index]=order;for(const key of ['clients','vehicles']){const item=key==='clients'?order.client:order.vehicle,found=(database[key]||[]).findIndex(entry=>entry.id===item?.id);if(found>=0)database[key][found]=item}localStorage.setItem(DB_KEY,JSON.stringify(database));document.dispatchEvent(new CustomEvent('cortez:database-updated',{detail:database}))};
 const closeModal=modal=>{modal?.remove();document.body.classList.remove('modal-open')};
 const showModal=html=>{document.querySelector('.os-workflow-modal')?.remove();const modal=document.createElement('div');modal.className='check-popup os-workflow-modal';modal.innerHTML=`<div class="check-popup-card">${html}</div>`;document.body.append(modal);document.body.classList.add('modal-open');return modal};

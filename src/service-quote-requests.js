@@ -1,5 +1,6 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{acknowledgeServiceQuoteRequests,canAdministerRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{acknowledgeServiceQuoteRequests,canAdministerRequests,canHandleRequestNotifications,deleteServiceQuoteRequest,getCachedMechanics,getCurrentUser,getManagedUser,readServiceQuoteRequests,saveServiceQuoteRequest,sendServiceQuoteToOrder}from'./supabase.js?v=20261105-2';
 import{isServiceQuotePendingForViewer}from'./request-notification-state.js';
 import{canUseOrderRequestForms}from'./order-request-access.js?v=20261103-1';
 
@@ -13,7 +14,7 @@ const parseMoney=value=>{const text=String(value??'').trim().replace(/[^\d,.-]/g
 let requests=[],loadedAt=0,loading=false,historyOrderId='',historyLoading=false;
 const deletingIds=new Set(),deletedIds=new Set();
 
-function currentOrder(){const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(order=>String(order.number)===number)}catch{return null}}
+function currentOrder(){const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(order=>matchesDisplayedOrder(order,number))}catch{return null}}
 function closeModal(modal){modal?.remove();if(!document.querySelector('.check-popup'))document.body.classList.remove('modal-open')}
 function showModal(html){document.querySelector('.service-quote-modal')?.remove();const modal=document.createElement('div');modal.className='check-popup os-workflow-modal service-quote-modal';modal.innerHTML=`<div class="check-popup-card">${html}</div>`;document.body.append(modal);document.body.classList.add('modal-open');return modal}
 function row(){return '<div class="part-request-row service-quote-row"><label><span>Quantidade</span><input class="quote-quantity" type="number" min="1" step="1" value="1"></label><label><span>Serviço solicitado</span><input class="quote-description" autocomplete="off"></label><label><span>Motivo (opcional)</span><input class="quote-reason" autocomplete="off"></label><button type="button" class="link remove-quote-row">Excluir item</button></div>'}

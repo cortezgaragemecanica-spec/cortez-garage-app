@@ -6,7 +6,7 @@ const read=file=>readFile(new URL(`../${file}`,import.meta.url),'utf8');
 
 test('nova publicação atualiza sem prender navegador ou atalho em recarregamentos',async()=>{
   const[boot,index,worker]=await Promise.all([read('src/boot.js'),read('index.html'),read('public/sw.js')]);
-  assert.match(boot,/const RELEASE='20261105-1'/);
+  assert.match(boot,/const RELEASE='20261105-2'/);
   assert.match(boot,/localStorage\.setItem\(RELEASE_KEY,RELEASE\)/);
   assert.doesNotMatch(boot,/localStorage\.clear\(\)/);
   assert.match(boot,/url\.searchParams\.set\('release',RELEASE\)/);
@@ -16,9 +16,9 @@ test('nova publicação atualiza sem prender navegador ou atalho em recarregamen
   assert.match(boot,/caches\.keys\(\).*caches\.delete/s);
   assert.match(boot,/getRegistrations.*unregister/s);
   assert.match(boot,/Promise\.race\(\[Promise\.allSettled\(cleanup\),wait\(1800\)\]\)/);
-  assert.match(index,/boot\.js\?v=20261105-1/);
-  assert.match(worker,/boot\.js\?v=20261105-1/);
-  assert.match(worker,/cortez-garage-v327-sectors/);
+  assert.match(index,/boot\.js\?v=20261105-2/);
+  assert.match(worker,/boot\.js\?v=20261105-2/);
+  assert.match(worker,/cortez-garage-v328-consolidated/);
   assert.doesNotMatch(worker,/client\.navigate|clients\.matchAll/);
   assert.match(boot,/mainUrl\.searchParams\.set\('release',RELEASE\)/);
   assert.match(boot,/cachedDatabase\?\.length>1000000/);

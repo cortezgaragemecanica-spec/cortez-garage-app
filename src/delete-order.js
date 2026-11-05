@@ -1,13 +1,14 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
 const DB_KEY='cortez-garage-v1';
-import{deleteOrder,hasPermission}from'./supabase.js?v=20261105-1';
+import{deleteOrder,hasPermission}from'./supabase.js?v=20261105-2';
 
 const readJson=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')||fallback}catch{return fallback}};
 
 async function deleteCurrentOrder(button){
   const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();
   const database=readJson(DB_KEY,{orders:[]});
-  const order=database.orders?.find(item=>String(item.number)===number);
+  const order=database.orders?.find(item=>matchesDisplayedOrder(item,number));
   if(!order)return alert('Não foi possível localizar esta ordem de serviço.');
   if(!confirm(`Excluir permanentemente a OS #${order.number}?\n\nEla será removida do banco e desaparecerá de todos os aparelhos.`))return;
   button.disabled=true;button.textContent='Excluindo…';
