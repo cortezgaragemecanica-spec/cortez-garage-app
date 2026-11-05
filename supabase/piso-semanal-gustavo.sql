@@ -41,8 +41,8 @@ begin
  select coalesce(array_agg(id order by id),'{}'),coalesce(sum(valor),0) into ids_e,saldo_e
  from public.ae_lancamentos_financeiros
  where categoria='Comissões' and lower(trim(mecanico))='gustavo' and status<>'Realizado'
- and vencimento<=hoje and coalesce(semana_inicio,vencimento)<=semana+5
- and (piso or coalesce(semana_inicio,vencimento)>=semana);
+ and coalesce(semana_inicio,vencimento)<=semana+5
+ and ((piso and vencimento<=hoje) or coalesce(semana_inicio,vencimento)>=semana);
  total:=greatest(0,greatest(1100,gerado)-pago);
  eletrica:=case when saldo_m+saldo_e>total and saldo_m+saldo_e>0 then round(total*saldo_e/(saldo_m+saldo_e),2) else least(total,saldo_e) end;
  previa:=jsonb_build_object('week',semana,'earned',gerado,'paid',pago,'total',total,'floor',piso,'electrical',eletrica,'mechanical',total-eletrica,'count',cardinality(ids_m)+cardinality(ids_e),'revision',md5(ids_m::text||ids_e::text||saldo_m::text||':'||saldo_e::text));
