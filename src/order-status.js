@@ -1,5 +1,6 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{updateOrderStatus}from'./supabase.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{updateOrderStatus}from'./supabase.js?v=20261105-2';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 
 const DB_KEY='cortez-garage-v1';
@@ -9,7 +10,7 @@ const OUTSIDE_STATUS='Orçamento fora do pátio';
 function readDatabase(key=DB_KEY){try{return JSON.parse(localStorage.getItem(key)||'null')}catch{return null}}
 function currentOrder(database){
   const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();
-  return(database?.orders||[]).find(order=>String(order.number)===number)||null;
+  return(database?.orders||[]).find(order=>matchesDisplayedOrder(order,number))||null;
 }
 function updateStoredStatus(status,updatedAt){
   const database=readDatabase();

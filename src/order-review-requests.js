@@ -1,11 +1,12 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{applyOrderReviewRequest,canSaveOrders as canManageServices,deleteOrderReviewRequest,getCurrentUser,hasPermission,readOrderReviewRequests,saveOrderReviewRequest}from'./supabase.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{applyOrderReviewRequest,canSaveOrders as canManageServices,deleteOrderReviewRequest,getCurrentUser,hasPermission,readOrderReviewRequests,saveOrderReviewRequest}from'./supabase.js?v=20261105-2';
 
 const DB_KEY='cortez-garage-v1',OWNER='cortezgaragemecanica@gmail.com',esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const owner=()=>String(getCurrentUser().email||'').toLowerCase()===OWNER;
 let requests=[],loadedAt=0,loading=false,historyOrderId='';
 
-function currentOrder(){const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(order=>String(order.number)===number)}catch{return null}}
+function currentOrder(){const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(order=>matchesDisplayedOrder(order,number))}catch{return null}}
 function closeModal(modal){modal?.remove();if(!document.querySelector('.check-popup'))document.body.classList.remove('modal-open')}
 function showModal(html){document.querySelector('.order-review-modal')?.remove();const modal=document.createElement('div');modal.className='check-popup os-workflow-modal order-review-modal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.innerHTML=`<div class="check-popup-card">${html}</div>`;document.body.append(modal);document.body.classList.add('modal-open');return modal}
 const fieldLabel=field=>field==='diagnosis'?'Diagnóstico':'Observação';

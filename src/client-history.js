@@ -1,4 +1,4 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
 import{mechanicDisplayName}from'./mechanic-privacy.js?v=20261105-1';
 
 const DATABASE_KEY='cortez-garage-v1';

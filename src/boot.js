@@ -1,5 +1,5 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-const RELEASE='20261105-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+const RELEASE='20261105-2';
 const RELEASE_KEY='cortez-web-release';
 const DATABASE_CACHE_KEY='cortez-garage-v1';
 const PENDING_DATABASE_KEY='cortez-garage-pending-db-v1';

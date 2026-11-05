@@ -1,4 +1,4 @@
-import{SECTOR_TITLE}from'./sector-context.js?v=20261105-1';
+import{SECTOR_TITLE}from'./sector-context.js?v=20261105-2';
 const WIDTH=1240,HEIGHT=1754,MARGIN=64,CONTENT=WIDTH-MARGIN*2;
 const text=value=>String(value??'').replace(/\s+/g,' ').trim();
 const safeName=value=>text(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9_-]+/gi,'-').replace(/^-+|-+$/g,'')||'Relatorio';

@@ -1,5 +1,6 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{getCurrentUser}from'./supabase.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{getCurrentUser}from'./supabase.js?v=20261105-2';
 import{closedOrderReceiptData}from'./closed-order-receipt-data.js?v=20261006-1';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1',LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
@@ -9,7 +10,7 @@ const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',cur
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const safeName=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'-');
 const loadImage=src=>new Promise((resolve,reject)=>{const image=new Image;image.onload=()=>resolve(image);image.onerror=reject;image.src=src});
-const readOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(order=>String(order.number)===number)}catch{return null}};
+const readOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();try{return(JSON.parse(localStorage.getItem(DB_KEY)||'{}').orders||[]).find(order=>matchesDisplayedOrder(order,number))}catch{return null}};
 const wrap=(ctx,text,maxWidth)=>{const words=String(text||'—').trim().split(/\s+/),lines=[];let line='';for(const word of words){const next=(line+' '+word).trim();if(line&&ctx.measureText(next).width>maxWidth){lines.push(line);line=word}else line=next}if(line)lines.push(line);return lines.length?lines:['—']};
 
 export function drawClosedOrderReceipt(order,logo){

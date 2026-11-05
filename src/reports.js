@@ -1,6 +1,8 @@
-import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-1';
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import{getCurrentUser,readFinance,readStock,readPartnerCommissionRates}from'./supabase.js?v=20261105-1';
+import{ACTIVE_SECTOR}from'./sector-context.js?v=20261105-2';
+import{projectOrderForSector}from'./sector-order-data.js?v=20261105-2';
+import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{getCurrentUser,readFinance,readStock,readPartnerCommissionRates}from'./supabase.js?v=20261105-2';
 import{exportReportPdf}from'./report-pdf-export.js?v=20261105-1';
 import{commissionWeekRange,mechanicAdvanceRows,normalizeCommissionText}from'./mechanic-advances.js?v=20260918-1';
 import{enableProgressiveTables}from'./pagination.js?v=20260930-1';
@@ -13,7 +15,7 @@ const $=selector=>document.querySelector(selector);
 const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const date=value=>value?new Date(`${String(value).slice(0,10)}T12:00`).toLocaleDateString('pt-BR'):'—';
-const database=()=>{try{return JSON.parse(localStorage.getItem(DB_KEY)||'null')||{orders:[],clients:[],vehicles:[]}}catch{return{orders:[],clients:[],vehicles:[]}}};
+const database=()=>{try{const db=JSON.parse(localStorage.getItem(DB_KEY)||'null');return db?{...db,orders:(db.orders||[]).map(order=>projectOrderForSector(order,ACTIVE_SECTOR)).filter(Boolean)}:db||{orders:[],clients:[],vehicles:[]}}catch{return{orders:[],clients:[],vehicles:[]}}};
 let finance=[],stock=[],selectedCommissionMechanic='Gustavo';
 const company=`<div class="report-company"><img src="${new URL('../official-logo.png',import.meta.url).href}" alt="Logo Cortez Garage"><div><h2>Cortez Garage mecânica e auto elétrica</h2><p>Av. Brasil, 5452, Bamerindus, Itapoá - SC</p><p>Cel: (47) 99124-7442 · CNPJ 57.757.919/0001-41</p></div></div>`;
 

@@ -12,7 +12,7 @@ test('checklist deixa de aparecer no menu principal',()=>{
 });
 
 test('checklist aparece somente no histórico do veículo com a data realizada',()=>{
-  assert.match(index,/checklist-history\.js\?v=20261105-1/);
+  assert.match(index,/checklist-history\.js\?v=20261105-2/);
   assert.match(moduleCode,/document\.querySelector\('\.vehicle-history'\)/);
   assert.match(moduleCode,/Realizado em \$\{formatDate\(order\.checklistAt\|\|order\.created\)\}/);
   assert.match(moduleCode,/if\(order\?\.checklist\?\.length\)article\.append\(checklistPanel\(order\)\)/);

@@ -1,6 +1,7 @@
-import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-1';
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
-import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js?v=20261008-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js?v=20261105-2';
 import {calculateOrderTotals} from './order-surcharge.js?v=20261017-1';
 
 const DB_KEY='cortez-garage-v1';
@@ -9,7 +10,7 @@ const COMPANY={name:ELECTRICAL_SECTOR?'Cortez Garage · Auto elétrica':'Cortez 
 const readDb=()=>{try{return JSON.parse(localStorage.getItem(DB_KEY)||'null')}catch{return null}};
 const plain=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,' ');
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const currentOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();return readDb()?.orders?.find(order=>String(order.number)===number)};
+const currentOrder=()=>{const number=document.querySelector('.os-head h2')?.textContent.match(/#(.+)/)?.[1]?.trim();return readDb()?.orders?.find(order=>matchesDisplayedOrder(order,number))};
 const loadImage=src=>new Promise((resolve,reject)=>{const image=new Image;image.onload=()=>resolve(image);image.onerror=reject;image.src=src});
 const wrap=(ctx,text,maxWidth)=>{const words=String(text||'—').split(/\s+/),lines=[];let line='';for(const word of words){const next=(line+' '+word).trim();if(line&&ctx.measureText(next).width>maxWidth){lines.push(line);line=word}else line=next}if(line)lines.push(line);return lines.length?lines:['—']};
 

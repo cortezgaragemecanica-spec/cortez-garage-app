@@ -13,6 +13,7 @@ const clone=value=>structuredClone(value);
 const now=(()=>{let tick=0;return()=>`2026-10-09T15:00:${String(tick++).padStart(2,'0')}.000Z`})();
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json'}});
 const tables={clientes:[],veiculos:[],ordens_servico:[],estoque:[],sincronizacao:[]};
+for(const table of Object.keys(tables))tables['ae_'+table]=[];
 
 function matches(row,params){
   for(const [key,value]of params){

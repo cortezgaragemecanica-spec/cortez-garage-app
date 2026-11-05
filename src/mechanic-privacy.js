@@ -1,4 +1,4 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
 export const OWNER_EMAIL='cortezgaragemecanica@gmail.com';
 export const PRIVATE_MECHANIC='Cortez';
 export const PRIVATE_MECHANIC_MASK='**';

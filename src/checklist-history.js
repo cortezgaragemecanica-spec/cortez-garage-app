@@ -1,4 +1,5 @@
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
 const DATABASE_KEY='cortez-garage-v1';
 
 const normalizePlate=value=>String(value||'').replace(/[^a-z0-9]/gi,'').toUpperCase();
@@ -63,7 +64,7 @@ function enhanceChecklistHistory(){
   history.querySelectorAll(':scope > article').forEach(article=>{
     if(article.querySelector('.vehicle-checklist'))return;
     const number=article.querySelector('header b')?.textContent.match(/#(.+)/)?.[1]?.trim();
-    const order=orders.find(item=>String(item.number)===number);
+    const order=orders.find(item=>matchesDisplayedOrder(item,number));
     if(order?.checklist?.length)article.append(checklistPanel(order));
   });
 }

@@ -1,5 +1,5 @@
-import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-1';
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-1';
+import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
 const CONFIG_KEY='cortez-garage-sync-v1';
 export const DEFAULT_SYNC_URL='https://script.google.com/macros/s/AKfycbyaVOd06qSiIzctse-XsBrCEe0ujR6KXFdCE47oHXjgRTHuye3uiDMSYyszZ3W76JGhsA/exec';
 
