@@ -15,6 +15,10 @@ function install(){
  if(!document.querySelector('aside nav'))return;
  document.documentElement.dataset.sector=ACTIVE_SECTOR;
  document.title=`Cortez Garage · ${SECTOR_TITLE}`;
+ if(!maySwitch()){
+  document.querySelectorAll('.sector-operation-banner,#sectorContext,header .sector-indicator').forEach(element=>element.remove());
+  return;
+ }
  const content=document.querySelector('#content');
  if(content&&!document.querySelector('.sector-operation-banner')){
   const banner=document.createElement('section');banner.className='sector-operation-banner';
