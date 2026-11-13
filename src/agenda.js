@@ -1,6 +1,6 @@
 import{actorAcrossSectors,rememberSector,routeSector,responseTable}from'./sector-routing.js?v=20261105-2';
 import{sectorRequestPath}from'./sector-context.js?v=20261105-2';
-import{refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261105-3';
+import{refreshSession,getCurrentUser,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics}from'./supabase.js?v=20261113-2';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 import{agendaDisplayName,isPrivateMechanic}from'./mechanic-privacy.js?v=20261105-1';
 import{hasSaturdaySchedule,mechanicWorksOnDate}from'./mechanic-saturday.js?v=20261003-2';
