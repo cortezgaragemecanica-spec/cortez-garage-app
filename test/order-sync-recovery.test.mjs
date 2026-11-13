@@ -49,5 +49,5 @@ test('publicação invalida o cache dos módulos corrigidos',async()=>{
   assert.match(index,/main\.js\?v=20261105-7/);
   assert.match(worker,/main\.js\?v=20261105-7/);
   assert.match(worker,/supabase\.js\?v=20261105-3/);
-  assert.match(worker,/cortez-garage-v333-filtro-direcao/);
+  assert.match(worker,/cortez-garage-v334-pagamento-parcial/);
 });
