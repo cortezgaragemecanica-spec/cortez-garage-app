@@ -1,5 +1,5 @@
 import{ACTIVE_SECTOR,ELECTRICAL_SECTOR,SECTOR_TITLE,SECTOR_OWNER,maySwitchSector,isSectorOperator}from'./sector-context.js?v=20261105-2';
-import{getCurrentUser,getManagedUser,readSectorCashOverview,transferSectorCash,allocateSectorExpense}from'./supabase.js?v=20261105-3';
+import{getCurrentUser,getManagedUser,readSectorCashOverview,transferSectorCash,allocateSectorExpense}from'./supabase.js?v=20261113-2';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const accounts=['Banco do Brasil','Mercado Livre','Dinheiro'];

@@ -1,6 +1,6 @@
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{reverseDeliveredOrder,cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261105-3';
+import{reverseDeliveredOrder,cancelOrderCommission,canAdministerRequests,canCloseOrders,canHandleRequestNotifications,deletePartRequest,finalizeOrderReady,getCurrentUser,getManagedUser,hasPermission,isKauaUser,markPartRequestSent,readOrderCommissions,readPartRequests,readStock,recordOrderAdvance,recordOrderCommissions,recordOrderDelivery,reopenReadyOrder,saveOrderProgress,saveOrderValues,savePartRequest,saveStockItems,updateOrderIdentity,updateOrderStatus,updatePartRequest}from'./supabase.js?v=20261113-2';
 import{calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';
 import{resolveOrderStockLinks}from'./order-stock-links.js?v=20261008-1';
 import{createInstallmentPlan,suggestedInstallmentDates}from'./order-installments.js?v=20260928-1';

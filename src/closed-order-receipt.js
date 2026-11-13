@@ -1,6 +1,6 @@
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{getCurrentUser}from'./supabase.js?v=20261105-3';
+import{getCurrentUser}from'./supabase.js?v=20261113-2';
 import{closedOrderReceiptData}from'./closed-order-receipt-data.js?v=20261006-1';
 
 const OWNER='cortezgaragemecanica@gmail.com',DB_KEY='cortez-garage-v1',LOGO_URL=new URL('../official-logo.png',import.meta.url).href;
