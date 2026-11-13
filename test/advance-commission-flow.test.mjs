@@ -51,7 +51,7 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(sql,/mesma pessoa e setor/);
   assert.match(sql,/pg_advisory_xact_lock/);
   assert.match(supabase,/p_setor:ACTIVE_SECTOR,p_ids:selected,p_caixa:paymentType/);
-  assert.match(worker,/cortez-garage-v335-data-pagamento/);
+  assert.match(worker,/cortez-garage-v336-cielo/);
 });
 
 test('pagamento de sócio relê e baixa todas as comissões pendentes em uma única saída',async()=>{
@@ -86,7 +86,7 @@ test('janela de comissões usa tabela ampla no computador e cartões no celular'
   assert.match(style,/\.commission-release-columns,.commission-service-row\{[^}]*grid-template-columns:/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.commission-service-row\{grid-template-columns:1fr 1fr/);
   assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(index,/order-workflow\.js\?v=20261105-2/);
+  assert.match(index,/order-workflow\.js\?v=20261113-3/);
 });
 
 test('entrega não duplica comissão antecipada nem reabre comissão já paga',async()=>{
