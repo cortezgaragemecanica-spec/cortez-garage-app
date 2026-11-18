@@ -1,4 +1,4 @@
-import{mechanicDisplayName}from'./mechanic-privacy.js?v=20261105-1';
+import{mechanicDisplayName}from'./mechanic-privacy.js?v=20261117-1';
 
 const EXECUTION_STATUSES=new Set(['Em andamento','Aguardando peça','Aguardando peças','Pronto para entrega','Entregue']);
 
