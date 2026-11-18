@@ -21,5 +21,14 @@ test('fechamento gera plano único e atômico, com valores e comissões no setor
  assert.equal(cash.reduce((sum,op)=>sum+op.body.valor,0),973);
  assert.equal(cash.find(op=>op.sector==='mecanica').body.valor,389.2);assert.equal(cash.find(op=>op.sector==='auto_eletrica').body.valor,583.8);
  assert.equal(commissions.find(op=>op.sector==='mecanica').body.valor,150);assert.equal(commissions.find(op=>op.sector==='auto_eletrica').body.valor,200);
+
  assert.ok(commissions.find(op=>op.sector==='auto_eletrica').body.referencia.endsWith('-servico-2'));
+ for(const [payment,expected] of [['Cartão máquina Cielo · Débito',975],['Cartão máquina Mercado Livre · Crédito',900],['Cartão máquina Rede Card (Luizinho) · Crédito',950]]){
+  const current=structuredClone(order);current.payment=payment.split(' · ')[0];
+  await recordOrderDelivery(current,payment);
+  const cash=submitted.p_plan.filter(op=>op.body.categoria==='Fluxo de caixa');
+  assert.equal(cash.reduce((sum,op)=>sum+op.body.valor,0),expected);
+  assert.ok(cash.every(op=>op.body.forma_pagamento===payment));
+ }
+
 });

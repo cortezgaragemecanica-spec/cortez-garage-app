@@ -608,7 +608,7 @@ test('proprietário altera internamente as comissões abertas sem mudar pagament
   assert.match(supabase,/weekStart!==partnerCommissionWeekStart\(\)/);
   assert.match(supabase,/A comissão só pode ser alterada para a semana atual/);
   assert.match(index,/admin\.js\?v=20261117-1/);
-  assert.match(index,/reports\.js\?v=20261105-2/);
+  assert.match(index,/reports\.js\?v=20261117-1/);
   assert.match(worker,/boot\.js\?v=20261117-1/);
 
 });

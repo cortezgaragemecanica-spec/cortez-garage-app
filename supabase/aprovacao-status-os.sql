@@ -19,7 +19,7 @@ create or replace function public.solicitar_status_os(p_order_id uuid,p_setor te
 returns jsonb language plpgsql security definer set search_path=pg_catalog,public as $$
 declare row_data jsonb; saved public.solicitacoes_status_os;
 begin
- if lower(auth.jwt()->>'email') not in ('gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com','cortezgaragemotorcycles@gmail.com')
+ if auth.uid() is null or lower(coalesce(auth.jwt()->>'email','')) not in ('gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com','cortezgaragemotorcycles@gmail.com')
  or not public.usuario_tem_permissao('editOrders') then raise exception 'Acesso não autorizado.' using errcode='42501';end if;
  if p_setor not in ('mecanica','auto_eletrica') or p_status not in ('Pronto para entrega','Entregue') then raise exception 'Solicitação inválida.';end if;
  if p_setor='mecanica' then select to_jsonb(o) into row_data from public.ordens_servico o where id=p_order_id;
