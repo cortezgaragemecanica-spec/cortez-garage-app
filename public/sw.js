@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v338-comissoes-unificadas';
+const CACHE='cortez-garage-v339-peca-nova';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './src/sector-context.js?v=20261105-2',
@@ -10,7 +10,7 @@ const SHELL=[
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261118-1',
+  './src/boot.js?v=20261118-2',
   './src/receipt-methods.js?v=20261117-1',
   './src/order-status-approval.js?v=20261117-1',
   './src/main.js?v=20261118-1',
@@ -19,7 +19,7 @@ const SHELL=[
   './src/business-sectors.js',
   './src/access-control.js?v=20261009-2',
   './src/sector-suggestions.js?v=20261118-1',
-  './src/budget-order.js?v=20261118-1',
+  './src/budget-order.js?v=20261118-2',
   './src/pdf-order.js?v=20261105-2',
   './src/owner-diagnosis-observation.js?v=20261031-1',
   './src/order-workflow.js?v=20261117-1',
@@ -62,7 +62,7 @@ const CORE=SHELL.filter(path=>[
   './',
   './index.html',
   './src/style.css?v=20261031-6&w=26',
-  './src/boot.js?v=20261118-1',
+  './src/boot.js?v=20261118-2',
   './official-logo.png',
   './icons/icon-192.png'
 ].includes(path));

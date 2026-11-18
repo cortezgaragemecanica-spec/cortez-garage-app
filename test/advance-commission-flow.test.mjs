@@ -51,7 +51,7 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(sql,/mesma pessoa e setor/);
   assert.match(sql,/pg_advisory_xact_lock/);
   assert.match(supabase,/p_setor:sector,p_ids:ids,p_caixa:paymentType/);
-  assert.match(worker,/cortez-garage-v338-comissoes-unificadas/);
+  assert.match(worker,/cortez-garage-v339-peca-nova/);
 });
 
 test('pagamento de sócio relê e baixa todas as comissões pendentes em uma única saída',async()=>{
