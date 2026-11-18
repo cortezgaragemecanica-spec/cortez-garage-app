@@ -54,7 +54,7 @@ export function electricalOrderView(order) {
   const classify = item => {
     if (steeringTerminal.test(normalizeDescription(item.description))) return { ...item, tags: [], sector: 'mecanica' };
     const tags = electricalTags(item.description);
-    const electrical = item.sector === 'auto_eletrica' || (!item.stockId && tags.length > 0) ||
+    const electrical = item.sector === 'auto_eletrica' || (!item.sectorManual && !item.stockId && tags.length > 0) ||
       (!item.sector && (order.sourceSector === 'auto_eletrica' || order.sector === 'auto_eletrica'));
     return { ...item, tags, sector: electrical ? 'auto_eletrica' : 'mecanica' };
   };
