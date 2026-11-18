@@ -1,11 +1,11 @@
 import{RECEIPT_METHODS}from'./receipt-methods.js?v=20261117-1';
-import{electricalOrderView}from'./electrical-order-view.js?v=20261105-7';
+import{electricalOrderView}from'./electrical-order-view.js?v=20261118-1';
 const sectorLabel=order=>order.sector==='mista'?'Mecânica + Auto elétrica':order.sector==='auto_eletrica'?'Auto elétrica':'Mecânica';
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{ACTIVE_SECTOR,ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
 import{DEFAULT_SYNC_URL,getSyncConfig,setSyncConfig,clearSyncConfig,syncStockMirror,consumeOrderStock}from'./sync.js?v=20261105-1';
-import{getSession,getCurrentUser,refreshSession,renderLogin,signOut,startUsageTracking,syncSupabase,readSupabase,readOrderPhotos,saveSupabase,saveOrderProgress,saveOrderValues,saveOrderTextFields,recordMirrorSync,readStock,saveStockItems,consumeStockForOrder,recordOrderReadyReceivable,recordOrderDelivery,updateOrderStatus,deleteVehicle,deleteClient,canSaveOrders as canManageServices,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics,readUserAccess,hasPermission}from'./supabase.js?v=20261117-1';
+import{getSession,getCurrentUser,refreshSession,renderLogin,signOut,startUsageTracking,syncSupabase,readSupabase,readOrderPhotos,saveSupabase,saveOrderProgress,saveOrderValues,saveOrderTextFields,recordMirrorSync,readStock,saveStockItems,consumeStockForOrder,recordOrderReadyReceivable,recordOrderDelivery,updateOrderStatus,deleteVehicle,deleteClient,canSaveOrders as canManageServices,agendaMechanicForCurrentUser,getCachedMechanics,readMechanics,readUserAccess,hasPermission}from'./supabase.js?v=20261118-1';
 import{paginate,pagerHtml}from'./pagination.js?v=20260930-1';
 import{mechanicDisplayName,selectableMechanics}from'./mechanic-privacy.js?v=20261117-1';
 import{NEW_ORDER_SURCHARGE_RATE,calculateOrderTotals}from'./order-surcharge.js?v=20261017-1';

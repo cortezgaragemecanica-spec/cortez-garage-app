@@ -36,7 +36,7 @@ test('comissão pode ser liberada por serviço antes da entrega e paga com saíd
   assert.match(admin,/Pagar comissões/);
   assert.match(admin,/Caixa utilizado/);
   assert.match(admin,/await payCommissions\(commissions\.map\(record=>record\.id\),account,reference\)/);
-  assert.match(admin,/somente um lançamento consolidado/);
+  assert.match(admin,/Cada caixa recebe sua saída consolidada correspondente/);
 });
 
 test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
@@ -50,8 +50,8 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(sql,/count_selected<>1/);
   assert.match(sql,/mesma pessoa e setor/);
   assert.match(sql,/pg_advisory_xact_lock/);
-  assert.match(supabase,/p_setor:ACTIVE_SECTOR,p_ids:selected,p_caixa:paymentType/);
-  assert.match(worker,/cortez-garage-v337-aprovacao-maquinas/);
+  assert.match(supabase,/p_setor:sector,p_ids:ids,p_caixa:paymentType/);
+  assert.match(worker,/cortez-garage-v338-comissoes-unificadas/);
 });
 
 test('pagamento de sócio relê e baixa todas as comissões pendentes em uma única saída',async()=>{
@@ -64,7 +64,7 @@ test('pagamento de sócio relê e baixa todas as comissões pendentes em uma ún
   assert.match(block,/return payCommissions\(ids,paymentType,reference\)/);
   assert.match(admin,/partner\?await payAllPartnerCommissions\(partner,account,reference\):await payCommissions/);
   assert.match(admin,/paidCount=result\.records\.length,paidTotal=result\.total/);
-  assert.match(admin,/Uma única saída de \$\{money\(paidTotal\)\}/);
+  assert.match(admin,/Total de \$\{money\(paidTotal\)\}/);
 });
 
 test('liberação antecipada pendente pode ser cancelada sem permitir estorno da paga',async()=>{

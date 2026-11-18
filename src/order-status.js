@@ -1,6 +1,6 @@
 import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
 import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
-import{updateOrderStatus}from'./supabase.js?v=20261117-1';
+import{updateOrderStatus}from'./supabase.js?v=20261118-1';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 
 const DB_KEY='cortez-garage-v1';
