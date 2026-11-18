@@ -13,8 +13,8 @@ export function currentUserEmail(){
 
 export const isOwnerEmail=(email=currentUserEmail())=>normalized(email)===OWNER_EMAIL;
 export const isPrivateMechanic=name=>normalized(name)===normalized(PRIVATE_MECHANIC);
-export const mechanicDisplayName=(name,email=currentUserEmail())=>isPrivateMechanic(name)&&!isOwnerEmail(email)?PRIVATE_MECHANIC_MASK:String(name||'');
-export const selectableMechanics=(names,email=currentUserEmail())=>isOwnerEmail(email)?[...names]:names.filter(name=>!isPrivateMechanic(name));
+export const mechanicDisplayName=name=>String(name||'');
+export const selectableMechanics=names=>[...names];
 export function serviceMechanicOptions(names,current='',email=currentUserEmail()){
   const preferred=['tony','fabio','gustavo','cortez'];
   return [...new Set([...selectableMechanics(names,email),current].filter(Boolean))].sort((a,b)=>{
