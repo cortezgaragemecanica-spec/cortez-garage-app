@@ -1,5 +1,5 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v339-peca-nova';
+const CACHE='cortez-garage-v340-descricoes-os';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
   './src/sector-context.js?v=20261105-2',
@@ -10,16 +10,17 @@ const SHELL=[
   './src/style.css?v=20261031-6&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261118-2',
+  './src/boot.js?v=20261118-3',
   './src/receipt-methods.js?v=20261117-1',
   './src/order-status-approval.js?v=20261117-1',
-  './src/main.js?v=20261118-1',
+  './src/main.js?v=20261118-3',
   './src/electrical-order-view.js?v=20261118-1',
   './src/sector-order-data.js?v=20261105-2',
   './src/business-sectors.js',
   './src/access-control.js?v=20261009-2',
   './src/sector-suggestions.js?v=20261118-1',
-  './src/budget-order.js?v=20261118-2',
+  './src/order-budget-consistency.js?v=20261118-3',
+  './src/budget-order.js?v=20261118-3',
   './src/pdf-order.js?v=20261105-2',
   './src/owner-diagnosis-observation.js?v=20261031-1',
   './src/order-workflow.js?v=20261117-1',
@@ -47,7 +48,7 @@ const SHELL=[
   './src/help.js?v=20261031-2',
   './src/ui-events.js?v=20260930-1',
   './src/stock-save-plan.js?v=20261008-1',
-  './src/supabase.js?v=20261118-1',
+  './src/supabase.js?v=20261118-3',
   './src/card-fees.js?v=20261006-1',
   './src/monthly-closing.js?v=20261006-1&w=5',
   './src/financial-recovery.js?v=20261020-2',
@@ -62,7 +63,7 @@ const CORE=SHELL.filter(path=>[
   './',
   './index.html',
   './src/style.css?v=20261031-6&w=26',
-  './src/boot.js?v=20261118-2',
+  './src/boot.js?v=20261118-3',
   './official-logo.png',
   './icons/icon-192.png'
 ].includes(path));
