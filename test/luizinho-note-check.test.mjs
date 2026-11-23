@@ -27,5 +27,5 @@ test('acerto mostra progresso e permite conferir cada nota',async()=>{
   assert.match(style,/\.luizinho-note-checked/);
   assert.match(index,/admin\.js\?v=20261118-1/);
   assert.match(index,/style\.css\?v=20261031-6&amp;w=26/);
-  assert.match(worker,/cortez-garage-v341-saldo-painel-os/);
+  assert.match(worker,/cortez-garage-v342-saldo-grupos/);
 });
