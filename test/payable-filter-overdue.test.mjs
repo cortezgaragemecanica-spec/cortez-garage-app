@@ -32,10 +32,25 @@ test('status das contas a pagar considera o mês do vencimento',()=>{
 });
 
 test('versões publicadas invalidam cache do módulo e do estilo',()=>{
-  assert.match(index,/admin\.js\?v=20261118-1/);
-  assert.match(index,/style\.css\?v=20261031-6/);
-  assert.match(worker,/cortez-garage-v342-saldo-grupos/);
-  assert.match(worker,/admin\.js\?v=20261118-1/);
-  assert.match(worker,/style\.css\?v=20261031-6&w=26/);
+  assert.match(index,/admin\.js\?v=20261126-1/);
+  assert.match(index,/style\.css\?v=20261126-1/);
+  assert.match(worker,/cortez-garage-v343-payable-colors/);
+  assert.match(worker,/admin\.js\?v=20261126-1/);
+  assert.match(worker,/style\.css\?v=20261126-1&w=26/);
 });
 
+
+test('cores por dia do vencimento preservam contas pagas',()=>{
+  const source=admin.match(/function payableMonthStatus\([^\n]+/)[0];
+  const status=new Function('localDateOnly',`return (${source})`)(d=>d.toISOString().slice(0,10));
+  const today=new Date('2026-11-26T12:00:00Z');
+  for(const dueDate of ['2026-10-30','2026-11-01','2026-11-25']){
+    assert.equal(status({dueDate},{paid:0},today).overdue,true);
+  }
+  assert.equal(status({dueDate:'2026-11-26'},{paid:25},today).dueToday,true);
+  for(const dueDate of ['2026-11-27','2026-12-01'])assert.equal(status({dueDate},{paid:0},today).overdue,false);
+  const paid=status({dueDate:'2026-11-25',status:'Realizado'},{paid:100},today);
+  assert.equal(paid.overdue,false);
+  assert.equal(paid.dueToday,undefined);
+  assert.match(admin,/payable-due-today/);
+});

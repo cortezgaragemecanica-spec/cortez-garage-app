@@ -25,6 +25,6 @@ test('fase 3 melhora toque, foco e leitura no celular',async()=>{
   assert.match(style,/\.order-more-actions-menu/);
   assert.match(style,/min-height:44px/);
   assert.match(style,/summary:focus-visible/);
-  assert.match(index,/style\.css\?v=20261031-6&amp;w=26/);
-  assert.match(worker,/cortez-garage-v342-saldo-grupos/);
+  assert.match(index,/style\.css\?v=20261126-1&amp;w=26/);
+  assert.match(worker,/cortez-garage-v343-payable-colors/);
 });
