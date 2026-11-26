@@ -1,19 +1,20 @@
 // Atualiza os compromissos previstos e a distribuição quinzenal dos custos fixos.
-const CACHE='cortez-garage-v345-admin-history';
+const CACHE='cortez-garage-v346-status-conference';
 const ROOT=new URL('./',self.location).pathname;
 const SHELL=[
+  './src/order-status-conference.js?v=20261126-4',
   './src/sector-unification.js?v=20261126-2',
   './src/sector-context.js?v=20261126-2',
   './src/sector-switcher.js?v=20261126-3',
   './src/sector.css?v=20261105-5',
   './',
   './index.html',
-  './src/style.css?v=20261126-1&w=26',
+  './src/style.css?v=20261126-4&w=26',
   './src/checklist.css?v=20260829-3',
   './src/monthly-closing.css?v=20261001-1',
-  './src/boot.js?v=20261126-3',
+  './src/boot.js?v=20261126-4',
   './src/receipt-methods.js?v=20261117-1',
-  './src/order-status-approval.js?v=20261117-1',
+  './src/order-status-approval.js?v=20261126-4',
   './src/main.js?v=20261126-1',
   './src/electrical-order-view.js?v=20261118-1',
   './src/sector-order-data.js?v=20261105-2',
@@ -63,8 +64,8 @@ const SHELL=[
 const CORE=SHELL.filter(path=>[
   './',
   './index.html',
-  './src/style.css?v=20261126-1&w=26',
-  './src/boot.js?v=20261126-3',
+  './src/style.css?v=20261126-4&w=26',
+  './src/boot.js?v=20261126-4',
   './official-logo.png',
   './icons/icon-192.png'
 ].includes(path));

@@ -1,3 +1,4 @@
+import{approveStatusConference}from'./order-status-conference.js?v=20261126-4';
 import {getCurrentUser,isGustavoUser,readOrderStatusRequests,readApprovalOrder,resolveOrderStatusRequest,submitOrderStatusRequest,readStock,finalizeOrderReady,recordOrderDelivery,updateOrderStatus,saveOrderValues} from './supabase.js?v=20261126-2';
 import {sectorStorage as storage,matchesDisplayedOrder} from './sector-context.js?v=20261126-2';
 import {resolveOrderStockLinks} from './order-stock-links.js?v=20261008-1';
@@ -21,6 +22,7 @@ async function refresh(){
  }catch(error){console.error('Falha ao consultar solicitações de status',error)}finally{loading=false}
 }
 function openRequests(){
+ if(!owner())return;
  document.querySelector('.status-approval-popup')?.remove();
  const popup=document.createElement('div');popup.className='check-popup status-approval-popup';
  popup.innerHTML='<section class="check-popup-card"><h3>Conferência de O.S.</h3><div class="approval-list"></div><button class="secondary close-approval">Fechar</button></section>';
@@ -38,27 +40,14 @@ function openRequests(){
    };
    item.querySelector('.approve-status').onclick=async event=>{
     if(!confirm('Confirmar a conferência e aprovar '+request.destino+'?'))return;
-    const button=event.currentTarget;button.disabled=true;
+    const button=event.currentTarget;if(button.disabled)return;button.disabled=true;
     try{
-     const current=await readApprovalOrder(request.os_id,request.setor);
-     if(!current)throw new Error('O.S. não encontrada.');
-     if(current.status!==request.destino){
-      if(new Date(current.updatedAt).getTime()!==new Date(request.versao).getTime()&&!(request.destino==='Entregue'&&current.closingReceipt?.paymentType===request.pagamento?.cashPayment))throw new Error('A O.S. mudou desde a solicitação. Recuse esta solicitação e peça nova conferência.');
-      if(request.destino==='Pronto para entrega'){
-       const links=resolveOrderStockLinks(current.budget?.parts||[],await readStock());
-       if(links.unresolved.length)throw new Error('Confira o vínculo e o saldo das peças de estoque.');
-       await finalizeOrderReady(current,links.selections);
-      }else{
-       if(current.status!=='Pronto para entrega')throw new Error('A O.S. precisa estar pronta para entrega.');
-       const payment=request.pagamento;
-       current.payment=payment.payment;
-       await recordOrderDelivery(current,payment.cashPayment,payment.credit,payment.card);
-       await saveOrderValues(current);
-       await updateOrderStatus(current.id,'Entregue');
-      }
-     }
-     await resolveOrderStatusRequest(request.id,'Aprovado');
-     item.remove();loadedAt=0;await refresh();alert('Solicitação aprovada e status confirmado.');
+     const result=await approveStatusConference(request,order,{
+      readOrder:readApprovalOrder,
+      makeReady:async current=>{const links=resolveOrderStockLinks(current.budget?.parts||[],await readStock());if(links.unresolved.length)throw new Error('Confira o vínculo e o saldo das peças de estoque.');await finalizeOrderReady(current,links.selections)},
+      recordDelivery:recordOrderDelivery,saveOrder:saveOrderValues,updateStatus:updateOrderStatus,resolveRequest:resolveOrderStatusRequest
+     });
+     item.remove();loadedAt=0;await refresh();alert(result.changed?'Solicitação aprovada e status confirmado.':'Conferência registrada. A O.S. já estava atualizada; nenhum lançamento foi repetido.');
     }catch(error){button.disabled=false;alert(error.message)}
    };
   }).catch(error=>{item.textContent=error.message});

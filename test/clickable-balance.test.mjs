@@ -40,9 +40,9 @@ test('cartão e sinais positivos e negativos possuem destaque visual',()=>{
 
 test('publicação invalida os caches do módulo e do estilo',()=>{
   assert.match(index,/admin\.js\?v=20261126-3/);
-  assert.match(index,/style\.css\?v=20261126-1/);
-  assert.match(worker,/cortez-garage-v345-admin-history/);
+  assert.match(index,/style\.css\?v=20261126-4/);
+  assert.match(worker,/cortez-garage-v346-status-conference/);
   assert.match(worker,/admin\.js\?v=20261126-3/);
-  assert.match(worker,/style\.css\?v=20261126-1&w=26/);
+  assert.match(worker,/style\.css\?v=20261126-4&w=26/);
 });
 
