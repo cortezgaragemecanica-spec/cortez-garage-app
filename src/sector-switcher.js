@@ -1,6 +1,6 @@
-import{sectorsUnified,includeElectricalMovement}from'./sector-unification.js?v=20261126-2';
+import{sectorsUnified}from'./sector-unification.js?v=20261126-2';
 import{ACTIVE_SECTOR,ELECTRICAL_SECTOR,SECTOR_TITLE,SECTOR_OWNER,maySwitchSector,isSectorOperator}from'./sector-context.js?v=20261126-2';
-import{getCurrentUser,getManagedUser,readElectricalArchive,readSectorCashOverview,transferSectorCash,allocateSectorExpense}from'./supabase.js?v=20261126-2';
+import{getCurrentUser,getManagedUser,readSectorCashOverview,transferSectorCash,allocateSectorExpense}from'./supabase.js?v=20261126-2';
 import{onUiUpdated}from'./ui-events.js?v=20260930-1';
 const money=value=>Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const accounts=['Banco do Brasil','Mercado Livre','Dinheiro','Luizinho'];
@@ -17,8 +17,7 @@ function install(){
  if(sectorsUnified()){
   document.documentElement.dataset.sector='mecanica';document.title='Cortez Garage';
   document.querySelectorAll('.sector-operation-banner,#sectorContext,header .sector-indicator').forEach(element=>element.remove());
-  if(owner()&&!document.querySelector('#electricalArchive')){const button=document.createElement('button');button.id='electricalArchive';button.className='secondary';button.textContent='Histórico da auto elétrica';button.onclick=openElectricalArchive;document.querySelector('aside nav').append(button)}
-  if(!owner())document.querySelector('#electricalArchive')?.remove();
+  document.querySelector('aside nav #electricalArchive')?.remove();
   return;
  }
  document.documentElement.dataset.sector=ACTIVE_SECTOR;
@@ -82,18 +81,3 @@ function operationForm(popup,type){
 }
 onUiUpdated(install);
 addEventListener('cortez:user-access-updated',()=>{document.querySelector('.sector-operation-banner')?.remove();document.querySelector('#sectorContext')?.remove();install()});
-
-async function openElectricalArchive(){
- if(!owner())return;document.querySelector('.sector-popup')?.remove();
- const popup=document.createElement('div');popup.className='check-popup sector-popup';
- popup.innerHTML='<section class="check-popup-card sector-overview" style="max-height:90vh;overflow:auto"><button class="secondary sector-close">Fechar</button><h2>Histórico da auto elétrica</h2><p>Consulta dos registros originais. A operação foi unificada em 26/11/2026. Nenhum valor anterior foi transferido ou recalculado.</p><div class="sector-archive-content">Carregando…</div></section>';
- popup.querySelector('.sector-close').onclick=()=>popup.remove();document.body.append(popup);
- const target=popup.querySelector('.sector-archive-content');
- const line=(container,label,value)=>{const p=document.createElement('p');p.textContent=label+': '+value;container.append(p)};
- try{const archive=await readElectricalArchive();target.replaceChildren();const heading=document.createElement('h3');heading.textContent='Ordens de serviço';target.append(heading);
- for(const order of archive.orders){const detail=document.createElement('details'),summary=document.createElement('summary');summary.textContent='O.S. #'+order.number+' · '+(order.client?.name||'')+' · '+(order.vehicle?.plate||'')+' · '+money(order.total);detail.append(summary);line(detail,'Veículo',order.vehicle?.model||'');line(detail,'Status',order.status);line(detail,'Reclamação',order.complaint);line(detail,'Diagnóstico',order.diagnosis);line(detail,'Observações',order.notes);for(const part of order.budget?.parts||[])line(detail,part.description,money(Number(part.value||0)*Number(part.quantity||1)));for(const service of order.budget?.services||[])line(detail,service.description,money(service.value));line(detail,'Total original',money(order.total));target.append(detail)}
- const financeHeading=document.createElement('h3');financeHeading.textContent='Financeiro anterior à unificação';target.append(financeHeading);
- for(const record of archive.finance.filter(row=>!includeElectricalMovement(row)))line(target,(record.dueDate||'')+' · '+record.category+' · '+record.description,money(record.amount)+' · '+record.status);
- if(!archive.orders.length&&!archive.finance.length)line(target,'Histórico','Nenhum registro encontrado');
- }catch(error){target.textContent=error.message}
-}

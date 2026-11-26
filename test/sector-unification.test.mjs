@@ -65,5 +65,17 @@ test('consulta elétrica não executa rotinas que modificam dados',()=>{
  assert.match(api,/currentEmail\(\)!==OWNER_EMAIL/);
  assert.doesNotMatch(api,/method:\s*'(POST|PATCH|DELETE)'|reconcile|writeDatabase/);
  const switcher=readFileSync(new URL('../src/sector-switcher.js',import.meta.url),'utf8');
- assert.match(switcher,/Histórico da auto elétrica/);assert.match(switcher,/button\.onclick=openElectricalArchive/);
+ assert.doesNotMatch(switcher,/button\.onclick=openElectricalArchive/);assert.match(admin,/archiveButton\.onclick=openElectricalArchive/);
+});
+
+test('histórico elétrico aparece apenas no Administrativo do proprietário',async()=>{
+ const source=admin.split('\n').find(line=>line.startsWith('function dashboardHtml('));
+ for(const isOwner of [true,false]){
+  const context=vm.createContext({totals:()=>({}),localStorage:{getItem:()=>''},financeOwner:()=>isOwner,money:()=>''});
+  vm.runInContext(source,context);const html=vm.runInContext('dashboardHtml()',context);
+  assert.equal(html.includes('id="electricalArchive"'),isOwner);
+ }
+ const start=admin.indexOf('async function openElectricalArchive()');
+ const open=new Function('financeOwner','return ('+admin.slice(start).trim()+')')(()=>false);
+ await open(); // Sem proprietário não acessa DOM nem consulta dados.
 });
