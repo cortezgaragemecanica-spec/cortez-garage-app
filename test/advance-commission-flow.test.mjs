@@ -51,7 +51,7 @@ test('sócios e mecânicos usam pagamento consolidado por pessoa',async()=>{
   assert.match(sql,/mesma pessoa e setor/);
   assert.match(sql,/pg_advisory_xact_lock/);
   assert.match(supabase,/p_setor:sector,p_ids:ids,p_caixa:paymentType/);
-  assert.match(worker,/cortez-garage-v345-admin-history/);
+  assert.match(worker,/cortez-garage-v346-status-conference/);
 });
 
 test('pagamento de sócio relê e baixa todas as comissões pendentes em uma única saída',async()=>{
@@ -85,7 +85,7 @@ test('janela de comissões usa tabela ampla no computador e cartões no celular'
   assert.match(style,/\.commission-release-popup \.check-popup-card\{[^}]*width:min\(1180px,[^}]*height:min\(820px/);
   assert.match(style,/\.commission-release-columns,.commission-service-row\{[^}]*grid-template-columns:/);
   assert.match(style,/@media\(max-width:760px\)[\s\S]*\.commission-service-row\{grid-template-columns:1fr 1fr/);
-  assert.match(index,/style\.css\?v=20261126-1/);
+  assert.match(index,/style\.css\?v=20261126-4/);
   assert.match(index,/order-workflow\.js\?v=20261117-1/);
 });
 
