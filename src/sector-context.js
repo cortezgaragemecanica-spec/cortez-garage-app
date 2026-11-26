@@ -1,9 +1,10 @@
+import{sectorsUnified}from'./sector-unification.js?v=20261126-2';
 // A sector is fixed for the lifetime of a page. A second tab cannot redirect
 // an in-flight save to another sector by changing shared browser storage.
 export const SECTOR_OWNER='cortezgaragemecanica@gmail.com';
 const gustavoEmails=new Set(['gust.cribas@gmail.com','gust.ribas@gmail.com','gust.ribas@hotmail.com','cortezgaragemotorcycles@gmail.com']);
 export function isSectorOperator(email='',profile=null){const normalized=String(email).trim().toLowerCase();if(normalized==='marcelinocortez2910@gmail.com'||profile?.active===false||profile?.permissions?.accessApp===false||/marcelino/i.test(profile?.name||''))return false;return normalized===SECTOR_OWNER||gustavoEmails.has(normalized)||normalized==='fabiomaier19850901@gmail.com'||/^(gustavo|fabio|fábio|tony|cortez)$/i.test(profile?.agendaMechanic||profile?.name||'')}
-export function maySwitchSector(email='',profile=null){return isSectorOperator(email,profile)&&(String(email).trim().toLowerCase()===SECTOR_OWNER||gustavoEmails.has(String(email).trim().toLowerCase())||/^gustavo$/i.test(profile?.agendaMechanic||profile?.name||''))}
+export function maySwitchSector(email='',profile=null){return !sectorsUnified()&&isSectorOperator(email,profile)&&(String(email).trim().toLowerCase()===SECTOR_OWNER||gustavoEmails.has(String(email).trim().toLowerCase())||/^gustavo$/i.test(profile?.agendaMechanic||profile?.name||''))}
 export function resolveSector(search='',email='',profile=null){
   return new URLSearchParams(search).get('sector')==='auto_eletrica'&&maySwitchSector(email,profile)?'auto_eletrica':'mecanica';
 }

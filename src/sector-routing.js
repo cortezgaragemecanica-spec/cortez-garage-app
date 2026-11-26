@@ -1,4 +1,4 @@
-import{ACTIVE_SECTOR,SECTOR_OWNER,isSectorOperator}from'./sector-context.js?v=20261105-2';
+import{ACTIVE_SECTOR,SECTOR_OWNER,isSectorOperator}from'./sector-context.js?v=20261126-2';
 const registry=new Map();
 export function actorAcrossSectors(){try{const email=JSON.parse(globalThis.localStorage?.getItem('cortez-garage-supabase-session-v1')||'null')?.user?.email||'',profiles=JSON.parse(globalThis.localStorage?.getItem('cortez-garage-user-access-v1')||'[]');return isSectorOperator(email,profiles.find(p=>p.email?.toLowerCase()===email.toLowerCase()))}catch{return false}}
 export function rememberSector(table,rows,sector){for(const row of Array.isArray(rows)?rows:[]){if(!row?.id)continue;const key=table+':'+row.id,old=registry.get(key);if(!old||sector==='mecanica')registry.set(key,sector);row.__sourceSector=sector}return rows}
