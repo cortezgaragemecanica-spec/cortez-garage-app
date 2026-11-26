@@ -32,10 +32,10 @@ test('status das contas a pagar considera o mês do vencimento',()=>{
 });
 
 test('versões publicadas invalidam cache do módulo e do estilo',()=>{
-  assert.match(index,/admin\.js\?v=20261126-2/);
+  assert.match(index,/admin\.js\?v=20261126-3/);
   assert.match(index,/style\.css\?v=20261126-1/);
-  assert.match(worker,/cortez-garage-v344-unified-operation/);
-  assert.match(worker,/admin\.js\?v=20261126-2/);
+  assert.match(worker,/cortez-garage-v345-admin-history/);
+  assert.match(worker,/admin\.js\?v=20261126-3/);
   assert.match(worker,/style\.css\?v=20261126-1&w=26/);
 });
 
