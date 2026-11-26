@@ -1,9 +1,12 @@
+import{unifiedNewOrder}from'./sector-unification.js?v=20261126-2';
 import {electricalTags} from './electrical-order-view.js?v=20261118-1';
 import {itemSector} from './sector-order-data.js?v=20261105-2';
 
 const normalize=value=>String(value||'').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().trim();
 export function suggestedItemSector(item={},order={}){
- if(item.stockId||item.sectorManual)return itemSector(item,order);
+ if(item.stockId)return itemSector(item,order);
+ if(unifiedNewOrder(order))return 'mecanica';
+ if(item.sectorManual)return itemSector(item,order);
  const description=normalize(item.description);
  if(/\btermina(?:l|is) (?:d[ae] )?direcao\b/.test(description))return 'mecanica';
  if(electricalTags(description).length)return 'auto_eletrica';

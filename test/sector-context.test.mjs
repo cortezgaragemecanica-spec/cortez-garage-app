@@ -4,9 +4,9 @@ import{resolveSector,createSectorStorage,sectorRequestPath,sectorStorageKey}from
 import{weeklySettlementRows}from'../src/partner-weekly-settlement.js';
 const owner='cortezgaragemecanica@gmail.com';
 test('URL não concede acesso elétrico a Marcelino ou outro usuário',()=>{
- assert.equal(resolveSector('?sector=auto_eletrica',owner),'auto_eletrica');
+ assert.equal(resolveSector('?sector=auto_eletrica',owner),'mecanica');
  for(const email of ['marcelino@example.com','',owner+'.evil'])assert.equal(resolveSector('?sector=auto_eletrica',email),'mecanica');
- assert.equal(resolveSector('?sector=auto_eletrica','gust.ribas@gmail.com'),'auto_eletrica');
+ assert.equal(resolveSector('?sector=auto_eletrica','gust.ribas@gmail.com'),'mecanica');
  assert.equal(resolveSector('',owner),'mecanica');
 });
 test('dois setores não compartilham O.S., estoque, rascunhos ou financeiro local',()=>{

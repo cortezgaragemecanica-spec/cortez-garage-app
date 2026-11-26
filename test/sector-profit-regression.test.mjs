@@ -1,3 +1,5 @@
+import{sectorsUnified}from'../src/sector-unification.js';
+import{projectOrderForSector}from'../src/sector-order-data.js';
 import test from'node:test';
 import assert from'node:assert/strict';
 import vm from'node:vm';
@@ -6,7 +8,7 @@ const admin=await readFile(new URL('../src/admin.js',import.meta.url),'utf8'),re
 const line=(source,name)=>source.split('\n').find(row=>row.startsWith('function '+name+'('));
 test('lançar comissão de sócio não reduz novamente a base como custo do mecânico',()=>{
  const order={id:'ae-os',number:'0001',labor:200},records=[{orderId:order.id,category:'Comissões',amount:100,reference:'comissao-os-servico-1'},{orderId:order.id,category:'Comissões',amount:45,reference:'partner-weekly-v2-fabiano-week-ae-os'}];
- const context=vm.createContext({order,records,finance:records,localOrders:()=>[order]});
+ const context=vm.createContext({order,records,finance:records,sectorsUnified,projectOrderForSector,ACTIVE_SECTOR:'mecanica',localOrders:()=>[order]});
  vm.runInContext(line(admin,'financeOrder')+';'+line(admin,'orderLaborCommission')+';'+line(reports,'orderCommission'),context);
  assert.equal(vm.runInContext('orderLaborCommission(order)',context),100);
  assert.equal(vm.runInContext('orderCommission(order)',context),100);

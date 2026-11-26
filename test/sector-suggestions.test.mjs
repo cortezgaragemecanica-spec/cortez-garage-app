@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {suggestedItemSector} from '../src/sector-suggestions.js';
+import {suggestedItemSector as suggest} from '../src/sector-suggestions.js';
+
+const suggestedItemSector=(item,order={})=>suggest(item,{created:'2026-11-05',...order});
 
 test('tags pré-selecionam peças e serviços elétricos e respeitam ajustes manuais e estoque',()=>{
  assert.equal(suggestedItemSector({description:'Lâmpada H7',sector:'mecanica'}),'auto_eletrica');

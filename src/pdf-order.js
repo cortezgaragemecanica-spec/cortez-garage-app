@@ -1,6 +1,6 @@
-import{matchesDisplayedOrder}from'./sector-context.js?v=20261105-2';
-import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261105-2';
-import{sectorStorage as localStorage}from'./sector-context.js?v=20261105-2';
+import{matchesDisplayedOrder}from'./sector-context.js?v=20261126-2';
+import{ELECTRICAL_SECTOR}from'./sector-context.js?v=20261126-2';
+import{sectorStorage as localStorage}from'./sector-context.js?v=20261126-2';
 import {isExecutionPdf,servicePdfSection,budgetObservation} from './pdf-order-sections.js?v=20261105-2';
 import {calculateOrderTotals} from './order-surcharge.js?v=20261017-1';
 

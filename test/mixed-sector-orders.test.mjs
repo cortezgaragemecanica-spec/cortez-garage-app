@@ -23,7 +23,7 @@ test('permissões operacionais são reconhecidas nos dois setores e Marcelino é
  assert.equal(isSectorOperator('fabiomaier19850901@gmail.com'),true);
  assert.equal(isSectorOperator('marcelino@example.com',{name:'Marcelino',agendaMechanic:'Tony'}),false);
  assert.equal(isSectorOperator('gust.ribas@gmail.com',{active:false}),false);
- assert.equal(maySwitchSector('gust.ribas@gmail.com'),true);assert.equal(maySwitchSector('tony@example.com',{agendaMechanic:'Tony'}),false);
+ assert.equal(maySwitchSector('gust.ribas@gmail.com'),false);assert.equal(maySwitchSector('tony@example.com',{agendaMechanic:'Tony'}),false);
  assert.equal(resolveSector('','gust.ribas@gmail.com'),'mecanica');
 });
 test('operações concorrentes mantêm a origem por ID, independentemente do setor da tela',()=>{

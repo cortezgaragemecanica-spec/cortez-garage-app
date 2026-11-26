@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {suggestedItemSector} from '../src/sector-suggestions.js';
 
-test('incluir peça nova aceita item de edição nulo e preserva a sugestão elétrica',async()=>{
+test('incluir peça nova aceita item de edição nulo e usa o fluxo unificado',async()=>{
  const source=readFileSync(new URL('../src/budget-order.js',import.meta.url),'utf8');
  const marker="modal.querySelector('#includePart').onclick=";
  const handler=source.slice(source.indexOf(marker)+marker.length).split('\n')[0].trim().replace(/;$/,'');
@@ -16,7 +16,7 @@ test('incluir peça nova aceita item de edição nulo e preserva a sugestão el�
  assert.deepEqual(alerts,[]);
  assert.equal(saved.length,1);
  assert.equal(saved[0].description,'Lâmpada H7');
- assert.equal(saved[0].sector,'auto_eletrica');
+ assert.equal(saved[0].sector,'mecanica');
  assert.equal(saved[0].sectorManual,false);
  assert.equal(saved[0].value,217.6);
  assert.equal(closed,true);
